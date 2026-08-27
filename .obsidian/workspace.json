@@ -190,18 +190,20 @@
   },
   "active": "946e453e37f98d3d",
   "lastOpenFiles": [
+    "frontend/dist/assets/index-BgIJUlCC.js",
+    "frontend/dist/assets/index-BVZ_LQCB.css",
+    "frontend/dist/assets",
+    "package.json",
+    "frontend/dist/assets/index-C02cWIXT.js",
+    "frontend/dist/assets/index-BYVMQ98Z.css",
     "docs/# Índice de Documentação — V1.md",
+    "docs/DOCUMENTACAO_COMPLETA_V1.md",
     "{\"message\": \"Lucas, registra aí pra mim a abertura de um lote de 1500 alevinos de Tambaqui no tanque escavado 02 hoje\"}",
     "node_modules/@types/uuid/package.json",
     "node_modules/@types/uuid/index.d.ts",
     "node_modules/@types/uuid/README.md",
     "node_modules/@types/uuid/index.d.mts",
     "node_modules/@types/uuid/LICENSE",
-    "node_modules/@types/uuid",
-    "node_modules/@esbuild/linux-s390x",
-    "node_modules/uuid/dist/version.d.ts",
-    "node_modules/uuid/dist/validate.d.ts",
-    "node_modules/uuid/dist/v7.d.ts",
     "node_modules/uuid/README.md",
     "node_modules/uuid/LICENSE.md",
     "node_modules/@esbuild/linux-x64/README.md",
@@ -225,8 +227,6 @@
     "node_modules/mkdirp/CHANGELOG.md",
     "node_modules/picomatch/README.md",
     "node_modules/@types/serve-static/README.md",
-    "node_modules/@types/body-parser/README.md",
-    "node_modules/@types/qs/README.md",
-    "node_modules/arg/README.md"
+    "node_modules/@types/body-parser/README.md"
   ]
 }

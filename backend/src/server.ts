@@ -18,6 +18,7 @@ import {
 import {
   insertCaixaMovimento,
   getSaldo,
+  listarMovimentosCaixa,
 } from "./repositories/caixaRepository";
 import {
   enqueueOperation,
@@ -85,6 +86,10 @@ app.use("/api", (req, res, next) => {
 });
 
 const apiKey = process.env.IA_API_KEY;
+const apiUrl =
+  process.env.IA_API_URL ||
+  "http://localhost:11434/v1/chat/completions";
+const model = process.env.IA_MODEL || "qwen2.5:0.5b";
 
 if (!apiKey) {
   console.warn(
@@ -92,7 +97,7 @@ if (!apiKey) {
   );
 }
 
-const chat = new ChatService(apiKey || "");
+const chat = new ChatService(apiKey || "", apiUrl, model);
 const manejoService = new ManejoService();
 const conhecimentoPromise = loadConhecimento(process.cwd());
 
@@ -309,6 +314,16 @@ app.get("/api/caixa/saldo", (_req, res) => {
   } catch (error) {
     return res.status(500).json({
       error: getErrorMessage(error, "Erro ao consultar saldo."),
+    });
+  }
+});
+
+app.get("/api/caixa/movimentos", (_req, res) => {
+  try {
+    return res.json(listarMovimentosCaixa());
+  } catch (error) {
+    return res.status(500).json({
+      error: getErrorMessage(error, "Erro ao listar movimentos."),
     });
   }
 });
@@ -771,7 +786,7 @@ if (databaseUrl) {
 
   syncWorker.start();
 } else {
-  console.warn("REMOTE_API_URL não definido - sincronização remota desativada.");
+  console.warn("DATABASE_URL não definido - sincronização remota desativada.");
 }
 
 const port = Number(process.env.PORT || 3000);

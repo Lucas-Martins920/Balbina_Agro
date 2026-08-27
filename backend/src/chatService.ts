@@ -9,7 +9,11 @@ export class ChatService {
   apiUrl: string;
   model: string;
 
-  constructor(apiKey: string, apiUrl = "http://localhost:11434/v1/chat/completions", model = "qwen2.5:1.5b") {
+  constructor(
+    apiKey: string,
+    apiUrl = "http://localhost:11434/v1/chat/completions",
+    model = "qwen2.5:0.5b"
+  ) {
     this.apiKey = apiKey;
     this.apiUrl = apiUrl;
     this.model = model;
@@ -39,6 +43,50 @@ export class ChatService {
     throw new Error("Não foi possível extrair JSON da resposta do modelo.");
   }
 
+  private extractAbrirLoteFromMessage(userMessage: string): AbrirLoteOutput {
+    const message = userMessage.trim();
+    const normalized = message.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const dateMatch = message.match(/\b(\d{4}-\d{2}-\d{2}|\d{2}\/\d{2}\/\d{4})\b/);
+    const dataInicio = dateMatch
+      ? dateMatch[1].includes("/")
+        ? dateMatch[1].split("/").reverse().join("-")
+        : dateMatch[1]
+      : new Date().toISOString().slice(0, 10);
+
+    const quantityMatch = normalized.match(/\b(?:com|de)\s+(\d+)\s+(?:alevinos?|peixes?)/i);
+    const speciesMatch = normalized.match(/\b(?:de|da especie)\s+([a-z][a-z ]*?)(?=(?:\s+(?:no|na|em|a partir|para))|$)/i);
+    const explicitLoteMatch = normalized.match(/\blote\s+([\w-]+(?:\s+\d+)?)/i);
+    const tankMatch = normalized.match(/\b(?:no|na|em)\s+(?:tanque|viveiro)\s+([\w-]+(?:\s+\d+)?)/i);
+
+    const tanqueId = tankMatch?.[1].trim() ||
+      (explicitLoteMatch && /^viveiro\b/i.test(explicitLoteMatch[1])
+        ? explicitLoteMatch[1].trim()
+        : undefined);
+
+    if (!quantityMatch || !speciesMatch || !tanqueId) {
+      throw new Error(
+        "Não foi possível interpretar o lote. Informe tanque, quantidade, espécie e, opcionalmente, a data."
+      );
+    }
+
+    const loteId = explicitLoteMatch && !/^viveiro\b/i.test(explicitLoteMatch[1])
+      ? explicitLoteMatch[1].trim()
+      : `LOTE-${dataInicio}-${tanqueId.replace(/\s+/g, "-")}`;
+
+    return {
+      action: "abrir_lote",
+      payload: {
+        loteId,
+        especie: speciesMatch[1].trim(),
+        tanqueId,
+        dataInicio,
+        estoqueInicial: Number(quantityMatch[1]),
+        unidade: "peixes",
+        observacoes: "Interpretado localmente a partir da mensagem do usuário.",
+      },
+    };
+  }
+
     private async callModel(messages: any[]) {
     // Adicionamos o "response_format" para travar o Qwen em formato JSON
     const body = { 
@@ -51,8 +99,12 @@ export class ChatService {
 
     const res = await fetch(this.apiUrl, {
       method: "POST",
-      // Removemos o Bearer Token obrigatório já que o Ollama local não autentica
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(this.apiKey
+          ? { Authorization: `Bearer ${this.apiKey}` }
+          : {}),
+      },
       body: JSON.stringify(body)
     });
 
@@ -70,11 +122,16 @@ export class ChatService {
 
   public async sendAbrirLoteRequest(userMessage: string): Promise<AbrirLoteOutput> {
     const messages = [...this.buildSystemPrompt("abrir_lote"), { role: "user", content: userMessage }];
-    const content = await this.callModel(messages);
-    const parsed = this.extractJson(content);
-    const v = AbrirLoteSchema.safeParse(parsed);
-    if (!v.success) throw new Error("Structured output inválido: " + JSON.stringify(v.error.format()));
-    return v.data;
+    try {
+      const content = await this.callModel(messages);
+      const parsed = this.extractJson(content);
+      const v = AbrirLoteSchema.safeParse(parsed);
+      if (v.success) return v.data;
+    } catch {
+      // O modelo pequeno pode ignorar response_format; nesse caso usamos a mensagem original.
+    }
+
+    return this.extractAbrirLoteFromMessage(userMessage);
   }
 
     // US-002: Chamado pelo endpoint /api/lancar-insumo

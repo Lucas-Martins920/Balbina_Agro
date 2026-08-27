@@ -81,10 +81,39 @@ button {
   text-decoration: none;
 }
 
+.sidebar-nav button {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 7px;
+  color: #b9d1c6;
+  background: transparent;
+  text-align: left;
+}
+
+.sidebar-nav button strong {
+  font-size: 0.88rem;
+}
+
+.sidebar-nav button small {
+  color: #86aa99;
+  font-family: Arial, sans-serif;
+  font-size: 0.72rem;
+}
+
 .sidebar-nav a.active,
-.sidebar-nav a:hover {
+.sidebar-nav a:hover,
+.sidebar-nav button.active,
+.sidebar-nav button:hover {
   color: #fff;
   background: #286251;
+}
+
+.sidebar-nav button.active small,
+.sidebar-nav button:hover small {
+  color: #d1e8dc;
 }
 
 .sidebar-note {
@@ -175,6 +204,13 @@ p {
 }
 
 .dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.section-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 18px;
@@ -352,14 +388,19 @@ button:disabled {
   }
 
   .sidebar-nav {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 4px;
   }
 
-  .sidebar-nav a {
+  .sidebar-nav a,
+  .sidebar-nav button {
     padding: 9px 6px;
     text-align: center;
     font-size: 0.75rem;
+  }
+
+  .sidebar-nav button small {
+    display: none;
   }
 
   .sidebar-note {
@@ -398,9 +439,21 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
+  .section-grid {
+    grid-template-columns: 1fr;
+  }
+
   .composer {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .cash-item {
+    grid-template-columns: 1fr auto;
+  }
+
+  .cash-type {
+    grid-column: 1 / -1;
   }
 
   .message {
@@ -473,6 +526,82 @@ button:disabled {
 
 .operation-form {
   margin-top: 18px;
+}
+
+.empty-state {
+  display: grid;
+  gap: 8px;
+}
+
+.empty-state h2,
+.empty-state p {
+  margin-bottom: 0;
+}
+
+.secondary-action {
+  margin: 18px 0;
+  color: #28563e;
+  background: #d9ece3;
+}
+
+.account-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 18px 0;
+}
+
+.cash-history {
+  margin-top: 18px;
+}
+
+.cash-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.cash-item {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid #dbe3da;
+  padding: 12px 0;
+}
+
+.cash-item small {
+  display: block;
+  margin-top: 4px;
+  color: #687269;
+  font-family: Arial, sans-serif;
+}
+
+.cash-type {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 5px 8px;
+  font-family: Arial, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.cash-type.entrada,
+.cash-value.entrada {
+  color: #236846;
+}
+
+.cash-type.saida,
+.cash-value.saida {
+  color: #a04d32;
+}
+
+.cash-type.entrada {
+  background: #d7eadb;
+}
+
+.cash-type.saida {
+  background: #f4dfd5;
 }
 
 .operation-fields {

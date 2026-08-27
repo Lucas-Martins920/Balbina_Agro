@@ -19,6 +19,14 @@ type Balance = {
   saidas: number;
 };
 
+type MovimentoCaixa = {
+  id: string;
+  tipo: "entrada" | "saida";
+  valor: number;
+  descricao: string | null;
+  dataMovimento: string;
+};
+
 type Lote = {
   id: string;
   especie: string;
@@ -58,7 +66,11 @@ type FormMode =
   | "venda"
   | "estoque"
   | "conta"
+  | "caixa"
+  | "registro"
   | null;
+
+type Section = "producao" | "caixa" | "manejo" | "contas";
 
 export default function App() {
   const [authenticated, setAuthenticated] = useState(hasToken);
@@ -69,8 +81,10 @@ export default function App() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [formMode, setFormMode] = useState<FormMode>(null);
+  const [activeSection, setActiveSection] = useState<Section>("producao");
 
   const [balance, setBalance] = useState<Balance | null>(null);
+  const [movimentosCaixa, setMovimentosCaixa] = useState<MovimentoCaixa[]>([]);
   const [lotes, setLotes] = useState<Lote[]>([]);
   const [estoque, setEstoque] = useState<Estoque[]>([]);
   const [alertas, setAlertas] = useState<ContaAlerta[]>([]);
@@ -122,6 +136,7 @@ export default function App() {
     try {
       const responses = await Promise.all([
         apiFetch("/api/caixa/saldo"),
+        apiFetch("/api/caixa/movimentos"),
         apiFetch("/api/lotes"),
         apiFetch("/api/estoque"),
         apiFetch("/api/contas-pagar/alertas"),
@@ -130,6 +145,7 @@ export default function App() {
 
       const [
         balanceResponse,
+        movimentosCaixaResponse,
         lotesResponse,
         estoqueResponse,
         alertasResponse,
@@ -138,6 +154,10 @@ export default function App() {
 
       if (balanceResponse.ok) {
         setBalance(await balanceResponse.json());
+      }
+
+      if (movimentosCaixaResponse.ok) {
+        setMovimentosCaixa(await movimentosCaixaResponse.json());
       }
 
       if (lotesResponse.ok) {
@@ -229,8 +249,12 @@ export default function App() {
 
       const isLote =
         normalized.includes("abrir lote") ||
+        normalized.includes("abre lote") ||
+        normalized.includes("abre um lote") ||
+        normalized.includes("abrir um lote") ||
         normalized.includes("novo lote") ||
-        normalized.includes("criar lote");
+        normalized.includes("criar lote") ||
+        normalized.includes("crie um lote");
 
       if (!isInsumo && !isLote) {
         addAssistantMessage(
@@ -239,9 +263,9 @@ export default function App() {
         return;
       }
 
-      const endpoint = isInsumo
-        ? "/api/lancar-insumo"
-        : "/api/abrir-lote";
+      const endpoint = isLote
+        ? "/api/abrir-lote"
+        : "/api/lancar-insumo";
 
       const response = await apiFetch(endpoint, {
         method: "POST",
@@ -335,6 +359,38 @@ export default function App() {
         };
       }
 
+      if (formMode === "caixa") {
+        endpoint = "/api/caixa/movimento";
+        body = {
+          tipo: form.get("tipo"),
+          valor: Number(form.get("valor")),
+          descricao: form.get("descricao"),
+          dataMovimento: form.get("dataMovimento"),
+        };
+      }
+
+      if (formMode === "registro") {
+        const registroTipo = form.get("registroTipo");
+
+        if (registroTipo === "conta") {
+          endpoint = "/api/contas-pagar";
+          body = {
+            descricao: form.get("descricao"),
+            fornecedor: form.get("fornecedor"),
+            valor: Number(form.get("valor")),
+            vencimento: form.get("data"),
+          };
+        } else {
+          endpoint = "/api/caixa/movimento";
+          body = {
+            tipo: form.get("tipo"),
+            valor: Number(form.get("valor")),
+            descricao: form.get("descricao"),
+            dataMovimento: form.get("data"),
+          };
+        }
+      }
+
       const response = await apiFetch(endpoint, {
         method: "POST",
         headers: {
@@ -407,9 +463,23 @@ export default function App() {
         </div>
 
         <nav className="sidebar-nav" aria-label="Navegação principal">
-          <a className="active" href="#visao-geral">Visão geral</a>
-          <a href="#producao">Produção</a>
-          <a href="#assistente">Assistente</a>
+          {([
+            ["producao", "Visão geral", "Acompanhe seus lotes"],
+            ["caixa", "Caixa", "Entradas e saídas"],
+            ["manejo", "Manejo", "Fale com a assistente"],
+            ["contas", "Contas", "Vencimentos"],
+          ] as const).map(([section, label, description]) => (
+            <button
+              className={activeSection === section ? "active" : ""}
+              key={section}
+              type="button"
+              onClick={() => setActiveSection(section)}
+              aria-current={activeSection === section ? "page" : undefined}
+            >
+              <strong>{label}</strong>
+              <small>{description}</small>
+            </button>
+          ))}
         </nav>
 
         <div className="sidebar-note">
@@ -422,7 +492,12 @@ export default function App() {
         <header className="header" id="visao-geral">
           <div>
             <span className="label">PAINEL DE OPERAÇÃO</span>
-            <h1>Visão geral</h1>
+            <h1>
+              {activeSection === "producao" && "Visão geral"}
+              {activeSection === "caixa" && "Caixa"}
+              {activeSection === "manejo" && "Manejo"}
+              {activeSection === "contas" && "Contas a pagar"}
+            </h1>
           </div>
 
           <div className="header-actions">
@@ -435,7 +510,7 @@ export default function App() {
           </div>
         </header>
 
-      <section className="dashboard">
+      {activeSection === "producao" && <section className="dashboard">
         <article className="balance-card">
           <span className="label">
             SALDO ATUAL DO CAIXA
@@ -488,18 +563,66 @@ export default function App() {
             </div>
           )}
         </article>
-      </section>
+      </section>}
 
-      <div id="producao">
-      <ProductionActions
+      {activeSection === "producao" && <div id="producao">
+        <ProductionActions
         onCloseLot={() => setFormMode("fechar")}
         onRegisterSale={() => setFormMode("venda")}
         onViewStock={() => setFormMode("estoque")}
         onViewPayables={() => setFormMode("conta")}
-      />
-      </div>
+        />
+      </div>}
 
-      {alertas.length > 0 && (
+      {activeSection === "caixa" && (
+        <>
+          <section className="section-grid">
+            <article className="balance-card">
+              <span className="label">SALDO ATUAL DO CAIXA</span>
+              <strong>R$ {(balance?.saldo ?? 0).toFixed(2).replace(".", ",")}</strong>
+              <div className="balance-details">
+                <span>Entradas: R$ {(balance?.entradas ?? 0).toFixed(2).replace(".", ",")}</span>
+                <span>Saídas: R$ {(balance?.saidas ?? 0).toFixed(2).replace(".", ",")}</span>
+              </div>
+            </article>
+            <section className="panel">
+              <span className="label">SINCRONIZAÇÃO</span>
+              <h2>{isOffline ? "Operando offline" : "Tudo sincronizado"}</h2>
+              <p>{sync.pending} operação(ões) aguardando envio para o servidor.</p>
+            </section>
+          </section>
+          <section className="panel cash-history">
+            <div className="chat-heading">
+              <div>
+                <span className="label">MOVIMENTAÇÕES</span>
+                <h2>Entradas e saídas</h2>
+              </div>
+            </div>
+            {movimentosCaixa.length === 0 ? (
+              <p>Nenhum lançamento registrado.</p>
+            ) : (
+              <div className="cash-list">
+                {movimentosCaixa.map((movimento) => (
+                  <div className="cash-item" key={movimento.id}>
+                    <span className={`cash-type ${movimento.tipo}`}>
+                      {movimento.tipo === "entrada" ? "Entrada" : "Saída"}
+                    </span>
+                    <div>
+                      <strong>{movimento.descricao || "Movimentação"}</strong>
+                      <small>{new Date(movimento.dataMovimento).toLocaleDateString("pt-BR")}</small>
+                    </div>
+                    <strong className={`cash-value ${movimento.tipo}`}>
+                      {movimento.tipo === "entrada" ? "+" : "-"} R$ {movimento.valor.toFixed(2).replace(".", ",")}
+                    </strong>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </>
+      )}
+
+      {activeSection === "contas" && (alertas.length > 0 ? (
         <section className="panel alert-panel">
           <span className="label">ALERTAS DE VENCIMENTO</span>
 
@@ -510,9 +633,27 @@ export default function App() {
             </p>
           ))}
         </section>
+      ) : (
+        <section className="panel empty-state">
+          <span className="label">CONTAS A PAGAR</span>
+          <h2>Nenhuma conta próxima do vencimento</h2>
+          <p>Use a ação abaixo para registrar uma nova conta.</p>
+        </section>
+      ))}
+
+      {activeSection === "contas" && alertas.length > 0 && (
+        <div className="account-actions">
+          <button type="button" onClick={() => setFormMode("registro")}>Registrar</button>
+        </div>
       )}
 
-      <section className="panel">
+      {activeSection === "contas" && alertas.length === 0 && (
+        <div className="account-actions">
+          <button type="button" onClick={() => setFormMode("registro")}>Registrar</button>
+        </div>
+      )}
+
+      {activeSection === "producao" && <section className="panel">
         <span className="label">ESTOQUE ATUAL</span>
 
         {estoque.length === 0 ? (
@@ -533,9 +674,9 @@ export default function App() {
             ))}
           </div>
         )}
-      </section>
+      </section>}
 
-      <section className="chat panel" id="assistente">
+      {activeSection === "manejo" && <section className="chat panel" id="assistente">
         <div className="chat-heading">
           <div>
             <span className="label">ASSISTENTE</span>
@@ -580,7 +721,7 @@ export default function App() {
             {loading ? "Processando..." : "Enviar"}
           </button>
         </form>
-      </section>
+      </section>}
 
       {formMode && (
         <section className="panel operation-form">
@@ -594,6 +735,10 @@ export default function App() {
                 "Movimentar estoque"}
               {formMode === "conta" &&
                 "Nova conta a pagar"}
+              {formMode === "caixa" &&
+                "Novo lançamento no caixa"}
+              {formMode === "registro" &&
+                "Registrar operação"}
             </h2>
 
             <button
@@ -736,6 +881,74 @@ export default function App() {
 
                 <input
                   name="vencimento"
+                  type="date"
+                  required
+                />
+              </>
+            )}
+
+            {formMode === "caixa" && (
+              <>
+                <select name="tipo" defaultValue="saida">
+                  <option value="entrada">Entrada</option>
+                  <option value="saida">Saída</option>
+                </select>
+
+                <input
+                  name="descricao"
+                  placeholder="Descrição: venda, compra, despesa..."
+                  required
+                />
+
+                <input
+                  name="valor"
+                  type="number"
+                  step="0.01"
+                  placeholder="Valor"
+                  required
+                />
+
+                <input
+                  name="dataMovimento"
+                  type="date"
+                  required
+                />
+              </>
+            )}
+
+            {formMode === "registro" && (
+              <>
+                <select name="registroTipo" defaultValue="caixa">
+                  <option value="caixa">Entrada ou saída no caixa</option>
+                  <option value="conta">Conta a pagar</option>
+                </select>
+
+                <select name="tipo" defaultValue="saida">
+                  <option value="entrada">Entrada</option>
+                  <option value="saida">Saída</option>
+                </select>
+
+                <input
+                  name="descricao"
+                  placeholder="Descrição"
+                  required
+                />
+
+                <input
+                  name="fornecedor"
+                  placeholder="Fornecedor (opcional)"
+                />
+
+                <input
+                  name="valor"
+                  type="number"
+                  step="0.01"
+                  placeholder="Valor"
+                  required
+                />
+
+                <input
+                  name="data"
                   type="date"
                   required
                 />

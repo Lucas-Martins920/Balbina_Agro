@@ -94,7 +94,10 @@ export class PostgresSyncWorker {
       maxAttempts: 5,
       ...options,
     };
-    this.pool = new Pool({ connectionString: this.options.databaseUrl });
+    this.pool = new Pool({
+      connectionString: this.options.databaseUrl,
+      ssl: { rejectUnauthorized: false },
+    });
   }
 
   start(): void {
