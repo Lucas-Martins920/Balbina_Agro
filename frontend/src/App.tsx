@@ -476,6 +476,18 @@ export default function App() {
   }
 
   const today = todayISO();
+  const kgParaVender = lotesComPeixe.reduce(
+    (sum, lote) => sum + Number(lote.kg_colhidos ?? 0) - Number(lote.kg_vendidos ?? 0),
+    0
+  );
+  // A frase do topo mostra o que mais precisa de atenção agora.
+  const finding = alertas[0]
+    ? `${alertas[0].descricao} ${daysLabel(alertas[0].dias_restantes)} · ${formatMoney(alertas[0].valor)}`
+    : kgParaVender > 0
+      ? `${formatNumber(kgParaVender)} kg de peixe prontos para vender`
+      : lotesAtivos.length > 0
+        ? `${lotesAtivos.length} lote(s) em engorda`
+        : "";
 
   return (
     <main className="app">
@@ -521,6 +533,9 @@ export default function App() {
         <header className="header">
           <div>
             <h1>{SECTION_TITLES[activeSection]}</h1>
+            {activeSection === "producao" && finding && (
+              <p className={`finding ${alertas.length > 0 ? "warn" : ""}`}>{finding}</p>
+            )}
           </div>
 
           <div className="header-actions">
