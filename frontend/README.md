@@ -29,8 +29,11 @@ http://localhost:3000
 Para apontar para outro backend:
 
 ```bash
-VITE_API_URL=http://localhost:3000
+VITE_API_URL=https://seu-backend.onrender.com
 ```
+
+No deploy, configure `VITE_API_URL` com a URL pública do serviço backend antes
+de executar o build. Sem essa variável, o frontend local usa `http://localhost:3000`.
 
 ## Scripts
 

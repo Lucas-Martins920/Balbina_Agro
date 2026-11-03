@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useRef,
   useState,
 } from "react";
 import type { FormEvent } from "react";
@@ -61,6 +62,16 @@ type ContaAlerta = {
   dias_restantes: number;
 };
 
+type Conta = {
+  id: string;
+  descricao: string;
+  fornecedor?: string | null;
+  valor: number;
+  vencimento: string;
+  status: "aberta" | "paga";
+  pago_em?: string | null;
+};
+
 type FormMode =
   | "fechar"
   | "venda"
@@ -70,7 +81,7 @@ type FormMode =
   | "registro"
   | null;
 
-type Section = "producao" | "caixa" | "manejo" | "contas";
+type Section = "producao" | "caixa" | "contas";
 
 export default function App() {
   const [authenticated, setAuthenticated] = useState(hasToken);
@@ -88,6 +99,9 @@ export default function App() {
   const [lotes, setLotes] = useState<Lote[]>([]);
   const [estoque, setEstoque] = useState<Estoque[]>([]);
   const [alertas, setAlertas] = useState<ContaAlerta[]>([]);
+  const [contas, setContas] = useState<Conta[]>([]);
+  const [payingAccountId, setPayingAccountId] = useState<string | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
   const [sync, setSync] = useState<SyncSummary>({
     pending: 0,
     synced: 0,
@@ -96,6 +110,7 @@ export default function App() {
 
   const [selectedLoteId, setSelectedLoteId] = useState("");
 
+  const nextMessageId = useRef(2);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -140,6 +155,7 @@ export default function App() {
         apiFetch("/api/lotes"),
         apiFetch("/api/estoque"),
         apiFetch("/api/contas-pagar/alertas"),
+        apiFetch("/api/contas-pagar"),
         apiFetch("/api/sync/summary"),
       ]);
 
@@ -149,6 +165,7 @@ export default function App() {
         lotesResponse,
         estoqueResponse,
         alertasResponse,
+        contasResponse,
         syncResponse,
       ] = responses;
 
@@ -172,6 +189,10 @@ export default function App() {
         setAlertas(await alertasResponse.json());
       }
 
+      if (contasResponse.ok) {
+        setContas(await contasResponse.json());
+      }
+
       if (syncResponse.ok) {
         setSync(await syncResponse.json());
       }
@@ -180,6 +201,33 @@ export default function App() {
         ...current,
         pending: Math.max(current.pending, 1),
       }));
+    }
+  }
+
+  async function payAccount(accountId: string) {
+    setPayingAccountId(accountId);
+
+    try {
+      const response = await apiFetch(`/api/contas-pagar/${accountId}/pagar`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const result = await response.json();
+
+      addAssistantMessage(
+        response.ok
+          ? "Conta marcada como paga."
+          : result.error || "Não foi possível marcar a conta como paga."
+      );
+
+      if (response.ok) {
+        await loadDashboard();
+      }
+    } catch {
+      addAssistantMessage("Não foi possível conectar ao backend.");
+    } finally {
+      setPayingAccountId(null);
     }
   }
 
@@ -209,7 +257,7 @@ export default function App() {
     setMessages((current) => [
       ...current,
       {
-        id: Date.now(),
+        id: nextMessageId.current++,
         role: "user",
         text,
       },
@@ -300,7 +348,7 @@ export default function App() {
     setMessages((current) => [
       ...current,
       {
-        id: Date.now(),
+        id: nextMessageId.current++,
         role: "assistant",
         text,
       },
@@ -466,7 +514,6 @@ export default function App() {
           {([
             ["producao", "Visão geral", "Acompanhe seus lotes"],
             ["caixa", "Caixa", "Entradas e saídas"],
-            ["manejo", "Manejo", "Fale com a assistente"],
             ["contas", "Contas", "Vencimentos"],
           ] as const).map(([section, label, description]) => (
             <button
@@ -495,7 +542,6 @@ export default function App() {
             <h1>
               {activeSection === "producao" && "Visão geral"}
               {activeSection === "caixa" && "Caixa"}
-              {activeSection === "manejo" && "Manejo"}
               {activeSection === "contas" && "Contas a pagar"}
             </h1>
           </div>
@@ -622,35 +668,58 @@ export default function App() {
         </>
       )}
 
-      {activeSection === "contas" && (alertas.length > 0 ? (
-        <section className="panel alert-panel">
-          <span className="label">ALERTAS DE VENCIMENTO</span>
+      {activeSection === "contas" && (
+        <>
+          {alertas.length > 0 && (
+            <section className="panel alert-panel">
+              <span className="label">ALERTAS DE VENCIMENTO</span>
+              {alertas.map((conta) => (
+                <p key={conta.id}>
+                  {conta.descricao} vence em {conta.dias_restantes} dia(s).
+                </p>
+              ))}
+            </section>
+          )}
 
-          {alertas.map((conta) => (
-            <p key={conta.id}>
-              {conta.descricao} vence em{" "}
-              {conta.dias_restantes} dia(s).
-            </p>
-          ))}
-        </section>
-      ) : (
-        <section className="panel empty-state">
-          <span className="label">CONTAS A PAGAR</span>
-          <h2>Nenhuma conta próxima do vencimento</h2>
-          <p>Use a ação abaixo para registrar uma nova conta.</p>
-        </section>
-      ))}
+          <section className="panel accounts-panel">
+            <div className="chat-heading">
+              <div>
+                <span className="label">CONTAS A PAGAR</span>
+                <h2>{contas.length === 0 ? "Nenhuma conta registrada" : "Contas registradas"}</h2>
+              </div>
+              <button type="button" onClick={() => setFormMode("registro")}>Registrar</button>
+            </div>
 
-      {activeSection === "contas" && alertas.length > 0 && (
-        <div className="account-actions">
-          <button type="button" onClick={() => setFormMode("registro")}>Registrar</button>
-        </div>
-      )}
-
-      {activeSection === "contas" && alertas.length === 0 && (
-        <div className="account-actions">
-          <button type="button" onClick={() => setFormMode("registro")}>Registrar</button>
-        </div>
+            {contas.length === 0 ? (
+              <p>Registre uma conta para acompanhar vencimentos e pagamentos.</p>
+            ) : (
+              <div className="accounts-list">
+                {contas.map((conta) => (
+                  <div className={`account-item ${conta.status}`} key={conta.id}>
+                    <div>
+                      <strong>{conta.descricao}</strong>
+                      <small>
+                        {conta.fornecedor || "Sem fornecedor"} · vence em {new Date(conta.vencimento).toLocaleDateString("pt-BR")}
+                      </small>
+                    </div>
+                    <strong>R$ {Number(conta.valor).toFixed(2).replace(".", ",")}</strong>
+                    {conta.status === "aberta" ? (
+                      <button
+                        type="button"
+                        onClick={() => payAccount(conta.id)}
+                        disabled={payingAccountId === conta.id}
+                      >
+                        {payingAccountId === conta.id ? "Salvando..." : "Marcar como paga"}
+                      </button>
+                    ) : (
+                      <span className="paid-status">Paga</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </>
       )}
 
       {activeSection === "producao" && <section className="panel">
@@ -676,52 +745,37 @@ export default function App() {
         )}
       </section>}
 
-      {activeSection === "manejo" && <section className="chat panel" id="assistente">
+      {chatOpen && <section className="chat panel chat-floating" id="assistente">
         <div className="chat-heading">
           <div>
             <span className="label">ASSISTENTE</span>
             <h2>Chat operacional</h2>
           </div>
-
-          <span className="status online">
-            ● Pronto
-          </span>
+          <button type="button" className="chat-close" onClick={() => setChatOpen(false)} aria-label="Fechar chat">Fechar</button>
         </div>
 
         <div className="messages">
           {messages.map((item) => (
-            <div
-              key={item.id}
-              className={`message ${item.role}`}
-            >
-              {item.text}
-            </div>
+            <div key={item.id} className={`message ${item.role}`}>{item.text}</div>
           ))}
         </div>
 
-        <form
-          onSubmit={sendMessage}
-          className="composer"
-        >
+        <form onSubmit={sendMessage} className="composer">
           <textarea
             value={message}
-            onChange={(event) =>
-              setMessage(event.target.value)
-            }
+            onChange={(event) => setMessage(event.target.value)}
             placeholder="Ex.: consultar saldo do caixa"
             rows={3}
           />
-
-          <button
-            type="submit"
-            disabled={
-              loading || !message.trim()
-            }
-          >
+          <button type="submit" disabled={loading || !message.trim()}>
             {loading ? "Processando..." : "Enviar"}
           </button>
         </form>
       </section>}
+
+      <button className="chat-toggle" type="button" onClick={() => setChatOpen((open) => !open)} aria-label="Abrir chat operacional">
+        {chatOpen ? "Fechar chat" : "Chat"}
+      </button>
 
       {formMode && (
         <section className="panel operation-form">
