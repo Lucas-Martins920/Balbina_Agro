@@ -14,6 +14,7 @@ export type ResultadoFechamento = {
   kgColhidos: number;
   custoTotal: number;
   custoPorKg: number;
+  movimentoEstoque: ReturnType<typeof inserirMovimentoEstoque>;
 };
 
 type LoteRow = {
@@ -101,7 +102,7 @@ export function fecharLote(
       custoPorKg,
     });
 
-    inserirMovimentoEstoque({
+    return inserirMovimentoEstoque({
       item: lote.especie,
       categoria: "peixe",
       quantidade: fechamento.kgColhidos,
@@ -112,7 +113,7 @@ export function fecharLote(
     });
   });
 
-  executarFechamento();
+  const movimentoEstoque = executarFechamento();
 
   return {
     loteId: fechamento.loteId,
@@ -121,5 +122,6 @@ export function fecharLote(
     kgColhidos: fechamento.kgColhidos,
     custoTotal,
     custoPorKg,
+    movimentoEstoque,
   };
 }

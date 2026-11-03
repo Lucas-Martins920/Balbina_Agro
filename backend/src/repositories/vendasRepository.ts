@@ -21,16 +21,21 @@ export function loteExiste(loteId: string): boolean {
   return Boolean(row?.id);
 }
 
-export function loteEstaFechado(loteId: string): boolean {
-  const row = db
+export type LoteResumo = {
+  id: string;
+  especie: string;
+  status: string;
+  kg_colhidos: number | null;
+};
+
+export function obterLote(loteId: string): LoteResumo | undefined {
+  return db
     .prepare(`
-      SELECT status
+      SELECT id, especie, status, kg_colhidos
       FROM lotes
       WHERE id = @loteId
     `)
-    .get({ loteId }) as { status?: string } | undefined;
-
-  return row?.status === "fechado";
+    .get({ loteId }) as LoteResumo | undefined;
 }
 
 export function inserirVenda(venda: NovaVenda) {

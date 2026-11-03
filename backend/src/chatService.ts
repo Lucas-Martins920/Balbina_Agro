@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import { AbrirLoteSchema, LancarInsumoSchema, AbrirLoteOutput, LancarInsumoOutput } from "./schemas";
 import { z } from "zod";
 
