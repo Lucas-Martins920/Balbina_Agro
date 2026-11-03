@@ -26,7 +26,7 @@ export function getPendingBatch(limit = 20, maxAttempts = 5): SyncQueueRow[] {
     FROM sync_queue
     WHERE status = 'pending'
       AND attempts < @maxAttempts
-    ORDER BY created_at ASC
+    ORDER BY created_at ASC, rowid ASC
     LIMIT @limit
   `);
 
@@ -75,9 +75,9 @@ export function markError(id: string, errorMessage: string) {
 export function getQueueSummary() {
   const stmt = db.prepare(`
     SELECT
-      SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending,
-      SUM(CASE WHEN status = 'synced' THEN 1 ELSE 0 END) AS synced,
-      SUM(CASE WHEN status = 'error' THEN 1 ELSE 0 END) AS error
+      COALESCE(SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END), 0) AS pending,
+      COALESCE(SUM(CASE WHEN status = 'synced' THEN 1 ELSE 0 END), 0) AS synced,
+      COALESCE(SUM(CASE WHEN status = 'error' THEN 1 ELSE 0 END), 0) AS error
     FROM sync_queue
   `);
 

@@ -1,8 +1,10 @@
-import dotenv from "dotenv";
-import path from "node:path";
+// Carrega o .env antes de qualquer outro módulo: db.ts lê DB_PATH na importação.
+import "dotenv/config";
+import crypto from "node:crypto";
 import express from "express";
 import cors from "cors";
 import { createToken, requireAuth } from "./auth";
+import db from "./db";
 
 import { ChatService } from "./chatService";
 import { loadConhecimento } from "./knowledgeLoader";
@@ -28,7 +30,8 @@ import {
   inserirVenda,
   listarVendas,
   loteExiste,
-  loteEstaFechado,
+  obterLote,
+  totalVendidoDoLote,
 } from "./repositories/vendasRepository";
 import {
   contaExiste,
@@ -48,14 +51,17 @@ import {
   handleLancarInsumoPayload,
 } from "./structuredOutputHandler";
 
-dotenv.config({
-  path: process.env.DOTENV_CONFIG_PATH || path.resolve(process.cwd(), ".env"),
-});
-
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+function safeEqual(received: unknown, expected: string): boolean {
+  if (typeof received !== "string") return false;
+  const a = crypto.createHash("sha256").update(received).digest();
+  const b = crypto.createHash("sha256").update(expected).digest();
+  return crypto.timingSafeEqual(a, b);
+}
 
 app.post("/api/login", (req, res) => {
   const username = process.env.AUTH_USER || "admin";
@@ -67,7 +73,10 @@ app.post("/api/login", (req, res) => {
     });
   }
 
-  if (req.body?.username !== username || req.body?.password !== password) {
+  if (
+    !safeEqual(req.body?.username, username) ||
+    !safeEqual(req.body?.password, password)
+  ) {
     return res.status(401).json({ error: "Credenciais inválidas." });
   }
 
@@ -98,7 +107,11 @@ if (!apiKey) {
 }
 
 const chat = new ChatService(apiKey || "", apiUrl, model);
-const manejoService = new ManejoService();
+const manejoService = new ManejoService(
+  process.env.IA_MANEJO_URL || apiUrl,
+  process.env.IA_MANEJO_MODEL || "qwen2.5:1.5b",
+  apiKey
+);
 const conhecimentoPromise = loadConhecimento(process.cwd());
 
 function isValidDate(value: unknown): value is string {
@@ -121,6 +134,13 @@ function getErrorMessage(
   error: unknown,
   fallback: string
 ): string {
+  if (
+    error instanceof Error &&
+    "code" in error &&
+    String(error.code).startsWith("SQLITE_CONSTRAINT")
+  ) {
+    return "Registro duplicado ou referência inválida.";
+  }
   return error instanceof Error ? error.message : fallback;
 }
 
@@ -210,12 +230,19 @@ app.post("/api/abrir-lote", async (req, res) => {
       });
     }
 
-    insertLote(parsed.payload);
+    if (loteExiste(parsed.payload.loteId)) {
+      return res.status(409).json({
+        error: `Já existe um lote com o código ${parsed.payload.loteId}.`,
+      });
+    }
 
-    enqueueOperation("lote", "create", {
-      id: parsed.payload.loteId,
-      ...parsed.payload,
-    });
+    db.transaction(() => {
+      insertLote(parsed.payload);
+      enqueueOperation("lote", "create", {
+        id: parsed.payload.loteId,
+        ...parsed.payload,
+      });
+    })();
 
     return res.status(201).json({
       ok: true,
@@ -260,40 +287,42 @@ app.post("/api/lancar-insumo", async (req, res) => {
 
     const loteId = findActiveLoteIdByTanque(parsed.payload.tanqueId);
 
-    insertInsumo(parsed.payload, loteId);
+    db.transaction(() => {
+      insertInsumo(parsed.payload, loteId);
 
-    enqueueOperation("insumo", "create", {
-      id: parsed.payload.insumoId,
-      ...parsed.payload,
-      loteId,
-    });
-
-    if (parsed.payload.precoUnitario !== undefined) {
-      const total =
-        parsed.payload.precoUnitario *
-        parsed.payload.quantidade;
-
-      const descricao = `Compra ${parsed.payload.tipo}`;
-
-      const caixaId = insertCaixaMovimento(
-        "saida",
-        total,
-        descricao,
-        parsed.payload.insumoId,
-        parsed.payload.dataCompra,
-        loteId
-      );
-
-      enqueueOperation("caixa", "create", {
-        id: caixaId,
-        tipo: "saida",
-        valor: total,
-        descricao,
-        referenciaId: parsed.payload.insumoId,
+      enqueueOperation("insumo", "create", {
+        id: parsed.payload.insumoId,
+        ...parsed.payload,
         loteId,
-        dataMovimento: parsed.payload.dataCompra,
       });
-    }
+
+      if (parsed.payload.precoUnitario !== undefined) {
+        const total =
+          parsed.payload.precoUnitario *
+          parsed.payload.quantidade;
+
+        const descricao = `Compra ${parsed.payload.tipo}`;
+
+        const caixaId = insertCaixaMovimento(
+          "saida",
+          total,
+          descricao,
+          parsed.payload.insumoId,
+          parsed.payload.dataCompra,
+          loteId
+        );
+
+        enqueueOperation("caixa", "create", {
+          id: caixaId,
+          tipo: "saida",
+          valor: total,
+          descricao,
+          referenciaId: parsed.payload.insumoId,
+          loteId,
+          dataMovimento: parsed.payload.dataCompra,
+        });
+      }
+    })();
 
     return res.status(201).json({
       ok: true,
@@ -364,24 +393,27 @@ app.post("/api/caixa/movimento", (req, res) => {
         ? descricao
         : "Movimentação manual";
 
-    const movementId = insertCaixaMovimento(
-      tipo,
-      valor,
-      descricaoFinal,
-      referenciaId ?? null,
-      dataMovimento,
-      loteId ?? null
-    );
+    const movementId = db.transaction(() => {
+      const id = insertCaixaMovimento(
+        tipo,
+        valor,
+        descricaoFinal,
+        referenciaId ?? null,
+        dataMovimento,
+        loteId ?? null
+      );
 
-    enqueueOperation("caixa", "create", {
-      id: movementId,
-      tipo,
-      valor,
-      descricao: descricaoFinal,
-      referenciaId: referenciaId ?? null,
-      loteId: loteId ?? null,
-      dataMovimento,
-    });
+      enqueueOperation("caixa", "create", {
+        id,
+        tipo,
+        valor,
+        descricao: descricaoFinal,
+        referenciaId: referenciaId ?? null,
+        loteId: loteId ?? null,
+        dataMovimento,
+      });
+      return id;
+    })();
 
     return res.status(201).json({
       ok: true,
@@ -415,20 +447,26 @@ app.post("/api/lotes/:id/fechar", (req, res) => {
       });
     }
 
-    const resultado = fecharLote({
-      loteId: id,
-      kgColhidos,
-      dataFechamento,
-    });
+    const resultado = db.transaction(() => {
+      const fechamento = fecharLote({
+        loteId: id,
+        kgColhidos,
+        dataFechamento,
+      });
 
-    enqueueOperation("lote", "update", {
-      id,
-      status: "fechado",
-      dataFechamento,
-      kgColhidos,
-      custoTotal: resultado.custoTotal,
-      custoPorKg: resultado.custoPorKg,
-    });
+      enqueueOperation("lote", "update", {
+        id,
+        status: "fechado",
+        dataFechamento,
+        kgColhidos,
+        custoTotal: fechamento.custoTotal,
+        custoPorKg: fechamento.custoPorKg,
+      });
+
+      enqueueOperation("estoque", "create", fechamento.movimentoEstoque);
+
+      return fechamento;
+    })();
 
     return res.json({
       ok: true,
@@ -479,58 +517,74 @@ app.post("/api/vendas", (req, res) => {
       });
     }
 
-    if (!loteExiste(loteId)) {
+    const lote = obterLote(loteId);
+
+    if (!lote) {
       return res.status(404).json({
         error: "Lote não encontrado.",
       });
     }
 
-    if (!loteEstaFechado(loteId)) {
+    if (lote.status !== "fechado") {
       return res.status(400).json({
         error: "O lote precisa estar fechado antes da venda.",
       });
     }
 
-    const venda = inserirVenda({
-      loteId,
-      dataVenda,
-      kgVendidos,
-      valorTotal,
-      comprador: comprador ?? null,
-    });
+    const disponivel =
+      Number(lote.kg_colhidos ?? 0) - totalVendidoDoLote(loteId);
 
-    const estoque = inserirMovimentoEstoque({
-      item: "tambaqui",
-      categoria: "peixe",
-      quantidade: kgVendidos,
-      unidade: "kg",
-      tipoMovimento: "saida",
-      referenciaId: venda.id,
-      dataMovimento: dataVenda,
-    });
+    if (kgVendidos > disponivel + 1e-9) {
+      return res.status(400).json({
+        error: `Quantidade acima do disponível no lote: ${disponivel.toFixed(2)} kg.`,
+      });
+    }
 
-    const descricao = `Venda do lote ${loteId}`;
+    // Tudo ou nada: se a baixa de estoque falhar, a venda e o caixa não ficam gravados.
+    const { venda, estoque } = db.transaction(() => {
+      const novaVenda = inserirVenda({
+        loteId,
+        dataVenda,
+        kgVendidos,
+        valorTotal,
+        comprador: comprador ?? null,
+      });
 
-    const caixaId = insertCaixaMovimento(
-      "entrada",
-      valorTotal,
-      descricao,
-      venda.id,
-      dataVenda,
-      loteId
-    );
+      const movimento = inserirMovimentoEstoque({
+        item: lote.especie,
+        categoria: "peixe",
+        quantidade: kgVendidos,
+        unidade: "kg",
+        tipoMovimento: "saida",
+        referenciaId: novaVenda.id,
+        dataMovimento: dataVenda,
+      });
 
-    enqueueOperation("venda", "create", venda);
-    enqueueOperation("estoque", "create", estoque);
-    enqueueOperation("caixa", "create", {
-      id: caixaId,
-      tipo: "entrada",
-      valor: valorTotal,
-      descricao,
-      referenciaId: venda.id,
-      loteId,
-      dataMovimento: dataVenda,
-    });
+      const descricao = `Venda do lote ${loteId}`;
+
+      const caixaId = insertCaixaMovimento(
+        "entrada",
+        valorTotal,
+        descricao,
+        novaVenda.id,
+        dataVenda,
+        loteId
+      );
+
+      enqueueOperation("venda", "create", novaVenda);
+      enqueueOperation("estoque", "create", movimento);
+      enqueueOperation("caixa", "create", {
+        id: caixaId,
+        tipo: "entrada",
+        valor: valorTotal,
+        descricao,
+        referenciaId: novaVenda.id,
+        loteId,
+        dataMovimento: dataVenda,
+      });
+
+      return { venda: novaVenda, estoque: movimento };
+    })();
 
     return res.status(201).json({
       ok: true,
@@ -588,14 +642,16 @@ app.post("/api/contas-pagar", (req, res) => {
       });
     }
 
-    const conta = inserirConta({
-      descricao,
-      fornecedor: fornecedor ?? null,
-      valor,
-      vencimento,
-    });
-
-    enqueueOperation("conta_pagar", "create", conta);
+    const conta = db.transaction(() => {
+      const novaConta = inserirConta({
+        descricao: descricao.trim(),
+        fornecedor: fornecedor || null,
+        valor,
+        vencimento,
+      });
+      enqueueOperation("conta_pagar", "create", novaConta);
+      return novaConta;
+    })();
 
     return res.status(201).json({
       ok: true,
@@ -631,7 +687,7 @@ app.get("/api/contas-pagar/alertas", (_req, res) => {
 app.patch("/api/contas-pagar/:id/pagar", (req, res) => {
   try {
     const { id } = req.params;
-    const pagoEm = req.body.pagoEm || new Date().toISOString();
+    const pagoEm = req.body?.pagoEm || new Date().toISOString();
 
     if (!isValidDate(pagoEm)) {
       return res.status(400).json({
@@ -645,17 +701,21 @@ app.patch("/api/contas-pagar/:id/pagar", (req, res) => {
       });
     }
 
-    if (!pagarConta(id, pagoEm)) {
+    const paga = db.transaction(() => {
+      if (!pagarConta(id, pagoEm)) return false;
+      enqueueOperation("conta_pagar", "update", {
+        id,
+        status: "paga",
+        pagoEm,
+      });
+      return true;
+    })();
+
+    if (!paga) {
       return res.status(400).json({
         error: "A conta já foi paga.",
       });
     }
-
-    enqueueOperation("conta_pagar", "update", {
-      id,
-      status: "paga",
-      pagoEm,
-    });
 
     return res.json({
       ok: true,
@@ -725,17 +785,19 @@ app.post("/api/estoque/movimentos", (req, res) => {
       });
     }
 
-    const movimento = inserirMovimentoEstoque({
-      item,
-      categoria,
-      quantidade,
-      unidade,
-      tipoMovimento,
-      referenciaId: referenciaId ?? null,
-      dataMovimento,
-    });
-
-    enqueueOperation("estoque", "create", movimento);
+    const movimento = db.transaction(() => {
+      const novoMovimento = inserirMovimentoEstoque({
+        item,
+        categoria,
+        quantidade,
+        unidade,
+        tipoMovimento,
+        referenciaId: referenciaId ?? null,
+        dataMovimento,
+      });
+      enqueueOperation("estoque", "create", novoMovimento);
+      return novoMovimento;
+    })();
 
     return res.status(201).json({
       ok: true,

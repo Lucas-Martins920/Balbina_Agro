@@ -1,50 +1,52 @@
 type ProductionActionsProps = {
   onCloseLot: () => void;
   onRegisterSale: () => void;
-  onViewStock: () => void;
-  onViewPayables: () => void;
+  onMoveStock: () => void;
+  onNewPayable: () => void;
+  canClose: boolean;
+  canSell: boolean;
 };
 
 export function ProductionActions({
   onCloseLot,
   onRegisterSale,
-  onViewStock,
-  onViewPayables,
+  onMoveStock,
+  onNewPayable,
+  canClose,
+  canSell,
 }: ProductionActionsProps) {
   return (
     <section className="panel production-actions">
-      <span className="label">PRODUÇÃO</span>
-      <h2>Operações do V1</h2>
+      <h2>Ações rápidas</h2>
 
       <div className="production-grid">
-        <button type="button" onClick={onCloseLot}>
+        <button
+          type="button"
+          onClick={onCloseLot}
+          disabled={!canClose}
+          title={canClose ? undefined : "Nenhum lote ativo para fechar"}
+        >
           Fechar lote
         </button>
 
-        <button type="button" onClick={onRegisterSale}>
+        <button
+          type="button"
+          onClick={onRegisterSale}
+          disabled={!canSell}
+          title={canSell ? undefined : "Feche um lote com peixe disponível para vender"}
+        >
           Registrar venda
         </button>
 
-        <button type="button" onClick={onViewStock}>
-          Consultar estoque
+        <button type="button" onClick={onMoveStock}>
+          Movimentar estoque
         </button>
 
-        <button type="button" onClick={onViewPayables}>
-          Contas a pagar
-        </button>
-
-        <button type="button" disabled>
-          Fruteiras (Em breve)
-        </button>
-
-        <button type="button" disabled>
-          Granja (Em breve)
-        </button>
-
-        <button type="button" disabled>
-          Gado (Em breve)
+        <button type="button" onClick={onNewPayable}>
+          Nova conta a pagar
         </button>
       </div>
+
     </section>
   );
 }

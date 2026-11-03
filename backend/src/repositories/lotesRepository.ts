@@ -49,9 +49,18 @@ export function listLotes() {
         unidade,
         observacoes,
         manejo_json,
+        status,
+        data_fechamento,
+        kg_colhidos,
+        custo_total,
+        custo_por_kg,
+        COALESCE(
+          (SELECT SUM(kg_vendidos) FROM vendas WHERE vendas.lote_id = lotes.id),
+          0
+        ) AS kg_vendidos,
         criado_em
       FROM lotes
-      ORDER BY criado_em DESC
+      ORDER BY (status = 'ativo') DESC, criado_em DESC
     `)
     .all();
 }

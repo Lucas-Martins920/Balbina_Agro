@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import { loadConhecimento } from "../knowledgeLoader";
 
 type ManejoResponse = {
@@ -21,13 +20,16 @@ type ModelResponse = {
 export class ManejoService {
   private readonly apiUrl: string;
   private readonly model: string;
+  private readonly apiKey?: string;
 
   constructor(
     apiUrl = "http://localhost:11434/v1/chat/completions",
-    model = "qwen2.5:1.5b"
+    model = "qwen2.5:1.5b",
+    apiKey?: string
   ) {
     this.apiUrl = apiUrl;
     this.model = model;
+    this.apiKey = apiKey;
   }
 
   async responder(pergunta: string): Promise<ManejoResponse> {
@@ -68,6 +70,9 @@ ${JSON.stringify(conhecimento)}
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(this.apiKey
+          ? { Authorization: `Bearer ${this.apiKey}` }
+          : {}),
       },
       body: JSON.stringify({
         model: this.model,
