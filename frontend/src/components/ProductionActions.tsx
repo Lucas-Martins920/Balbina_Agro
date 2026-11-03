@@ -47,7 +47,6 @@ export function ProductionActions({
         </button>
       </div>
 
-      <p className="coming-soon">Em breve: fruteiras, granja e gado.</p>
     </section>
   );
 }

@@ -439,7 +439,6 @@ export default function App() {
       <main className="login-screen">
         <section className="panel login-panel">
           <div className="brand brand-light">
-            <span className="brand-mark">BA</span>
             <span>Balbina Agro</span>
           </div>
           <h1>Acesso ao sistema</h1>
@@ -493,16 +492,15 @@ export default function App() {
     <main className="app">
       <aside className="sidebar">
         <div className="brand">
-          <span className="brand-mark">BA</span>
           <span>Balbina Agro</span>
         </div>
 
         <nav className="sidebar-nav" aria-label="Navegação principal">
           {([
-            ["producao", "Visão geral", "Lotes e estoque"],
-            ["caixa", "Caixa", "Entradas e saídas"],
-            ["contas", "Contas", "Vencimentos"],
-          ] as const).map(([section, label, description]) => (
+            ["producao", "Visão geral"],
+            ["caixa", "Caixa"],
+            ["contas", "Contas"],
+          ] as const).map(([section, label]) => (
             <button
               className={activeSection === section ? "active" : ""}
               key={section}
@@ -518,15 +516,10 @@ export default function App() {
                   </span>
                 )}
               </strong>
-              <small>{description}</small>
             </button>
           ))}
         </nav>
 
-        <div className="sidebar-note">
-          Funciona sem internet: os dados ficam no aparelho e são enviados ao
-          servidor quando a conexão volta.
-        </div>
       </aside>
 
       <div className="workspace">
@@ -550,36 +543,36 @@ export default function App() {
 
         {activeSection === "producao" && (
           <>
-            <section className="kpi-grid">
-              <article className="balance-card">
-                <span className="label">SALDO DO CAIXA</span>
+            <section className="panel summary">
+              <div className="summary-cell">
+                <span className="label">Saldo do caixa</span>
                 <strong className={balance && balance.saldo < 0 ? "negative" : ""}>
                   {formatMoney(balance?.saldo)}
                 </strong>
-                <div className="balance-details">
-                  <span>Entradas {formatMoney(balance?.entradas)}</span>
-                  <span>Saídas {formatMoney(balance?.saidas)}</span>
-                </div>
-              </article>
-              <article className="kpi">
-                <span className="label">LOTES ATIVOS</span>
+                <small>
+                  {formatMoney(balance?.entradas)} entraram · {formatMoney(balance?.saidas)} saíram
+                </small>
+              </div>
+              <div className="summary-cell">
+                <span className="label">Lotes em engorda</span>
                 <strong>{lotesAtivos.length}</strong>
                 <small>
                   {formatNumber(lotesAtivos.reduce((sum, lote) => sum + lote.estoque_inicial, 0))} peixes na água
                 </small>
-              </article>
-              <article
-                className={`kpi kpi-clickable ${alertas.length > 0 ? "kpi-warning" : ""}`}
+              </div>
+              <button
+                type="button"
+                className={`summary-cell summary-link ${alertas.length > 0 ? "warn" : ""}`}
                 onClick={() => setActiveSection("contas")}
               >
-                <span className="label">CONTAS EM ABERTO</span>
+                <span className="label">Contas em aberto</span>
                 <strong>{formatMoney(totalAberto)}</strong>
                 <small>
                   {alertas.length > 0
                     ? `${alertas.length} vencendo em até 7 dias`
                     : `${contasAbertas.length} conta(s) em aberto`}
                 </small>
-              </article>
+              </button>
             </section>
 
             <ProductionActions
@@ -659,7 +652,7 @@ export default function App() {
           <>
             <section className="two-columns">
               <article className="balance-card">
-                <span className="label">SALDO DO CAIXA</span>
+                <span className="label">Saldo do caixa</span>
                 <strong className={balance && balance.saldo < 0 ? "negative" : ""}>
                   {formatMoney(balance?.saldo)}
                 </strong>
