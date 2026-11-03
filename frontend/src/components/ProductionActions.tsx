@@ -17,7 +17,7 @@ export function ProductionActions({
 }: ProductionActionsProps) {
   return (
     <section className="panel production-actions">
-      <span className="label">AÇÕES RÁPIDAS</span>
+      <h2>Ações rápidas</h2>
 
       <div className="production-grid">
         <button
@@ -26,7 +26,7 @@ export function ProductionActions({
           disabled={!canClose}
           title={canClose ? undefined : "Nenhum lote ativo para fechar"}
         >
-          <span aria-hidden="true">🎣</span> Fechar lote
+          Fechar lote
         </button>
 
         <button
@@ -35,15 +35,15 @@ export function ProductionActions({
           disabled={!canSell}
           title={canSell ? undefined : "Feche um lote com peixe disponível para vender"}
         >
-          <span aria-hidden="true">💰</span> Registrar venda
+          Registrar venda
         </button>
 
         <button type="button" onClick={onMoveStock}>
-          <span aria-hidden="true">📦</span> Movimentar estoque
+          Movimentar estoque
         </button>
 
         <button type="button" onClick={onNewPayable}>
-          <span aria-hidden="true">🧾</span> Nova conta a pagar
+          Nova conta a pagar
         </button>
       </div>
 

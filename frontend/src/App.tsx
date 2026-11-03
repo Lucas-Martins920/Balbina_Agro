@@ -11,6 +11,12 @@ import {
   todayISO,
 } from "./lib/format";
 
+const CloseIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
+    <path d="M4 4l8 8M12 4l-8 8" />
+  </svg>
+);
+
 type Message = {
   id: number;
   role: "user" | "assistant";
@@ -514,7 +520,6 @@ export default function App() {
       <div className="workspace">
         <header className="header">
           <div>
-            <span className="label">PAINEL DE OPERAÇÃO</span>
             <h1>{SECTION_TITLES[activeSection]}</h1>
           </div>
 
@@ -537,8 +542,8 @@ export default function App() {
                   {formatMoney(balance?.saldo)}
                 </strong>
                 <div className="balance-details">
-                  <span>↑ {formatMoney(balance?.entradas)}</span>
-                  <span>↓ {formatMoney(balance?.saidas)}</span>
+                  <span>Entradas {formatMoney(balance?.entradas)}</span>
+                  <span>Saídas {formatMoney(balance?.saidas)}</span>
                 </div>
               </article>
               <article className="kpi">
@@ -573,10 +578,10 @@ export default function App() {
 
             <section className="two-columns">
               <article className="panel">
-                <span className="label">LOTES</span>
+                <h2>Lotes</h2>
                 {lotes.length === 0 ? (
                   <div className="empty-state">
-                    <h2>Nenhum lote cadastrado</h2>
+                    <h3>Nenhum lote cadastrado</h3>
                     <p>Abra o chat e escreva, por exemplo: "abrir lote L-01 com 500 alevinos de tambaqui no tanque TQ-1".</p>
                     <button type="button" onClick={() => setChatOpen(true)}>Abrir chat</button>
                   </div>
@@ -609,10 +614,10 @@ export default function App() {
               </article>
 
               <article className="panel">
-                <span className="label">ESTOQUE ATUAL</span>
+                <h2>Estoque</h2>
                 {estoque.length === 0 ? (
                   <div className="empty-state">
-                    <h2>Estoque vazio</h2>
+                    <h3>Estoque vazio</h3>
                     <p>O peixe entra no estoque ao fechar um lote. Ração pode ser lançada em "Movimentar estoque".</p>
                   </div>
                 ) : (
@@ -649,9 +654,10 @@ export default function App() {
                 </div>
               </article>
               <section className="panel">
-                <span className="label">SINCRONIZAÇÃO</span>
-                <h2>{statusLabel}</h2>
+                <h2>Sincronização</h2>
                 <p>
+                  <strong>{statusLabel}</strong>
+                  <br />
                   {sync.synced} enviada(s) · {sync.pending} aguardando · {sync.error} com erro
                 </p>
               </section>
@@ -659,7 +665,6 @@ export default function App() {
             <section className="panel">
               <div className="panel-heading">
                 <div>
-                  <span className="label">MOVIMENTAÇÕES</span>
                   <h2>Entradas e saídas</h2>
                 </div>
                 <button type="button" onClick={() => openForm("caixa")}>
@@ -694,7 +699,7 @@ export default function App() {
           <>
             {alertas.length > 0 && (
               <section className="panel alert-panel" role="alert">
-                <span className="label">ALERTAS DE VENCIMENTO</span>
+                <h2>Vencendo em até 7 dias</h2>
                 {alertas.map((conta) => (
                   <p key={conta.id}>
                     <strong>{conta.descricao}</strong> · {formatMoney(conta.valor)} ·{" "}
@@ -707,7 +712,6 @@ export default function App() {
             <section className="panel">
               <div className="panel-heading">
                 <div>
-                  <span className="label">CONTAS A PAGAR</span>
                   <h2>{contas.length === 0 ? "Nenhuma conta registrada" : `${formatMoney(totalAberto)} em aberto`}</h2>
                 </div>
                 <button type="button" onClick={() => openForm("conta")}>
@@ -753,11 +757,10 @@ export default function App() {
         <section className="chat panel chat-floating" aria-label="Chat operacional">
           <div className="panel-heading">
             <div>
-              <span className="label">ASSISTENTE</span>
               <h2>Chat operacional</h2>
             </div>
             <button type="button" className="ghost-button" onClick={() => setChatOpen(false)} aria-label="Fechar chat">
-              ✕
+              <CloseIcon />
             </button>
           </div>
 
@@ -796,7 +799,7 @@ export default function App() {
         onClick={() => setChatOpen((open) => !open)}
         aria-expanded={chatOpen}
       >
-        {chatOpen ? "Fechar chat" : "💬 Chat"}
+        {chatOpen ? "Fechar chat" : "Chat"}
       </button>
 
       {formMode && (
@@ -812,7 +815,7 @@ export default function App() {
             <div className="panel-heading">
               <h2 id="form-title">{FORM_TITLES[formMode]}</h2>
               <button type="button" className="ghost-button" onClick={() => setFormMode(null)} aria-label="Fechar">
-                ✕
+                <CloseIcon />
               </button>
             </div>
 
