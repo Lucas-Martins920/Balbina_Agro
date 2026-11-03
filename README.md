@@ -1,7 +1,5 @@
 # Balbina Agro V1
 
-<<<<<<< HEAD
-=======
 Sistema operacional local-first para piscicultura de tambaqui, com API Node/Express,
 SQLite, IA para chat operacional, painel React/Vite e app Android via Capacitor.
 
@@ -112,4 +110,3 @@ Documento principal:
 ```text
 docs/DOCUMENTACAO_COMPLETA_V1.md
 ```
->>>>>>> 5daa222 (organiza caixa e contas)

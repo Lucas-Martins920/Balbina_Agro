@@ -1,12 +1,15 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import "./index.css";
 import { ProductionActions } from "./components/ProductionActions";
 import { apiFetch, clearToken, hasToken, login } from "./api/client";
+import {
+  daysLabel,
+  formatDate,
+  formatMoney,
+  formatNumber,
+  todayISO,
+} from "./lib/format";
 
 type Message = {
   id: number;
@@ -36,8 +39,10 @@ type Lote = {
   estoque_inicial: number;
   unidade?: string;
   status?: string;
-  kg_colhidos?: number;
-  custo_por_kg?: number;
+  kg_colhidos?: number | null;
+  custo_total?: number | null;
+  custo_por_kg?: number | null;
+  kg_vendidos?: number | null;
 };
 
 type SyncSummary = {
@@ -72,16 +77,33 @@ type Conta = {
   pago_em?: string | null;
 };
 
-type FormMode =
-  | "fechar"
-  | "venda"
-  | "estoque"
-  | "conta"
-  | "caixa"
-  | "registro"
-  | null;
+type FormMode = "fechar" | "venda" | "estoque" | "conta" | "caixa" | null;
 
 type Section = "producao" | "caixa" | "contas";
+
+type Toast = { id: number; kind: "success" | "error"; text: string };
+
+const FORM_TITLES: Record<Exclude<FormMode, null>, string> = {
+  fechar: "Fechar lote",
+  venda: "Registrar venda",
+  estoque: "Movimentar estoque",
+  conta: "Nova conta a pagar",
+  caixa: "Novo lançamento no caixa",
+};
+
+const SECTION_TITLES: Record<Section, string> = {
+  producao: "Visão geral",
+  caixa: "Caixa",
+  contas: "Contas a pagar",
+};
+
+async function readJson(response: Response): Promise<Record<string, unknown>> {
+  try {
+    return await response.json();
+  } catch {
+    return {};
+  }
+}
 
 export default function App() {
   const [authenticated, setAuthenticated] = useState(hasToken);
@@ -92,6 +114,8 @@ export default function App() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [formMode, setFormMode] = useState<FormMode>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
   const [activeSection, setActiveSection] = useState<Section>("producao");
 
   const [balance, setBalance] = useState<Balance | null>(null);
@@ -102,29 +126,75 @@ export default function App() {
   const [contas, setContas] = useState<Conta[]>([]);
   const [payingAccountId, setPayingAccountId] = useState<string | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
-  const [sync, setSync] = useState<SyncSummary>({
-    pending: 0,
-    synced: 0,
-    error: 0,
-  });
+  const [backendOnline, setBackendOnline] = useState(true);
+  const [sync, setSync] = useState<SyncSummary>({ pending: 0, synced: 0, error: 0 });
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const [selectedLoteId, setSelectedLoteId] = useState("");
-
-  const nextMessageId = useRef(2);
+  const nextId = useRef(2);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
       role: "assistant",
-      text:
-        "Olá. Posso abrir lotes, registrar insumos ou consultar o caixa.",
+      text: "Olá! Posso abrir lotes, registrar insumos ou consultar o caixa.",
     },
   ]);
+
+  const notify = useCallback((kind: Toast["kind"], text: string) => {
+    const id = nextId.current++;
+    setToasts((current) => [...current, { id, kind, text }]);
+    window.setTimeout(
+      () => setToasts((current) => current.filter((toast) => toast.id !== id)),
+      4500
+    );
+  }, []);
 
   useEffect(() => {
     const handleAuthExpired = () => setAuthenticated(false);
     window.addEventListener("balbina-auth-expired", handleAuthExpired);
     return () => window.removeEventListener("balbina-auth-expired", handleAuthExpired);
   }, []);
+
+  const loadDashboard = useCallback(async () => {
+    try {
+      const [b, m, l, e, a, c, s] = await Promise.all([
+        apiFetch("/api/caixa/saldo"),
+        apiFetch("/api/caixa/movimentos"),
+        apiFetch("/api/lotes"),
+        apiFetch("/api/estoque"),
+        apiFetch("/api/contas-pagar/alertas"),
+        apiFetch("/api/contas-pagar"),
+        apiFetch("/api/sync/summary"),
+      ]);
+
+      if (b.ok) setBalance(await b.json());
+      if (m.ok) setMovimentosCaixa(await m.json());
+      if (l.ok) setLotes(await l.json());
+      if (e.ok) setEstoque(await e.json());
+      if (a.ok) setAlertas(await a.json());
+      if (c.ok) setContas(await c.json());
+      if (s.ok) {
+        const summary = await s.json();
+        setSync({
+          pending: Number(summary.pending ?? 0),
+          synced: Number(summary.synced ?? 0),
+          error: Number(summary.error ?? 0),
+        });
+      }
+      setBackendOnline(true);
+    } catch {
+      setBackendOnline(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!authenticated) return;
+    const first = window.setTimeout(loadDashboard, 0);
+    const interval = window.setInterval(loadDashboard, 5000);
+    return () => {
+      window.clearTimeout(first);
+      window.clearInterval(interval);
+    };
+  }, [authenticated, loadDashboard]);
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -136,7 +206,11 @@ export default function App() {
       setAuthenticated(true);
       setPassword("");
     } catch (error) {
-      setLoginError(error instanceof Error ? error.message : "Não foi possível entrar.");
+      setLoginError(
+        error instanceof Error && error.message !== "Failed to fetch"
+          ? error.message
+          : "Não foi possível conectar ao servidor."
+      );
     } finally {
       setLoginLoading(false);
     }
@@ -147,352 +221,245 @@ export default function App() {
     setAuthenticated(false);
   }
 
-  async function loadDashboard() {
-    try {
-      const responses = await Promise.all([
-        apiFetch("/api/caixa/saldo"),
-        apiFetch("/api/caixa/movimentos"),
-        apiFetch("/api/lotes"),
-        apiFetch("/api/estoque"),
-        apiFetch("/api/contas-pagar/alertas"),
-        apiFetch("/api/contas-pagar"),
-        apiFetch("/api/sync/summary"),
-      ]);
-
-      const [
-        balanceResponse,
-        movimentosCaixaResponse,
-        lotesResponse,
-        estoqueResponse,
-        alertasResponse,
-        contasResponse,
-        syncResponse,
-      ] = responses;
-
-      if (balanceResponse.ok) {
-        setBalance(await balanceResponse.json());
-      }
-
-      if (movimentosCaixaResponse.ok) {
-        setMovimentosCaixa(await movimentosCaixaResponse.json());
-      }
-
-      if (lotesResponse.ok) {
-        setLotes(await lotesResponse.json());
-      }
-
-      if (estoqueResponse.ok) {
-        setEstoque(await estoqueResponse.json());
-      }
-
-      if (alertasResponse.ok) {
-        setAlertas(await alertasResponse.json());
-      }
-
-      if (contasResponse.ok) {
-        setContas(await contasResponse.json());
-      }
-
-      if (syncResponse.ok) {
-        setSync(await syncResponse.json());
-      }
-    } catch {
-      setSync((current) => ({
-        ...current,
-        pending: Math.max(current.pending, 1),
-      }));
-    }
+  function addAssistantMessage(text: string) {
+    setMessages((current) => [
+      ...current,
+      { id: nextId.current++, role: "assistant", text },
+    ]);
   }
 
-  async function payAccount(accountId: string) {
-    setPayingAccountId(accountId);
+  async function payAccount(conta: Conta) {
+    if (!window.confirm(`Marcar "${conta.descricao}" (${formatMoney(conta.valor)}) como paga?`)) {
+      return;
+    }
 
+    setPayingAccountId(conta.id);
     try {
-      const response = await apiFetch(`/api/contas-pagar/${accountId}/pagar`, {
+      const response = await apiFetch(`/api/contas-pagar/${conta.id}/pagar`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
       });
-      const result = await response.json();
-
-      addAssistantMessage(
-        response.ok
-          ? "Conta marcada como paga."
-          : result.error || "Não foi possível marcar a conta como paga."
-      );
+      const result = await readJson(response);
 
       if (response.ok) {
+        notify("success", "Conta marcada como paga.");
         await loadDashboard();
+      } else {
+        notify("error", String(result.error || "Não foi possível marcar a conta como paga."));
       }
     } catch {
-      addAssistantMessage("Não foi possível conectar ao backend.");
+      notify("error", "Não foi possível conectar ao servidor.");
     } finally {
       setPayingAccountId(null);
     }
   }
 
-  useEffect(() => {
-    if (!authenticated) return;
-    loadDashboard();
-
-    const interval = window.setInterval(
-      loadDashboard,
-      5000
-    );
-
-    return () => window.clearInterval(interval);
-  }, [authenticated]);
-
-  async function sendMessage(
-    event: FormEvent<HTMLFormElement>
-  ) {
+  async function sendMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     const text = message.trim();
+    if (!text || loading) return;
 
-    if (!text || loading) {
-      return;
-    }
-
-    setMessages((current) => [
-      ...current,
-      {
-        id: nextMessageId.current++,
-        role: "user",
-        text,
-      },
-    ]);
-
+    setMessages((current) => [...current, { id: nextId.current++, role: "user", text }]);
     setMessage("");
     setLoading(true);
 
-    const normalized = text.toLowerCase();
+    const normalized = text
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "");
 
     try {
-      if (
-        normalized.includes("saldo") ||
-        normalized.includes("caixa")
-      ) {
-        const response = await apiFetch("/api/caixa/saldo");
-        const result = await response.json();
+      const isLote = /\b(abr[ei]r?|novo|criar|crie|cadastrar)\b.*\blote\b/.test(normalized);
+      const isInsumo =
+        !isLote && /\b(racao|alevinos?|medicamento|insumo|compra|comprei)\b/.test(normalized);
+      const isSaldo = !isLote && !isInsumo && /\b(saldo|caixa)\b/.test(normalized);
 
+      if (isSaldo) {
+        const response = await apiFetch("/api/caixa/saldo");
+        const result = await readJson(response);
         addAssistantMessage(
           response.ok
-            ? `O saldo atual do caixa é R$ ${Number(
-                result.saldo
-              ).toFixed(2)}.`
+            ? `O saldo atual do caixa é ${formatMoney(Number(result.saldo))}.`
             : "Não foi possível consultar o caixa."
         );
-
         return;
       }
-
-      const isInsumo =
-        normalized.includes("ração") ||
-        normalized.includes("racao") ||
-        normalized.includes("alevino") ||
-        normalized.includes("medicamento") ||
-        normalized.includes("insumo") ||
-        normalized.includes("compra");
-
-      const isLote =
-        normalized.includes("abrir lote") ||
-        normalized.includes("abre lote") ||
-        normalized.includes("abre um lote") ||
-        normalized.includes("abrir um lote") ||
-        normalized.includes("novo lote") ||
-        normalized.includes("criar lote") ||
-        normalized.includes("crie um lote");
 
       if (!isInsumo && !isLote) {
         addAssistantMessage(
-          "Posso ajudar com abrir lote, registrar insumo ou consultar o saldo do caixa."
+          'Posso ajudar com: "abrir lote L-01 com 500 alevinos de tambaqui no tanque TQ-1", "comprei 50 kg de ração a R$ 4,50 para o tanque TQ-1" ou "qual o saldo do caixa?".'
         );
         return;
       }
 
-      const endpoint = isLote
-        ? "/api/abrir-lote"
-        : "/api/lancar-insumo";
-
-      const response = await apiFetch(endpoint, {
+      const response = await apiFetch(isLote ? "/api/abrir-lote" : "/api/lancar-insumo", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text }),
       });
-
-      const result = await response.json();
+      const result = await readJson(response);
 
       addAssistantMessage(
         response.ok
           ? isInsumo
-            ? `Insumo registrado: ${result.insumoId ?? "OK"}`
-            : `Lote registrado: ${result.loteId ?? "OK"}`
-          : result.error ||
-              "Não foi possível processar a operação."
+            ? `Insumo registrado: ${result.insumoId ?? "OK"}.`
+            : `Lote ${result.loteId ?? ""} aberto com sucesso.`
+          : String(result.error || "Não foi possível processar a operação.")
       );
 
-      await loadDashboard();
+      if (response.ok) await loadDashboard();
     } catch {
-      addAssistantMessage(
-        "Backend indisponível no momento."
-      );
+      addAssistantMessage("Servidor indisponível no momento. Tente novamente.");
     } finally {
       setLoading(false);
     }
   }
 
-  function addAssistantMessage(text: string) {
-    setMessages((current) => [
-      ...current,
-      {
-        id: nextMessageId.current++,
-        role: "assistant",
-        text,
-      },
-    ]);
+  function openForm(mode: FormMode) {
+    setFormError("");
+    setFormMode(mode);
   }
 
-  async function submitForm(
-    event: FormEvent<HTMLFormElement>
-  ) {
+  async function submitForm(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!formMode || submitting) return;
 
     const form = new FormData(event.currentTarget);
+    const get = (key: string) => String(form.get(key) ?? "").trim();
+    const num = (key: string) => Number(get(key).replace(",", "."));
 
-    try {
-      let endpoint = "";
-      let body: Record<string, unknown> = {};
+    let endpoint = "";
+    let body: Record<string, unknown> = {};
 
-      if (formMode === "fechar") {
-        endpoint = `/api/lotes/${form.get("loteId")}/fechar`;
-        body = {
-          kgColhidos: Number(form.get("kgColhidos")),
-          dataFechamento: form.get("dataFechamento"),
-        };
-      }
-
-      if (formMode === "venda") {
+    switch (formMode) {
+      case "fechar":
+        endpoint = `/api/lotes/${encodeURIComponent(get("loteId"))}/fechar`;
+        body = { kgColhidos: num("kgColhidos"), dataFechamento: get("dataFechamento") };
+        break;
+      case "venda":
         endpoint = "/api/vendas";
         body = {
-          loteId: form.get("loteId"),
-          dataVenda: form.get("dataVenda"),
-          kgVendidos: Number(form.get("kgVendidos")),
-          valorTotal: Number(form.get("valorTotal")),
-          comprador: form.get("comprador"),
+          loteId: get("loteId"),
+          dataVenda: get("dataVenda"),
+          kgVendidos: num("kgVendidos"),
+          valorTotal: num("valorTotal"),
+          comprador: get("comprador") || null,
         };
-      }
-
-      if (formMode === "estoque") {
+        break;
+      case "estoque":
         endpoint = "/api/estoque/movimentos";
         body = {
-          item: form.get("item"),
-          categoria: form.get("categoria"),
-          quantidade: Number(form.get("quantidade")),
-          unidade: form.get("unidade"),
-          tipoMovimento: form.get("tipoMovimento"),
-          dataMovimento: form.get("dataMovimento"),
+          item: get("item"),
+          categoria: get("categoria"),
+          quantidade: num("quantidade"),
+          unidade: get("unidade"),
+          tipoMovimento: get("tipoMovimento"),
+          dataMovimento: get("dataMovimento"),
         };
-      }
-
-      if (formMode === "conta") {
+        break;
+      case "conta":
         endpoint = "/api/contas-pagar";
         body = {
-          descricao: form.get("descricao"),
-          fornecedor: form.get("fornecedor"),
-          valor: Number(form.get("valor")),
-          vencimento: form.get("vencimento"),
+          descricao: get("descricao"),
+          fornecedor: get("fornecedor") || null,
+          valor: num("valor"),
+          vencimento: get("vencimento"),
         };
-      }
-
-      if (formMode === "caixa") {
+        break;
+      case "caixa":
         endpoint = "/api/caixa/movimento";
         body = {
-          tipo: form.get("tipo"),
-          valor: Number(form.get("valor")),
-          descricao: form.get("descricao"),
-          dataMovimento: form.get("dataMovimento"),
+          tipo: get("tipo"),
+          valor: num("valor"),
+          descricao: get("descricao"),
+          dataMovimento: get("dataMovimento"),
+          loteId: get("loteId") || null,
         };
-      }
+        break;
+    }
 
-      if (formMode === "registro") {
-        const registroTipo = form.get("registroTipo");
-
-        if (registroTipo === "conta") {
-          endpoint = "/api/contas-pagar";
-          body = {
-            descricao: form.get("descricao"),
-            fornecedor: form.get("fornecedor"),
-            valor: Number(form.get("valor")),
-            vencimento: form.get("data"),
-          };
-        } else {
-          endpoint = "/api/caixa/movimento";
-          body = {
-            tipo: form.get("tipo"),
-            valor: Number(form.get("valor")),
-            descricao: form.get("descricao"),
-            dataMovimento: form.get("data"),
-          };
-        }
-      }
-
+    setSubmitting(true);
+    setFormError("");
+    try {
       const response = await apiFetch(endpoint, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+      const result = await readJson(response);
 
-      const result = await response.json();
-
-      addAssistantMessage(
-        response.ok
-          ? "Operação registrada com sucesso."
-          : result.error || "Não foi possível concluir."
-      );
-
-      if (response.ok) {
-        setFormMode(null);
-        await loadDashboard();
+      if (!response.ok) {
+        setFormError(String(result.error || "Não foi possível concluir."));
+        return;
       }
+
+      if (formMode === "fechar" && typeof result.custoPorKg === "number") {
+        notify(
+          "success",
+          `Lote fechado. Custo: ${formatMoney(Number(result.custoTotal))} (${formatMoney(result.custoPorKg)}/kg).`
+        );
+      } else {
+        notify("success", `${FORM_TITLES[formMode]}: registrado com sucesso.`);
+      }
+      setFormMode(null);
+      await loadDashboard();
     } catch {
-      addAssistantMessage(
-        "Não foi possível conectar ao backend."
-      );
+      setFormError("Não foi possível conectar ao servidor.");
+    } finally {
+      setSubmitting(false);
     }
   }
 
-  const isOffline =
-    sync.pending > 0 || sync.error > 0;
+  const lotesAtivos = lotes.filter((lote) => (lote.status ?? "ativo") === "ativo");
+  const lotesFechados = lotes.filter((lote) => lote.status === "fechado");
+  const lotesComPeixe = lotesFechados.filter(
+    (lote) => Number(lote.kg_colhidos ?? 0) - Number(lote.kg_vendidos ?? 0) > 0
+  );
+  const contasAbertas = contas.filter((conta) => conta.status === "aberta");
+  const totalAberto = contasAbertas.reduce((sum, conta) => sum + Number(conta.valor), 0);
+
+  const statusLabel = !backendOnline
+    ? "Servidor offline"
+    : sync.error > 0
+      ? `${sync.error} erro(s) de sync`
+      : sync.pending > 0
+        ? `${sync.pending} aguardando envio`
+        : "Sincronizado";
+  const statusClass = !backendOnline || sync.error > 0 ? "offline" : sync.pending > 0 ? "pending" : "online";
 
   if (!authenticated) {
     return (
-      <main className="app login-screen">
+      <main className="login-screen">
         <section className="panel login-panel">
-          <span className="label">BALBINA AGRO</span>
+          <div className="brand brand-light">
+            <span className="brand-mark">BA</span>
+            <span>Balbina Agro</span>
+          </div>
           <h1>Acesso ao sistema</h1>
           <p>Entre para acompanhar a operação da sua propriedade.</p>
           <form className="operation-fields" onSubmit={handleLogin}>
-            <input
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              placeholder="Usuário"
-              autoComplete="username"
-              required
-            />
-            <input
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="Senha"
-              type="password"
-              autoComplete="current-password"
-              required
-            />
-            {loginError && <p className="form-error">{loginError}</p>}
+            <label>
+              Usuário
+              <input
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                autoComplete="username"
+                autoCapitalize="none"
+                required
+              />
+            </label>
+            <label>
+              Senha
+              <input
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                type="password"
+                autoComplete="current-password"
+                required
+              />
+            </label>
+            {loginError && <p className="form-error" role="alert">{loginError}</p>}
             <button type="submit" disabled={loginLoading}>
               {loginLoading ? "Entrando..." : "Entrar"}
             </button>
@@ -502,9 +469,11 @@ export default function App() {
     );
   }
 
+  const today = todayISO();
+
   return (
     <main className="app">
-      <aside className="sidebar flex flex-col">
+      <aside className="sidebar">
         <div className="brand">
           <span className="brand-mark">BA</span>
           <span>Balbina Agro</span>
@@ -512,7 +481,7 @@ export default function App() {
 
         <nav className="sidebar-nav" aria-label="Navegação principal">
           {([
-            ["producao", "Visão geral", "Acompanhe seus lotes"],
+            ["producao", "Visão geral", "Lotes e estoque"],
             ["caixa", "Caixa", "Entradas e saídas"],
             ["contas", "Contas", "Vencimentos"],
           ] as const).map(([section, label, description]) => (
@@ -523,498 +492,519 @@ export default function App() {
               onClick={() => setActiveSection(section)}
               aria-current={activeSection === section ? "page" : undefined}
             >
-              <strong>{label}</strong>
+              <strong>
+                {label}
+                {section === "contas" && alertas.length > 0 && (
+                  <span className="nav-badge" aria-label={`${alertas.length} alertas`}>
+                    {alertas.length}
+                  </span>
+                )}
+              </strong>
               <small>{description}</small>
             </button>
           ))}
         </nav>
 
         <div className="sidebar-note">
-          Operação offline-first<br />
-          Os dados locais são enviados quando a conexão retorna.
+          Funciona sem internet: os dados ficam no aparelho e são enviados ao
+          servidor quando a conexão volta.
         </div>
       </aside>
 
-      <div className="workspace min-w-0">
-        <header className="header" id="visao-geral">
+      <div className="workspace">
+        <header className="header">
           <div>
             <span className="label">PAINEL DE OPERAÇÃO</span>
-            <h1>
-              {activeSection === "producao" && "Visão geral"}
-              {activeSection === "caixa" && "Caixa"}
-              {activeSection === "contas" && "Contas a pagar"}
-            </h1>
+            <h1>{SECTION_TITLES[activeSection]}</h1>
           </div>
 
           <div className="header-actions">
-            <span className={`status ${isOffline ? "offline" : "online"}`}>
-              ● {isOffline ? `${sync.pending} pendente(s)` : "Online"}
+            <span className={`status ${statusClass}`} role="status">
+              <span className="status-dot" aria-hidden="true" /> {statusLabel}
             </span>
-            <button className="logout-button" type="button" onClick={handleLogout}>
+            <button className="ghost-button" type="button" onClick={handleLogout}>
               Sair
             </button>
           </div>
         </header>
 
-      {activeSection === "producao" && <section className="dashboard">
-        <article className="balance-card">
-          <span className="label">
-            SALDO ATUAL DO CAIXA
-          </span>
-
-          <strong>
-            R${" "}
-            {(balance?.saldo ?? 0)
-              .toFixed(2)
-              .replace(".", ",")}
-          </strong>
-
-          <div className="balance-details">
-            <span>
-              Entradas: R${" "}
-              {(balance?.entradas ?? 0).toFixed(2)}
-            </span>
-
-            <span>
-              Saídas: R${" "}
-              {(balance?.saidas ?? 0).toFixed(2)}
-            </span>
-          </div>
-        </article>
-
-        <article className="panel">
-          <span className="label">LOTES ATIVOS</span>
-
-          {lotes.length === 0 ? (
-            <>
-              <h2>Nenhum lote cadastrado</h2>
-              <p>
-                Use o chat para abrir um novo lote.
-              </p>
-            </>
-          ) : (
-            <div className="lot-list">
-              {lotes.map((lote) => (
-                <div className="lot-item" key={lote.id}>
-                  <strong>{lote.id}</strong>
-                  <span>{lote.especie}</span>
-                  <small>
-                    Tanque {lote.tanque_id} ·{" "}
-                    {lote.estoque_inicial}{" "}
-                    {lote.unidade || "peixes"} ·{" "}
-                    {lote.status || "ativo"}
-                  </small>
+        {activeSection === "producao" && (
+          <>
+            <section className="kpi-grid">
+              <article className="balance-card">
+                <span className="label">SALDO DO CAIXA</span>
+                <strong className={balance && balance.saldo < 0 ? "negative" : ""}>
+                  {formatMoney(balance?.saldo)}
+                </strong>
+                <div className="balance-details">
+                  <span>↑ {formatMoney(balance?.entradas)}</span>
+                  <span>↓ {formatMoney(balance?.saidas)}</span>
                 </div>
-              ))}
-            </div>
-          )}
-        </article>
-      </section>}
-
-      {activeSection === "producao" && <div id="producao">
-        <ProductionActions
-        onCloseLot={() => setFormMode("fechar")}
-        onRegisterSale={() => setFormMode("venda")}
-        onViewStock={() => setFormMode("estoque")}
-        onViewPayables={() => setFormMode("conta")}
-        />
-      </div>}
-
-      {activeSection === "caixa" && (
-        <>
-          <section className="section-grid">
-            <article className="balance-card">
-              <span className="label">SALDO ATUAL DO CAIXA</span>
-              <strong>R$ {(balance?.saldo ?? 0).toFixed(2).replace(".", ",")}</strong>
-              <div className="balance-details">
-                <span>Entradas: R$ {(balance?.entradas ?? 0).toFixed(2).replace(".", ",")}</span>
-                <span>Saídas: R$ {(balance?.saidas ?? 0).toFixed(2).replace(".", ",")}</span>
-              </div>
-            </article>
-            <section className="panel">
-              <span className="label">SINCRONIZAÇÃO</span>
-              <h2>{isOffline ? "Operando offline" : "Tudo sincronizado"}</h2>
-              <p>{sync.pending} operação(ões) aguardando envio para o servidor.</p>
-            </section>
-          </section>
-          <section className="panel cash-history">
-            <div className="chat-heading">
-              <div>
-                <span className="label">MOVIMENTAÇÕES</span>
-                <h2>Entradas e saídas</h2>
-              </div>
-            </div>
-            {movimentosCaixa.length === 0 ? (
-              <p>Nenhum lançamento registrado.</p>
-            ) : (
-              <div className="cash-list">
-                {movimentosCaixa.map((movimento) => (
-                  <div className="cash-item" key={movimento.id}>
-                    <span className={`cash-type ${movimento.tipo}`}>
-                      {movimento.tipo === "entrada" ? "Entrada" : "Saída"}
-                    </span>
-                    <div>
-                      <strong>{movimento.descricao || "Movimentação"}</strong>
-                      <small>{new Date(movimento.dataMovimento).toLocaleDateString("pt-BR")}</small>
-                    </div>
-                    <strong className={`cash-value ${movimento.tipo}`}>
-                      {movimento.tipo === "entrada" ? "+" : "-"} R$ {movimento.valor.toFixed(2).replace(".", ",")}
-                    </strong>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-        </>
-      )}
-
-      {activeSection === "contas" && (
-        <>
-          {alertas.length > 0 && (
-            <section className="panel alert-panel">
-              <span className="label">ALERTAS DE VENCIMENTO</span>
-              {alertas.map((conta) => (
-                <p key={conta.id}>
-                  {conta.descricao} vence em {conta.dias_restantes} dia(s).
-                </p>
-              ))}
-            </section>
-          )}
-
-          <section className="panel accounts-panel">
-            <div className="chat-heading">
-              <div>
-                <span className="label">CONTAS A PAGAR</span>
-                <h2>{contas.length === 0 ? "Nenhuma conta registrada" : "Contas registradas"}</h2>
-              </div>
-              <button type="button" onClick={() => setFormMode("registro")}>Registrar</button>
-            </div>
-
-            {contas.length === 0 ? (
-              <p>Registre uma conta para acompanhar vencimentos e pagamentos.</p>
-            ) : (
-              <div className="accounts-list">
-                {contas.map((conta) => (
-                  <div className={`account-item ${conta.status}`} key={conta.id}>
-                    <div>
-                      <strong>{conta.descricao}</strong>
-                      <small>
-                        {conta.fornecedor || "Sem fornecedor"} · vence em {new Date(conta.vencimento).toLocaleDateString("pt-BR")}
-                      </small>
-                    </div>
-                    <strong>R$ {Number(conta.valor).toFixed(2).replace(".", ",")}</strong>
-                    {conta.status === "aberta" ? (
-                      <button
-                        type="button"
-                        onClick={() => payAccount(conta.id)}
-                        disabled={payingAccountId === conta.id}
-                      >
-                        {payingAccountId === conta.id ? "Salvando..." : "Marcar como paga"}
-                      </button>
-                    ) : (
-                      <span className="paid-status">Paga</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-        </>
-      )}
-
-      {activeSection === "producao" && <section className="panel">
-        <span className="label">ESTOQUE ATUAL</span>
-
-        {estoque.length === 0 ? (
-          <p>Nenhum item no estoque.</p>
-        ) : (
-          <div className="lot-list">
-            {estoque.map((item) => (
-              <div
-                className="lot-item"
-                key={`${item.categoria}-${item.item}`}
-              >
-                <strong>{item.item}</strong>
-                <span>{item.categoria}</span>
+              </article>
+              <article className="kpi">
+                <span className="label">LOTES ATIVOS</span>
+                <strong>{lotesAtivos.length}</strong>
                 <small>
-                  {item.saldo} {item.unidade}
+                  {formatNumber(lotesAtivos.reduce((sum, lote) => sum + lote.estoque_inicial, 0))} peixes na água
                 </small>
-              </div>
-            ))}
-          </div>
+              </article>
+              <article
+                className={`kpi kpi-clickable ${alertas.length > 0 ? "kpi-warning" : ""}`}
+                onClick={() => setActiveSection("contas")}
+              >
+                <span className="label">CONTAS EM ABERTO</span>
+                <strong>{formatMoney(totalAberto)}</strong>
+                <small>
+                  {alertas.length > 0
+                    ? `${alertas.length} vencendo em até 7 dias`
+                    : `${contasAbertas.length} conta(s) em aberto`}
+                </small>
+              </article>
+            </section>
+
+            <ProductionActions
+              onCloseLot={() => openForm("fechar")}
+              onRegisterSale={() => openForm("venda")}
+              onMoveStock={() => openForm("estoque")}
+              onNewPayable={() => openForm("conta")}
+              canClose={lotesAtivos.length > 0}
+              canSell={lotesComPeixe.length > 0}
+            />
+
+            <section className="two-columns">
+              <article className="panel">
+                <span className="label">LOTES</span>
+                {lotes.length === 0 ? (
+                  <div className="empty-state">
+                    <h2>Nenhum lote cadastrado</h2>
+                    <p>Abra o chat e escreva, por exemplo: "abrir lote L-01 com 500 alevinos de tambaqui no tanque TQ-1".</p>
+                    <button type="button" onClick={() => setChatOpen(true)}>Abrir chat</button>
+                  </div>
+                ) : (
+                  <div className="lot-list">
+                    {[...lotesAtivos, ...lotesFechados].map((lote) => {
+                      const fechado = lote.status === "fechado";
+                      const restante = Number(lote.kg_colhidos ?? 0) - Number(lote.kg_vendidos ?? 0);
+                      return (
+                        <div className={`lot-item ${fechado ? "closed" : ""}`} key={lote.id}>
+                          <div className="lot-title">
+                            <strong>{lote.id}</strong>
+                            <span className={`pill ${fechado ? "pill-muted" : "pill-ok"}`}>
+                              {fechado ? "Fechado" : "Ativo"}
+                            </span>
+                          </div>
+                          <span>
+                            {lote.especie} · Tanque {lote.tanque_id}
+                          </span>
+                          <small>
+                            {fechado
+                              ? `${formatNumber(lote.kg_colhidos)} kg colhidos · ${formatMoney(lote.custo_por_kg)}/kg · ${formatNumber(restante)} kg para vender`
+                              : `${formatNumber(lote.estoque_inicial)} ${lote.unidade || "peixes"} desde ${formatDate(lote.data_inicio)}`}
+                          </small>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </article>
+
+              <article className="panel">
+                <span className="label">ESTOQUE ATUAL</span>
+                {estoque.length === 0 ? (
+                  <div className="empty-state">
+                    <h2>Estoque vazio</h2>
+                    <p>O peixe entra no estoque ao fechar um lote. Ração pode ser lançada em "Movimentar estoque".</p>
+                  </div>
+                ) : (
+                  <div className="stock-list">
+                    {estoque.map((item) => (
+                      <div className="stock-item" key={`${item.categoria}-${item.item}-${item.unidade}`}>
+                        <span className={`pill ${item.categoria === "peixe" ? "pill-blue" : "pill-ok"}`}>
+                          {item.categoria === "peixe" ? "Peixe" : "Ração"}
+                        </span>
+                        <strong>{item.item}</strong>
+                        <span className="stock-qty">
+                          {formatNumber(item.saldo)} {item.unidade}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </article>
+            </section>
+          </>
         )}
-      </section>}
 
-      {chatOpen && <section className="chat panel chat-floating" id="assistente">
-        <div className="chat-heading">
-          <div>
-            <span className="label">ASSISTENTE</span>
-            <h2>Chat operacional</h2>
-          </div>
-          <button type="button" className="chat-close" onClick={() => setChatOpen(false)} aria-label="Fechar chat">Fechar</button>
-        </div>
+        {activeSection === "caixa" && (
+          <>
+            <section className="two-columns">
+              <article className="balance-card">
+                <span className="label">SALDO DO CAIXA</span>
+                <strong className={balance && balance.saldo < 0 ? "negative" : ""}>
+                  {formatMoney(balance?.saldo)}
+                </strong>
+                <div className="balance-details">
+                  <span>Entradas: {formatMoney(balance?.entradas)}</span>
+                  <span>Saídas: {formatMoney(balance?.saidas)}</span>
+                </div>
+              </article>
+              <section className="panel">
+                <span className="label">SINCRONIZAÇÃO</span>
+                <h2>{statusLabel}</h2>
+                <p>
+                  {sync.synced} enviada(s) · {sync.pending} aguardando · {sync.error} com erro
+                </p>
+              </section>
+            </section>
+            <section className="panel">
+              <div className="panel-heading">
+                <div>
+                  <span className="label">MOVIMENTAÇÕES</span>
+                  <h2>Entradas e saídas</h2>
+                </div>
+                <button type="button" onClick={() => openForm("caixa")}>
+                  Novo lançamento
+                </button>
+              </div>
+              {movimentosCaixa.length === 0 ? (
+                <p>Nenhum lançamento registrado.</p>
+              ) : (
+                <div className="cash-list">
+                  {movimentosCaixa.map((movimento) => (
+                    <div className="cash-item" key={movimento.id}>
+                      <span className={`cash-type ${movimento.tipo}`}>
+                        {movimento.tipo === "entrada" ? "Entrada" : "Saída"}
+                      </span>
+                      <div>
+                        <strong>{movimento.descricao || "Movimentação"}</strong>
+                        <small>{formatDate(movimento.dataMovimento)}</small>
+                      </div>
+                      <strong className={`cash-value ${movimento.tipo}`}>
+                        {movimento.tipo === "entrada" ? "+" : "−"} {formatMoney(movimento.valor)}
+                      </strong>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        )}
 
-        <div className="messages">
-          {messages.map((item) => (
-            <div key={item.id} className={`message ${item.role}`}>{item.text}</div>
-          ))}
-        </div>
+        {activeSection === "contas" && (
+          <>
+            {alertas.length > 0 && (
+              <section className="panel alert-panel" role="alert">
+                <span className="label">ALERTAS DE VENCIMENTO</span>
+                {alertas.map((conta) => (
+                  <p key={conta.id}>
+                    <strong>{conta.descricao}</strong> · {formatMoney(conta.valor)} ·{" "}
+                    {daysLabel(conta.dias_restantes)}
+                  </p>
+                ))}
+              </section>
+            )}
 
-        <form onSubmit={sendMessage} className="composer">
-          <textarea
-            value={message}
-            onChange={(event) => setMessage(event.target.value)}
-            placeholder="Ex.: consultar saldo do caixa"
-            rows={3}
-          />
-          <button type="submit" disabled={loading || !message.trim()}>
-            {loading ? "Processando..." : "Enviar"}
-          </button>
-        </form>
-      </section>}
+            <section className="panel">
+              <div className="panel-heading">
+                <div>
+                  <span className="label">CONTAS A PAGAR</span>
+                  <h2>{contas.length === 0 ? "Nenhuma conta registrada" : `${formatMoney(totalAberto)} em aberto`}</h2>
+                </div>
+                <button type="button" onClick={() => openForm("conta")}>
+                  Nova conta
+                </button>
+              </div>
 
-      <button className="chat-toggle" type="button" onClick={() => setChatOpen((open) => !open)} aria-label="Abrir chat operacional">
-        {chatOpen ? "Fechar chat" : "Chat"}
-      </button>
+              {contas.length === 0 ? (
+                <p>Registre uma conta para acompanhar vencimentos e pagamentos.</p>
+              ) : (
+                <div className="accounts-list">
+                  {contas.map((conta) => (
+                    <div className={`account-item ${conta.status}`} key={conta.id}>
+                      <div>
+                        <strong>{conta.descricao}</strong>
+                        <small>
+                          {conta.fornecedor || "Sem fornecedor"} · vence em {formatDate(conta.vencimento)}
+                        </small>
+                      </div>
+                      <strong>{formatMoney(conta.valor)}</strong>
+                      {conta.status === "aberta" ? (
+                        <button
+                          type="button"
+                          className="secondary-button"
+                          onClick={() => payAccount(conta)}
+                          disabled={payingAccountId === conta.id}
+                        >
+                          {payingAccountId === conta.id ? "Salvando..." : "Marcar como paga"}
+                        </button>
+                      ) : (
+                        <span className="pill pill-ok">Paga {conta.pago_em ? formatDate(conta.pago_em) : ""}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        )}
+      </div>
 
-      {formMode && (
-        <section className="panel operation-form">
-          <div className="chat-heading">
-            <h2>
-              {formMode === "fechar" &&
-                "Fechar lote"}
-              {formMode === "venda" &&
-                "Registrar venda"}
-              {formMode === "estoque" &&
-                "Movimentar estoque"}
-              {formMode === "conta" &&
-                "Nova conta a pagar"}
-              {formMode === "caixa" &&
-                "Novo lançamento no caixa"}
-              {formMode === "registro" &&
-                "Registrar operação"}
-            </h2>
-
-            <button
-              type="button"
-              onClick={() => setFormMode(null)}
-            >
-              Fechar
+      {chatOpen && (
+        <section className="chat panel chat-floating" aria-label="Chat operacional">
+          <div className="panel-heading">
+            <div>
+              <span className="label">ASSISTENTE</span>
+              <h2>Chat operacional</h2>
+            </div>
+            <button type="button" className="ghost-button" onClick={() => setChatOpen(false)} aria-label="Fechar chat">
+              ✕
             </button>
           </div>
 
-          <form
-            onSubmit={submitForm}
-            className="operation-fields"
-          >
-            {(formMode === "fechar" ||
-              formMode === "venda") && (
-              <input
-                name="loteId"
-                placeholder="ID do lote"
-                defaultValue={selectedLoteId}
-                onChange={(event) =>
-                  setSelectedLoteId(event.target.value)
+          <div className="messages" aria-live="polite">
+            {messages.map((item) => (
+              <div key={item.id} className={`message ${item.role}`}>
+                {item.text}
+              </div>
+            ))}
+            {loading && <div className="message assistant typing">Processando…</div>}
+          </div>
+
+          <form onSubmit={sendMessage} className="composer">
+            <textarea
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
                 }
-                required
-              />
-            )}
-
-            {formMode === "fechar" && (
-              <>
-                <input
-                  name="kgColhidos"
-                  type="number"
-                  step="0.01"
-                  placeholder="Kg colhidos"
-                  required
-                />
-
-                <input
-                  name="dataFechamento"
-                  type="date"
-                  required
-                />
-              </>
-            )}
-
-            {formMode === "venda" && (
-              <>
-                <input
-                  name="dataVenda"
-                  type="date"
-                  required
-                />
-
-                <input
-                  name="kgVendidos"
-                  type="number"
-                  step="0.01"
-                  placeholder="Kg vendidos"
-                  required
-                />
-
-                <input
-                  name="valorTotal"
-                  type="number"
-                  step="0.01"
-                  placeholder="Valor total"
-                  required
-                />
-
-                <input
-                  name="comprador"
-                  placeholder="Comprador"
-                />
-              </>
-            )}
-
-            {formMode === "estoque" && (
-              <>
-                <input
-                  name="item"
-                  placeholder="Item"
-                  required
-                />
-
-                <select name="categoria" defaultValue="racao">
-                  <option value="racao">Ração</option>
-                  <option value="peixe">Peixe</option>
-                </select>
-
-                <input
-                  name="quantidade"
-                  type="number"
-                  step="0.01"
-                  placeholder="Quantidade"
-                  required
-                />
-
-                <input
-                  name="unidade"
-                  placeholder="Unidade: kg, unidade..."
-                  required
-                />
-
-                <select
-                  name="tipoMovimento"
-                  defaultValue="entrada"
-                >
-                  <option value="entrada">Entrada</option>
-                  <option value="saida">Saída</option>
-                </select>
-
-                <input
-                  name="dataMovimento"
-                  type="date"
-                  required
-                />
-              </>
-            )}
-
-            {formMode === "conta" && (
-              <>
-                <input
-                  name="descricao"
-                  placeholder="Descrição"
-                  required
-                />
-
-                <input
-                  name="fornecedor"
-                  placeholder="Fornecedor"
-                />
-
-                <input
-                  name="valor"
-                  type="number"
-                  step="0.01"
-                  placeholder="Valor"
-                  required
-                />
-
-                <input
-                  name="vencimento"
-                  type="date"
-                  required
-                />
-              </>
-            )}
-
-            {formMode === "caixa" && (
-              <>
-                <select name="tipo" defaultValue="saida">
-                  <option value="entrada">Entrada</option>
-                  <option value="saida">Saída</option>
-                </select>
-
-                <input
-                  name="descricao"
-                  placeholder="Descrição: venda, compra, despesa..."
-                  required
-                />
-
-                <input
-                  name="valor"
-                  type="number"
-                  step="0.01"
-                  placeholder="Valor"
-                  required
-                />
-
-                <input
-                  name="dataMovimento"
-                  type="date"
-                  required
-                />
-              </>
-            )}
-
-            {formMode === "registro" && (
-              <>
-                <select name="registroTipo" defaultValue="caixa">
-                  <option value="caixa">Entrada ou saída no caixa</option>
-                  <option value="conta">Conta a pagar</option>
-                </select>
-
-                <select name="tipo" defaultValue="saida">
-                  <option value="entrada">Entrada</option>
-                  <option value="saida">Saída</option>
-                </select>
-
-                <input
-                  name="descricao"
-                  placeholder="Descrição"
-                  required
-                />
-
-                <input
-                  name="fornecedor"
-                  placeholder="Fornecedor (opcional)"
-                />
-
-                <input
-                  name="valor"
-                  type="number"
-                  step="0.01"
-                  placeholder="Valor"
-                  required
-                />
-
-                <input
-                  name="data"
-                  type="date"
-                  required
-                />
-              </>
-            )}
-
-            <button type="submit">
-              Salvar operação
+              }}
+              placeholder="Ex.: qual o saldo do caixa?"
+              rows={2}
+            />
+            <button type="submit" disabled={loading || !message.trim()}>
+              Enviar
             </button>
           </form>
         </section>
       )}
+
+      <button
+        className="chat-toggle"
+        type="button"
+        onClick={() => setChatOpen((open) => !open)}
+        aria-expanded={chatOpen}
+      >
+        {chatOpen ? "Fechar chat" : "💬 Chat"}
+      </button>
+
+      {formMode && (
+        <div className="modal-backdrop" onClick={() => !submitting && setFormMode(null)}>
+          <section
+            className="panel modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="form-title"
+            onClick={(event) => event.stopPropagation()}
+            onKeyDown={(event) => event.key === "Escape" && !submitting && setFormMode(null)}
+          >
+            <div className="panel-heading">
+              <h2 id="form-title">{FORM_TITLES[formMode]}</h2>
+              <button type="button" className="ghost-button" onClick={() => setFormMode(null)} aria-label="Fechar">
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={submitForm} className="operation-fields" key={formMode}>
+              {formMode === "fechar" && (
+                <>
+                  <label>
+                    Lote
+                    <select name="loteId" required defaultValue={lotesAtivos[0]?.id}>
+                      {lotesAtivos.map((lote) => (
+                        <option key={lote.id} value={lote.id}>
+                          {lote.id} · {lote.especie} · Tanque {lote.tanque_id}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <div className="field-row">
+                    <label>
+                      Kg colhidos
+                      <input name="kgColhidos" type="number" inputMode="decimal" step="0.01" min="0.01" required autoFocus />
+                    </label>
+                    <label>
+                      Data do fechamento
+                      <input name="dataFechamento" type="date" defaultValue={today} required />
+                    </label>
+                  </div>
+                  <p className="hint">O custo do lote é a soma das saídas de caixa ligadas a ele.</p>
+                </>
+              )}
+
+              {formMode === "venda" && (
+                <>
+                  <label>
+                    Lote
+                    <select name="loteId" required defaultValue={lotesComPeixe[0]?.id}>
+                      {lotesComPeixe.map((lote) => (
+                        <option key={lote.id} value={lote.id}>
+                          {lote.id} · {formatNumber(Number(lote.kg_colhidos ?? 0) - Number(lote.kg_vendidos ?? 0))} kg disponíveis
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <div className="field-row">
+                    <label>
+                      Kg vendidos
+                      <input name="kgVendidos" type="number" inputMode="decimal" step="0.01" min="0.01" required autoFocus />
+                    </label>
+                    <label>
+                      Valor total (R$)
+                      <input name="valorTotal" type="number" inputMode="decimal" step="0.01" min="0.01" required />
+                    </label>
+                  </div>
+                  <div className="field-row">
+                    <label>
+                      Data da venda
+                      <input name="dataVenda" type="date" defaultValue={today} required />
+                    </label>
+                    <label>
+                      Comprador (opcional)
+                      <input name="comprador" />
+                    </label>
+                  </div>
+                </>
+              )}
+
+              {formMode === "estoque" && (
+                <>
+                  <div className="field-row">
+                    <label>
+                      Tipo
+                      <select name="tipoMovimento" defaultValue="entrada">
+                        <option value="entrada">Entrada</option>
+                        <option value="saida">Saída</option>
+                      </select>
+                    </label>
+                    <label>
+                      Categoria
+                      <select name="categoria" defaultValue="racao">
+                        <option value="racao">Ração</option>
+                        <option value="peixe">Peixe</option>
+                      </select>
+                    </label>
+                  </div>
+                  <label>
+                    Item
+                    <input name="item" placeholder="Ex.: ração 32% proteína" list="itens-estoque" required autoFocus />
+                    <datalist id="itens-estoque">
+                      {estoque.map((item) => (
+                        <option key={`${item.categoria}-${item.item}`} value={item.item} />
+                      ))}
+                    </datalist>
+                  </label>
+                  <div className="field-row">
+                    <label>
+                      Quantidade
+                      <input name="quantidade" type="number" inputMode="decimal" step="0.01" min="0.01" required />
+                    </label>
+                    <label>
+                      Unidade
+                      <input name="unidade" defaultValue="kg" required />
+                    </label>
+                  </div>
+                  <label>
+                    Data
+                    <input name="dataMovimento" type="date" defaultValue={today} required />
+                  </label>
+                </>
+              )}
+
+              {formMode === "conta" && (
+                <>
+                  <label>
+                    Descrição
+                    <input name="descricao" placeholder="Ex.: energia do aerador" required autoFocus />
+                  </label>
+                  <label>
+                    Fornecedor (opcional)
+                    <input name="fornecedor" />
+                  </label>
+                  <div className="field-row">
+                    <label>
+                      Valor (R$)
+                      <input name="valor" type="number" inputMode="decimal" step="0.01" min="0.01" required />
+                    </label>
+                    <label>
+                      Vencimento
+                      <input name="vencimento" type="date" defaultValue={today} required />
+                    </label>
+                  </div>
+                </>
+              )}
+
+              {formMode === "caixa" && (
+                <>
+                  <div className="field-row">
+                    <label>
+                      Tipo
+                      <select name="tipo" defaultValue="saida">
+                        <option value="entrada">Entrada</option>
+                        <option value="saida">Saída</option>
+                      </select>
+                    </label>
+                    <label>
+                      Valor (R$)
+                      <input name="valor" type="number" inputMode="decimal" step="0.01" min="0.01" required autoFocus />
+                    </label>
+                  </div>
+                  <label>
+                    Descrição
+                    <input name="descricao" placeholder="Ex.: compra de ração, venda avulsa..." required />
+                  </label>
+                  <div className="field-row">
+                    <label>
+                      Data
+                      <input name="dataMovimento" type="date" defaultValue={today} required />
+                    </label>
+                    <label>
+                      Lote (entra no custo)
+                      <select name="loteId" defaultValue="">
+                        <option value="">Nenhum</option>
+                        {lotesAtivos.map((lote) => (
+                          <option key={lote.id} value={lote.id}>
+                            {lote.id}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
+                </>
+              )}
+
+              {formError && <p className="form-error" role="alert">{formError}</p>}
+
+              <div className="form-actions">
+                <button type="button" className="ghost-button" onClick={() => setFormMode(null)}>
+                  Cancelar
+                </button>
+                <button type="submit" disabled={submitting}>
+                  {submitting ? "Salvando..." : "Salvar"}
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      )}
+
+      <div className="toasts" aria-live="polite">
+        {toasts.map((toast) => (
+          <div key={toast.id} className={`toast ${toast.kind}`}>
+            {toast.text}
+          </div>
+        ))}
       </div>
     </main>
   );
