@@ -204,7 +204,8 @@ p { color: #687269; }
   --glass-shine: inset 0 1px 0 rgba(255, 255, 255, 0.85), inset 0 -1px 0 rgba(255, 255, 255, 0.25);
   --glass-depth: 0 8px 32px rgba(18, 61, 50, 0.10);
 }
-body { background: #e6efea; }
+html { background: #e6efea; }
+body { background: transparent; }
 body::before {
   content: "";
   position: fixed;
