@@ -1,19 +1,17 @@
 type ProductionActionsProps = {
   onCloseLot: () => void;
-  onRegisterSale: () => void;
   onMoveStock: () => void;
-  onNewPayable: () => void;
+  onOpenBiometry: () => void;
+  onOpenChat: () => void;
   canClose: boolean;
-  canSell: boolean;
 };
 
 export function ProductionActions({
   onCloseLot,
-  onRegisterSale,
   onMoveStock,
-  onNewPayable,
+  onOpenBiometry,
+  onOpenChat,
   canClose,
-  canSell,
 }: ProductionActionsProps) {
   return (
     <section className="panel production-actions">
@@ -29,24 +27,18 @@ export function ProductionActions({
           Fechar lote
         </button>
 
-        <button
-          type="button"
-          onClick={onRegisterSale}
-          disabled={!canSell}
-          title={canSell ? undefined : "Feche um lote com peixe disponível para vender"}
-        >
-          Registrar venda
-        </button>
-
         <button type="button" onClick={onMoveStock}>
           Movimentar estoque
         </button>
 
-        <button type="button" onClick={onNewPayable}>
-          Nova conta a pagar
+        <button type="button" onClick={onOpenBiometry}>
+          Registrar biometria
+        </button>
+
+        <button type="button" onClick={onOpenChat}>
+          Chat operacional
         </button>
       </div>
-
     </section>
   );
 }

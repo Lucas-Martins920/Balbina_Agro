@@ -7,11 +7,12 @@ projeto gera o app Android via Capacitor.
 
 - Tela de login com credenciais do backend.
 - Armazenamento do token JWT em `localStorage`.
-- Dashboard com saldo do caixa, lotes, estoque, alertas de contas e status de sincronizacao.
-- Chat operacional para consultar caixa, abrir lote e registrar insumo.
-- Formularios para fechar lote, registrar venda, movimentar estoque e criar conta a pagar.
-- Atualizacao automatica do painel a cada 5 segundos enquanto autenticado.
-- App Android em `frontend/android`.
+- Dashboard operacional com lotes em engorda, estoque e sincronização do viveiro.
+- Chat operacional para abrir lotes, registrar insumos e orientar as ações do dia a dia.
+- Atalhos de biometria e operação rápida de viveiro.
+- Formulários para fechar lote e movimentar estoque.
+- Atualização automática do painel a cada 5 segundos enquanto autenticado.
+- App Android em `android/` com Capacitor.
 
 ## Rodar web
 

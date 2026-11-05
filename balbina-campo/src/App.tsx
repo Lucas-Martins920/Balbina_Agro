@@ -4,7 +4,6 @@ import "./index.css";
 import { ProductionActions } from "./components/ProductionActions";
 import { apiFetch, clearToken, hasToken, login } from "./api/client";
 import {
-  daysLabel,
   formatDate,
   formatMoney,
   formatNumber,
@@ -21,20 +20,6 @@ type Message = {
   id: number;
   role: "user" | "assistant";
   text: string;
-};
-
-type Balance = {
-  saldo: number;
-  entradas: number;
-  saidas: number;
-};
-
-type MovimentoCaixa = {
-  id: string;
-  tipo: "entrada" | "saida";
-  valor: number;
-  descricao: string | null;
-  dataMovimento: string;
 };
 
 type Lote = {
@@ -64,43 +49,13 @@ type Estoque = {
   saldo: number;
 };
 
-type ContaAlerta = {
-  id: string;
-  descricao: string;
-  fornecedor?: string;
-  valor: number;
-  vencimento: string;
-  dias_restantes: number;
-};
-
-type Conta = {
-  id: string;
-  descricao: string;
-  fornecedor?: string | null;
-  valor: number;
-  vencimento: string;
-  status: "aberta" | "paga";
-  pago_em?: string | null;
-};
-
-type FormMode = "fechar" | "venda" | "estoque" | "conta" | "caixa" | null;
-
-type Section = "producao" | "caixa" | "contas";
+type FormMode = "fechar" | "estoque" | null;
 
 type Toast = { id: number; kind: "success" | "error"; text: string };
 
 const FORM_TITLES: Record<Exclude<FormMode, null>, string> = {
   fechar: "Fechar lote",
-  venda: "Registrar venda",
   estoque: "Movimentar estoque",
-  conta: "Nova conta a pagar",
-  caixa: "Novo lançamento no caixa",
-};
-
-const SECTION_TITLES: Record<Section, string> = {
-  producao: "Visão geral",
-  caixa: "Caixa",
-  contas: "Contas a pagar",
 };
 
 async function readJson(response: Response): Promise<Record<string, unknown>> {
@@ -122,15 +77,9 @@ export default function App() {
   const [formMode, setFormMode] = useState<FormMode>(null);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
-  const [activeSection, setActiveSection] = useState<Section>("producao");
 
-  const [balance, setBalance] = useState<Balance | null>(null);
-  const [movimentosCaixa, setMovimentosCaixa] = useState<MovimentoCaixa[]>([]);
   const [lotes, setLotes] = useState<Lote[]>([]);
   const [estoque, setEstoque] = useState<Estoque[]>([]);
-  const [alertas, setAlertas] = useState<ContaAlerta[]>([]);
-  const [contas, setContas] = useState<Conta[]>([]);
-  const [payingAccountId, setPayingAccountId] = useState<string | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [backendOnline, setBackendOnline] = useState(true);
   const [sync, setSync] = useState<SyncSummary>({ pending: 0, synced: 0, error: 0 });
@@ -141,7 +90,7 @@ export default function App() {
     {
       id: 1,
       role: "assistant",
-      text: "Olá! Posso abrir lotes, registrar insumos ou consultar o caixa.",
+      text: "Olá! Posso abrir lotes, registrar insumos e orientar a operação do viveiro.",
     },
   ]);
 
@@ -162,22 +111,14 @@ export default function App() {
 
   const loadDashboard = useCallback(async () => {
     try {
-      const [b, m, l, e, a, c, s] = await Promise.all([
-        apiFetch("/api/caixa/saldo"),
-        apiFetch("/api/caixa/movimentos"),
+      const [l, e, s] = await Promise.all([
         apiFetch("/api/lotes"),
         apiFetch("/api/estoque"),
-        apiFetch("/api/contas-pagar/alertas"),
-        apiFetch("/api/contas-pagar"),
         apiFetch("/api/sync/summary"),
       ]);
 
-      if (b.ok) setBalance(await b.json());
-      if (m.ok) setMovimentosCaixa(await m.json());
       if (l.ok) setLotes(await l.json());
       if (e.ok) setEstoque(await e.json());
-      if (a.ok) setAlertas(await a.json());
-      if (c.ok) setContas(await c.json());
       if (s.ok) {
         const summary = await s.json();
         setSync({
@@ -234,33 +175,6 @@ export default function App() {
     ]);
   }
 
-  async function payAccount(conta: Conta) {
-    if (!window.confirm(`Marcar "${conta.descricao}" (${formatMoney(conta.valor)}) como paga?`)) {
-      return;
-    }
-
-    setPayingAccountId(conta.id);
-    try {
-      const response = await apiFetch(`/api/contas-pagar/${conta.id}/pagar`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-      const result = await readJson(response);
-
-      if (response.ok) {
-        notify("success", "Conta marcada como paga.");
-        await loadDashboard();
-      } else {
-        notify("error", String(result.error || "Não foi possível marcar a conta como paga."));
-      }
-    } catch {
-      notify("error", "Não foi possível conectar ao servidor.");
-    } finally {
-      setPayingAccountId(null);
-    }
-  }
-
   async function sendMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const text = message.trim();
@@ -279,22 +193,10 @@ export default function App() {
       const isLote = /\b(abr[ei]r?|novo|criar|crie|cadastrar)\b.*\blote\b/.test(normalized);
       const isInsumo =
         !isLote && /\b(racao|alevinos?|medicamento|insumo|compra|comprei)\b/.test(normalized);
-      const isSaldo = !isLote && !isInsumo && /\b(saldo|caixa)\b/.test(normalized);
-
-      if (isSaldo) {
-        const response = await apiFetch("/api/caixa/saldo");
-        const result = await readJson(response);
-        addAssistantMessage(
-          response.ok
-            ? `O saldo atual do caixa é ${formatMoney(Number(result.saldo))}.`
-            : "Não foi possível consultar o caixa."
-        );
-        return;
-      }
 
       if (!isInsumo && !isLote) {
         addAssistantMessage(
-          'Posso ajudar com: "abrir lote L-01 com 500 alevinos de tambaqui no tanque TQ-1", "comprei 50 kg de ração a R$ 4,50 para o tanque TQ-1" ou "qual o saldo do caixa?".'
+          'Posso ajudar com: "abrir lote L-01 com 500 alevinos de tambaqui no tanque TQ-1" ou "comprei 50 kg de ração para o tanque TQ-1".'
         );
         return;
       }
@@ -343,16 +245,6 @@ export default function App() {
         endpoint = `/api/lotes/${encodeURIComponent(get("loteId"))}/fechar`;
         body = { kgColhidos: num("kgColhidos"), dataFechamento: get("dataFechamento") };
         break;
-      case "venda":
-        endpoint = "/api/vendas";
-        body = {
-          loteId: get("loteId"),
-          dataVenda: get("dataVenda"),
-          kgVendidos: num("kgVendidos"),
-          valorTotal: num("valorTotal"),
-          comprador: get("comprador") || null,
-        };
-        break;
       case "estoque":
         endpoint = "/api/estoque/movimentos";
         body = {
@@ -362,25 +254,6 @@ export default function App() {
           unidade: get("unidade"),
           tipoMovimento: get("tipoMovimento"),
           dataMovimento: get("dataMovimento"),
-        };
-        break;
-      case "conta":
-        endpoint = "/api/contas-pagar";
-        body = {
-          descricao: get("descricao"),
-          fornecedor: get("fornecedor") || null,
-          valor: num("valor"),
-          vencimento: get("vencimento"),
-        };
-        break;
-      case "caixa":
-        endpoint = "/api/caixa/movimento";
-        body = {
-          tipo: get("tipo"),
-          valor: num("valor"),
-          descricao: get("descricao"),
-          dataMovimento: get("dataMovimento"),
-          loteId: get("loteId") || null,
         };
         break;
     }
@@ -419,11 +292,6 @@ export default function App() {
 
   const lotesAtivos = lotes.filter((lote) => (lote.status ?? "ativo") === "ativo");
   const lotesFechados = lotes.filter((lote) => lote.status === "fechado");
-  const lotesComPeixe = lotesFechados.filter(
-    (lote) => Number(lote.kg_colhidos ?? 0) - Number(lote.kg_vendidos ?? 0) > 0
-  );
-  const contasAbertas = contas.filter((conta) => conta.status === "aberta");
-  const totalAberto = contasAbertas.reduce((sum, conta) => sum + Number(conta.valor), 0);
 
   const statusLabel = !backendOnline
     ? "Servidor offline"
@@ -475,18 +343,9 @@ export default function App() {
   }
 
   const today = todayISO();
-  const kgParaVender = lotesComPeixe.reduce(
-    (sum, lote) => sum + Number(lote.kg_colhidos ?? 0) - Number(lote.kg_vendidos ?? 0),
-    0
-  );
-  // A frase do topo mostra o que mais precisa de atenção agora.
-  const finding = alertas[0]
-    ? `${alertas[0].descricao} ${daysLabel(alertas[0].dias_restantes)} · ${formatMoney(alertas[0].valor)}`
-    : kgParaVender > 0
-      ? `${formatNumber(kgParaVender)} kg de peixe prontos para vender`
-      : lotesAtivos.length > 0
-        ? `${lotesAtivos.length} lote(s) em engorda`
-        : "";
+  const finding = lotesAtivos.length > 0
+    ? `${lotesAtivos.length} lote(s) em engorda`
+    : "Operação em standby";
 
   return (
     <main className="app">
@@ -496,28 +355,9 @@ export default function App() {
         </div>
 
         <nav className="sidebar-nav" aria-label="Navegação principal">
-          {([
-            ["producao", "Visão geral"],
-            ["caixa", "Caixa"],
-            ["contas", "Contas"],
-          ] as const).map(([section, label]) => (
-            <button
-              className={activeSection === section ? "active" : ""}
-              key={section}
-              type="button"
-              onClick={() => setActiveSection(section)}
-              aria-current={activeSection === section ? "page" : undefined}
-            >
-              <strong>
-                {label}
-                {section === "contas" && alertas.length > 0 && (
-                  <span className="nav-badge" aria-label={`${alertas.length} alertas`}>
-                    {alertas.length}
-                  </span>
-                )}
-              </strong>
-            </button>
-          ))}
+          <button type="button" className="active" aria-current="page">
+            <strong>Visão geral</strong>
+          </button>
         </nav>
 
       </aside>
@@ -525,10 +365,8 @@ export default function App() {
       <div className="workspace">
         <header className="header">
           <div>
-            <h1>{SECTION_TITLES[activeSection]}</h1>
-            {activeSection === "producao" && finding && (
-              <p className={`finding ${alertas.length > 0 ? "warn" : ""}`}>{finding}</p>
-            )}
+            <h1>Visão geral</h1>
+            {finding && <p className="finding">{finding}</p>}
           </div>
 
           <div className="header-actions">
@@ -541,224 +379,99 @@ export default function App() {
           </div>
         </header>
 
-        {activeSection === "producao" && (
-          <>
-            <section className="panel summary">
-              <div className="summary-cell">
-                <span className="label">Saldo do caixa</span>
-                <strong className={balance && balance.saldo < 0 ? "negative" : ""}>
-                  {formatMoney(balance?.saldo)}
-                </strong>
-                <small>
-                  {formatMoney(balance?.entradas)} entraram · {formatMoney(balance?.saidas)} saíram
-                </small>
-              </div>
-              <div className="summary-cell">
-                <span className="label">Lotes em engorda</span>
-                <strong>{lotesAtivos.length}</strong>
-                <small>
-                  {formatNumber(lotesAtivos.reduce((sum, lote) => sum + lote.estoque_inicial, 0))} peixes na água
-                </small>
-              </div>
-              <button
-                type="button"
-                className={`summary-cell summary-link ${alertas.length > 0 ? "warn" : ""}`}
-                onClick={() => setActiveSection("contas")}
-              >
-                <span className="label">Contas em aberto</span>
-                <strong>{formatMoney(totalAberto)}</strong>
-                <small>
-                  {alertas.length > 0
-                    ? `${alertas.length} vencendo em até 7 dias`
-                    : `${contasAbertas.length} conta(s) em aberto`}
-                </small>
-              </button>
-            </section>
+        <>
+          <section className="panel summary">
+            <div className="summary-cell">
+              <span className="label">Lotes em engorda</span>
+              <strong>{lotesAtivos.length}</strong>
+              <small>
+                {formatNumber(lotesAtivos.reduce((sum, lote) => sum + lote.estoque_inicial, 0))} peixes na água
+              </small>
+            </div>
+            <div className="summary-cell">
+              <span className="label">Lotes fechados</span>
+              <strong>{lotesFechados.length}</strong>
+              <small>{formatNumber(lotesFechados.reduce((sum, lote) => sum + Number(lote.kg_colhidos ?? 0), 0))} kg colhidos</small>
+            </div>
+            <div className="summary-cell">
+              <span className="label">Estoque monitorado</span>
+              <strong>{estoque.length}</strong>
+              <small>{estoque.length > 0 ? "itens ativos em estoque" : "nenhum item cadastrado"}</small>
+            </div>
+          </section>
 
-            <ProductionActions
-              onCloseLot={() => openForm("fechar")}
-              onRegisterSale={() => openForm("venda")}
-              onMoveStock={() => openForm("estoque")}
-              onNewPayable={() => openForm("conta")}
-              canClose={lotesAtivos.length > 0}
-              canSell={lotesComPeixe.length > 0}
-            />
+          <ProductionActions
+            onCloseLot={() => openForm("fechar")}
+            onMoveStock={() => openForm("estoque")}
+            onOpenBiometry={() => {
+              setChatOpen(true);
+              setMessage("Registrar biometria do lote atual e acompanhar peso dos peixes.");
+            }}
+            onOpenChat={() => setChatOpen(true)}
+            canClose={lotesAtivos.length > 0}
+          />
 
-            <section className="two-columns">
-              <article className="panel">
-                <h2>Lotes</h2>
-                {lotes.length === 0 ? (
-                  <div className="empty-state">
-                    <h3>Nenhum lote cadastrado</h3>
-                    <p>Abra o chat e escreva, por exemplo: "abrir lote L-01 com 500 alevinos de tambaqui no tanque TQ-1".</p>
-                    <button type="button" onClick={() => setChatOpen(true)}>Abrir chat</button>
-                  </div>
-                ) : (
-                  <div className="lot-list">
-                    {[...lotesAtivos, ...lotesFechados].map((lote) => {
-                      const fechado = lote.status === "fechado";
-                      const restante = Number(lote.kg_colhidos ?? 0) - Number(lote.kg_vendidos ?? 0);
-                      return (
-                        <div className={`lot-item ${fechado ? "closed" : ""}`} key={lote.id}>
-                          <div className="lot-title">
-                            <strong>{lote.id}</strong>
-                            <span className={`pill ${fechado ? "pill-muted" : "pill-ok"}`}>
-                              {fechado ? "Fechado" : "Ativo"}
-                            </span>
-                          </div>
-                          <span>
-                            {lote.especie} · Tanque {lote.tanque_id}
+          <section className="two-columns">
+            <article className="panel">
+              <h2>Lotes</h2>
+              {lotes.length === 0 ? (
+                <div className="empty-state">
+                  <h3>Nenhum lote cadastrado</h3>
+                  <p>Abra o chat e escreva, por exemplo: "abrir lote L-01 com 500 alevinos de tambaqui no tanque TQ-1".</p>
+                  <button type="button" onClick={() => setChatOpen(true)}>Abrir chat</button>
+                </div>
+              ) : (
+                <div className="lot-list">
+                  {[...lotesAtivos, ...lotesFechados].map((lote) => {
+                    const fechado = lote.status === "fechado";
+                    return (
+                      <div className={`lot-item ${fechado ? "closed" : ""}`} key={lote.id}>
+                        <div className="lot-title">
+                          <strong>{lote.id}</strong>
+                          <span className={`pill ${fechado ? "pill-muted" : "pill-ok"}`}>
+                            {fechado ? "Fechado" : "Ativo"}
                           </span>
-                          <small>
-                            {fechado
-                              ? `${formatNumber(lote.kg_colhidos)} kg colhidos · ${formatMoney(lote.custo_por_kg)}/kg · ${formatNumber(restante)} kg para vender`
-                              : `${formatNumber(lote.estoque_inicial)} ${lote.unidade || "peixes"} desde ${formatDate(lote.data_inicio)}`}
-                          </small>
                         </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </article>
-
-              <article className="panel">
-                <h2>Estoque</h2>
-                {estoque.length === 0 ? (
-                  <div className="empty-state">
-                    <h3>Estoque vazio</h3>
-                    <p>O peixe entra no estoque ao fechar um lote. Ração pode ser lançada em "Movimentar estoque".</p>
-                  </div>
-                ) : (
-                  <div className="stock-list">
-                    {estoque.map((item) => (
-                      <div className="stock-item" key={`${item.categoria}-${item.item}-${item.unidade}`}>
-                        <span className={`pill ${item.categoria === "peixe" ? "pill-blue" : "pill-ok"}`}>
-                          {item.categoria === "peixe" ? "Peixe" : "Ração"}
+                        <span>
+                          {lote.especie} · Tanque {lote.tanque_id}
                         </span>
-                        <strong>{item.item}</strong>
-                        <span className="stock-qty">
-                          {formatNumber(item.saldo)} {item.unidade}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </article>
-            </section>
-          </>
-        )}
-
-        {activeSection === "caixa" && (
-          <>
-            <section className="two-columns">
-              <article className="balance-card">
-                <span className="label">Saldo do caixa</span>
-                <strong className={balance && balance.saldo < 0 ? "negative" : ""}>
-                  {formatMoney(balance?.saldo)}
-                </strong>
-                <div className="balance-details">
-                  <span>Entradas: {formatMoney(balance?.entradas)}</span>
-                  <span>Saídas: {formatMoney(balance?.saidas)}</span>
-                </div>
-              </article>
-              <section className="panel">
-                <h2>Sincronização</h2>
-                <p>
-                  <strong>{statusLabel}</strong>
-                  <br />
-                  {sync.synced} enviada(s) · {sync.pending} aguardando · {sync.error} com erro
-                </p>
-              </section>
-            </section>
-            <section className="panel">
-              <div className="panel-heading">
-                <div>
-                  <h2>Entradas e saídas</h2>
-                </div>
-                <button type="button" onClick={() => openForm("caixa")}>
-                  Novo lançamento
-                </button>
-              </div>
-              {movimentosCaixa.length === 0 ? (
-                <p>Nenhum lançamento registrado.</p>
-              ) : (
-                <div className="cash-list">
-                  {movimentosCaixa.map((movimento) => (
-                    <div className="cash-item" key={movimento.id}>
-                      <span className={`cash-type ${movimento.tipo}`}>
-                        {movimento.tipo === "entrada" ? "Entrada" : "Saída"}
-                      </span>
-                      <div>
-                        <strong>{movimento.descricao || "Movimentação"}</strong>
-                        <small>{formatDate(movimento.dataMovimento)}</small>
-                      </div>
-                      <strong className={`cash-value ${movimento.tipo}`}>
-                        {movimento.tipo === "entrada" ? "+" : "−"} {formatMoney(movimento.valor)}
-                      </strong>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-          </>
-        )}
-
-        {activeSection === "contas" && (
-          <>
-            {alertas.length > 0 && (
-              <section className="panel alert-panel" role="alert">
-                <h2>Vencendo em até 7 dias</h2>
-                {alertas.map((conta) => (
-                  <p key={conta.id}>
-                    <strong>{conta.descricao}</strong> · {formatMoney(conta.valor)} ·{" "}
-                    {daysLabel(conta.dias_restantes)}
-                  </p>
-                ))}
-              </section>
-            )}
-
-            <section className="panel">
-              <div className="panel-heading">
-                <div>
-                  <h2>{contas.length === 0 ? "Nenhuma conta registrada" : `${formatMoney(totalAberto)} em aberto`}</h2>
-                </div>
-                <button type="button" onClick={() => openForm("conta")}>
-                  Nova conta
-                </button>
-              </div>
-
-              {contas.length === 0 ? (
-                <p>Registre uma conta para acompanhar vencimentos e pagamentos.</p>
-              ) : (
-                <div className="accounts-list">
-                  {contas.map((conta) => (
-                    <div className={`account-item ${conta.status}`} key={conta.id}>
-                      <div>
-                        <strong>{conta.descricao}</strong>
                         <small>
-                          {conta.fornecedor || "Sem fornecedor"} · vence em {formatDate(conta.vencimento)}
+                          {fechado
+                            ? `${formatNumber(lote.kg_colhidos)} kg colhidos · ${formatMoney(lote.custo_por_kg)}/kg`
+                            : `${formatNumber(lote.estoque_inicial)} ${lote.unidade || "peixes"} desde ${formatDate(lote.data_inicio)}`}
                         </small>
                       </div>
-                      <strong>{formatMoney(conta.valor)}</strong>
-                      {conta.status === "aberta" ? (
-                        <button
-                          type="button"
-                          className="secondary-button"
-                          onClick={() => payAccount(conta)}
-                          disabled={payingAccountId === conta.id}
-                        >
-                          {payingAccountId === conta.id ? "Salvando..." : "Marcar como paga"}
-                        </button>
-                      ) : (
-                        <span className="pill pill-ok">Paga {conta.pago_em ? formatDate(conta.pago_em) : ""}</span>
-                      )}
+                    );
+                  })}
+                </div>
+              )}
+            </article>
+
+            <article className="panel">
+              <h2>Estoque</h2>
+              {estoque.length === 0 ? (
+                <div className="empty-state">
+                  <h3>Estoque vazio</h3>
+                  <p>O peixe entra no estoque ao fechar um lote. Ração pode ser lançada em "Movimentar estoque".</p>
+                </div>
+              ) : (
+                <div className="stock-list">
+                  {estoque.map((item) => (
+                    <div className="stock-item" key={`${item.categoria}-${item.item}-${item.unidade}`}>
+                      <span className={`pill ${item.categoria === "peixe" ? "pill-blue" : "pill-ok"}`}>
+                        {item.categoria === "peixe" ? "Peixe" : "Ração"}
+                      </span>
+                      <strong>{item.item}</strong>
+                      <span className="stock-qty">
+                        {formatNumber(item.saldo)} {item.unidade}
+                      </span>
                     </div>
                   ))}
                 </div>
               )}
-            </section>
-          </>
-        )}
+            </article>
+          </section>
+        </>
       </div>
 
       {chatOpen && (
@@ -791,7 +504,7 @@ export default function App() {
                   event.currentTarget.form?.requestSubmit();
                 }
               }}
-              placeholder="Ex.: qual o saldo do caixa?"
+              placeholder="Ex.: abrir lote L-01 com 500 alevinos no tanque TQ-1"
               rows={2}
             />
             <button type="submit" disabled={loading || !message.trim()}>
@@ -850,42 +563,7 @@ export default function App() {
                       <input name="dataFechamento" type="date" defaultValue={today} required />
                     </label>
                   </div>
-                  <p className="hint">O custo do lote é a soma das saídas de caixa ligadas a ele.</p>
-                </>
-              )}
-
-              {formMode === "venda" && (
-                <>
-                  <label>
-                    Lote
-                    <select name="loteId" required defaultValue={lotesComPeixe[0]?.id}>
-                      {lotesComPeixe.map((lote) => (
-                        <option key={lote.id} value={lote.id}>
-                          {lote.id} · {formatNumber(Number(lote.kg_colhidos ?? 0) - Number(lote.kg_vendidos ?? 0))} kg disponíveis
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <div className="field-row">
-                    <label>
-                      Kg vendidos
-                      <input name="kgVendidos" type="number" inputMode="decimal" step="0.01" min="0.01" required autoFocus />
-                    </label>
-                    <label>
-                      Valor total (R$)
-                      <input name="valorTotal" type="number" inputMode="decimal" step="0.01" min="0.01" required />
-                    </label>
-                  </div>
-                  <div className="field-row">
-                    <label>
-                      Data da venda
-                      <input name="dataVenda" type="date" defaultValue={today} required />
-                    </label>
-                    <label>
-                      Comprador (opcional)
-                      <input name="comprador" />
-                    </label>
-                  </div>
+                  <p className="hint">O fechamento do lote considera o histórico do viveiro e o estoque associado ao lote.</p>
                 </>
               )}
 
@@ -930,68 +608,6 @@ export default function App() {
                     Data
                     <input name="dataMovimento" type="date" defaultValue={today} required />
                   </label>
-                </>
-              )}
-
-              {formMode === "conta" && (
-                <>
-                  <label>
-                    Descrição
-                    <input name="descricao" placeholder="Ex.: energia do aerador" required autoFocus />
-                  </label>
-                  <label>
-                    Fornecedor (opcional)
-                    <input name="fornecedor" />
-                  </label>
-                  <div className="field-row">
-                    <label>
-                      Valor (R$)
-                      <input name="valor" type="number" inputMode="decimal" step="0.01" min="0.01" required />
-                    </label>
-                    <label>
-                      Vencimento
-                      <input name="vencimento" type="date" defaultValue={today} required />
-                    </label>
-                  </div>
-                </>
-              )}
-
-              {formMode === "caixa" && (
-                <>
-                  <div className="field-row">
-                    <label>
-                      Tipo
-                      <select name="tipo" defaultValue="saida">
-                        <option value="entrada">Entrada</option>
-                        <option value="saida">Saída</option>
-                      </select>
-                    </label>
-                    <label>
-                      Valor (R$)
-                      <input name="valor" type="number" inputMode="decimal" step="0.01" min="0.01" required autoFocus />
-                    </label>
-                  </div>
-                  <label>
-                    Descrição
-                    <input name="descricao" placeholder="Ex.: compra de ração, venda avulsa..." required />
-                  </label>
-                  <div className="field-row">
-                    <label>
-                      Data
-                      <input name="dataMovimento" type="date" defaultValue={today} required />
-                    </label>
-                    <label>
-                      Lote (entra no custo)
-                      <select name="loteId" defaultValue="">
-                        <option value="">Nenhum</option>
-                        {lotesAtivos.map((lote) => (
-                          <option key={lote.id} value={lote.id}>
-                            {lote.id}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
                 </>
               )}
 
