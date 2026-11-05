@@ -1,25 +1,27 @@
 # Balbina Agro V1 - Documentacao Completa
 
 **Versao:** 1.0  
-**Status:** primeira versao funcional em desenvolvimento  
-**Escopo:** piscicultura de tambaqui, autenticação, caixa, lotes, estoque, contas a pagar, chat operacional e sincronizacao offline-first  
-**Data da documentacao:** 25/08/2026
+**Status:** V1 funcional em desenvolvimento  
+**Escopo:** piscicultura, autenticacao, caixa, lotes, estoque, contas a pagar, chat operacional e sincronizacao assincrona  
+**Data da ultima revisao:** 03/11/2026
 
 ---
 
 ## 1. Visao geral
 
-Balbina Agro V1 e um sistema operacional para piscicultura, focado exclusivamente no manejo e controle financeiro/produtivo de lotes de peixe, especialmente tambaqui.
+Balbina Agro V1 e um sistema operacional para piscicultura, com controle financeiro e produtivo de lotes de peixe e conhecimento tecnico local voltado a tambaqui. O campo especie e configuravel e o backend nao restringe os lotes a uma unica especie.
 
-A primeira versao prova cinco pilares:
+A V1 implementa os seguintes pilares:
 
 - registrar operacoes por chat com IA;
 - controlar caixa com entradas, saidas e saldo;
 - abrir e fechar lotes, calculando custo por kg;
 - controlar estoque basico de peixe e racao;
-- operar localmente com SQLite e manter uma fila de sincronizacao para envio posterior.
+- persistir dados e fila de sincronizacao em SQLite no backend;
+- sincronizar opcionalmente os registros para PostgreSQL;
+- disponibilizar um painel web responsivo e um app Android via Capacitor.
 
-Esta versao nao cobre outras culturas, sensores, voz, notas fiscais, fornecedores completos, integracao bancaria, visao computacional ou multi-producao.
+O termo local-first descreve a persistencia SQLite no backend e o envio remoto assincrono. O frontend ainda depende de conectividade com a API para carregar e gravar dados; nao ha banco/cache local no dispositivo para continuar operando quando a API estiver indisponivel. A V1 nao cobre sensores, voz, notas fiscais, fornecedores completos, integracao bancaria, visao computacional ou multi-producao.
 
 ---
 
@@ -32,17 +34,19 @@ Balbina_Agro/
 │   │   ├── server.ts            # API REST principal
 │   │   ├── auth.ts              # Login, JWT e protecao de rotas
 │   │   ├── db.ts                # Inicializacao do SQLite e schema local
-│   │   ├── chatService.ts       # Integracao com modelo local via Ollama/OpenAI-compatible API
+│   │   ├── chatService.ts       # Chat operacional para lote e insumo
+│   │   ├── services/manejoService.ts # Respostas tecnicas baseadas em conhecimento local
 │   │   ├── knowledgeLoader.ts   # Carregamento de conhecimento local de tambaqui
 │   │   ├── structuredOutputHandler.ts
 │   │   ├── schemas.ts           # Schemas Zod para structured output
-│   │   ├── repositories/        # Persistencia SQLite
-│   │   └── services/            # Regras de producao, manejo e sync
+│   │   ├── repositories/        # Persistencia SQLite por dominio
+│   │   └── services/            # Regras de producao, manejo e sync PostgreSQL
 │   ├── conhecimento_tambaqui.txt
-│   ├── balbina_v1.db
 │   └── package.json
 ├── frontend/                    # App React/Vite + Capacitor Android
-│   ├── src/App.tsx              # Tela operacional principal
+│   ├── src/App.tsx              # Login, painel, formularios e chat
+│   ├── src/api/client.ts        # Cliente HTTP autenticado
+│   ├── src/components/          # Acoes operacionais de producao
 │   ├── src/index.css            # Estilos da interface
 │   ├── capacitor.config.ts      # Configuracao do app Android
 │   └── android/                 # Projeto Android gerado pelo Capacitor
@@ -58,6 +62,8 @@ Arquivos de planejamento ja existentes:
 
 Esta documentacao descreve a V1 conforme implementada no codigo atual.
 
+O arquivo SQLite e criado em tempo de execucao (por padrao, no diretorio de trabalho do backend) e nao e um artefato necessario no repositorio.
+
 ---
 
 ## 3. Stack tecnica
@@ -70,8 +76,8 @@ Esta documentacao descreve a V1 conforme implementada no codigo atual.
 - better-sqlite3
 - pg
 - Zod
-- node-fetch
 - uuid
+- dotenv
 
 ### Frontend
 
@@ -85,7 +91,8 @@ Esta documentacao descreve a V1 conforme implementada no codigo atual.
 
 - API local compativel com OpenAI Chat Completions
 - Padrao atual: `http://localhost:11434/v1/chat/completions`
-- Modelo padrao: `qwen2.5:1.5b`
+- Modelo padrao do chat operacional: `qwen2.5:0.5b`
+- Modelo padrao do manejo tecnico: `qwen2.5:1.5b`
 - Uso principal:
   - extrair JSON estruturado para abertura de lote;
   - extrair JSON estruturado para lancamento de insumo;
@@ -113,7 +120,7 @@ Esta documentacao descreve a V1 conforme implementada no codigo atual.
 - Node.js instalado
 - npm instalado
 - Ollama rodando localmente, se os endpoints de chat forem usados
-- Modelo `qwen2.5:1.5b` disponivel no Ollama, ou ajuste do modelo no codigo
+- Modelo `qwen2.5:0.5b` para o chat operacional e, se usado, `qwen2.5:1.5b` para manejo; ambos podem ser configurados por variaveis de ambiente
 - Android Studio e SDK Android, se for rodar no emulador/celular
 
 ### 4.2. Backend
@@ -147,11 +154,10 @@ DATABASE_URL=postgres://usuario:senha@host:5432/banco
 
 Observacoes:
 
-- `IA_API_KEY` e lida, mas a chamada atual para Ollama local nao envia Bearer Token.
-- `JWT_SECRET` e `AUTH_PASSWORD` sao obrigatorios para login.
-- `AUTH_USER` e opcional e assume `admin` quando nao definido.
-- `DATABASE_URL` ativa a sincronizacao remota com PostgreSQL.
-- Sem `DATABASE_URL`, a aplicacao segue funcionando localmente com SQLite e a fila de sync permanece registrada.
+- `IA_API_KEY` e opcional para uma instalacao Ollama local sem autenticacao; quando definida, e enviada como `Authorization: Bearer ...`.
+- `IA_API_URL` e `IA_MODEL` configuram URL e modelo do chat operacional.
+- `IA_MANEJO_URL` e `IA_MANEJO_MODEL` configuram URL e modelo do endpoint de manejo; por padrao, herdam a URL do chat e usam `qwen2.5:1.5b`.
+- `DATABASE_URL` ativa a sincronizacao remota com PostgreSQL por meio de um worker em segundo plano.
 
 ### 4.3. Frontend web
 
@@ -214,7 +220,7 @@ O chat no frontend aceita mensagens em texto e decide localmente o fluxo:
 - se contem `abrir lote`, `novo lote` ou `criar lote`, envia para `/api/abrir-lote`;
 - caso contrario, informa que pode abrir lote, registrar insumo ou consultar saldo.
 
-O backend usa `ChatService` para chamar o modelo e validar a resposta com Zod.
+O backend usa `ChatService` para chamar o modelo e validar a resposta com Zod. A abertura de lote tem fallback de interpretacao local quando a IA falha ou retorna JSON invalido; o lancamento de insumo depende de uma resposta valida da IA. O frontend nao encaminha perguntas gerais para o endpoint de manejo tecnico: mensagens sem uma intencao reconhecida recebem uma orientacao de uso.
 
 ### 5.1.1. Login e sessao
 
@@ -280,6 +286,8 @@ O caixa registra:
 - referencia de origem;
 - lote relacionado, quando houver.
 
+O painel tambem permite lancamento manual de entrada/saida e mostra o historico dos movimentos. Compras de insumo com preco unitario geram automaticamente uma saida no caixa; vendas geram uma entrada.
+
 Saldo:
 
 ```text
@@ -292,10 +300,11 @@ Regras implementadas:
 
 - exige lote existente;
 - exige lote com status `fechado`;
+- impede vender mais quilos do que o saldo colhido ainda disponivel no lote;
 - registra venda;
 - cria saida de estoque de peixe;
 - cria entrada de caixa;
-- adiciona operacoes na fila de sincronizacao.
+- grava venda, movimento de estoque, movimento de caixa e fila de sincronizacao em uma transacao atomica.
 
 ### 5.7. Estoque
 
@@ -323,7 +332,7 @@ Funcionalidades:
 
 - criar conta a pagar;
 - listar contas;
-- listar alertas de contas abertas com vencimento em ate 7 dias;
+- listar alertas de contas abertas com vencimento nos proximos 7 dias, incluindo contas vencidas ainda abertas;
 - marcar conta como paga.
 
 Status:
@@ -331,9 +340,11 @@ Status:
 - `aberta`
 - `paga`
 
-### 5.9. Offline-first e sincronizacao
+Marcar como paga atualiza o status e a data de pagamento; nao cria automaticamente um movimento de saida no caixa.
 
-Todas as operacoes principais gravam primeiro no SQLite local.
+### 5.9. Persistencia local e sincronizacao remota
+
+As operacoes suportadas gravam primeiro no SQLite do backend e registram a sincronizacao pendente na mesma transacao quando aplicavel. Isso nao torna o frontend offline: o aplicativo precisa acessar a API para consultar ou enviar operacoes.
 
 Depois, o sistema insere uma entrada em `sync_queue` com:
 
@@ -344,7 +355,7 @@ Depois, o sistema insere uma entrada em `sync_queue` com:
 - tentativas;
 - ultimo erro.
 
-Quando `DATABASE_URL` esta configurado, o `PostgresSyncWorker` roda a cada 5 segundos por padrao:
+Quando `DATABASE_URL` esta configurado, o `PostgresSyncWorker` roda a cada 5 segundos por padrao, processa lotes de ate 10 itens e tenta cada registro no maximo 5 vezes:
 
 - garante a existencia das tabelas remotas no PostgreSQL;
 - busca um lote de pendencias locais;
@@ -354,7 +365,7 @@ Quando `DATABASE_URL` esta configurado, o `PostgresSyncWorker` roda a cada 5 seg
 - incrementa tentativas quando falha;
 - marca como `error` ao atingir o limite.
 
-Sem `DATABASE_URL`, a sincronizacao remota fica desativada, mas as operacoes continuam sendo gravadas localmente e enfileiradas.
+Sem `DATABASE_URL`, a sincronizacao remota fica desativada, mas as operacoes continuam sendo gravadas no SQLite e enfileiradas. O resumo da fila e local ao backend.
 
 ---
 
@@ -512,6 +523,12 @@ Resposta:
 ```
 
 ```http
+GET /api/caixa/movimentos
+```
+
+Lista os movimentos de caixa ordenados por data e criacao, do mais recente para o mais antigo.
+
+```http
 POST /api/caixa/movimento
 Content-Type: application/json
 ```
@@ -562,7 +579,10 @@ Regras:
 - `loteId` e obrigatorio;
 - lote deve existir;
 - lote deve estar fechado;
+- `kgVendidos` nao pode ultrapassar `kg_colhidos` menos os quilos ja vendidos;
 - `kgVendidos` e `valorTotal` devem ser positivos.
+
+O registro da venda, baixa do estoque, entrada no caixa e enfileiramento para sync ocorre em uma unica transacao SQLite.
 
 ```http
 GET /api/vendas
@@ -598,7 +618,7 @@ Lista todas as contas.
 GET /api/contas-pagar/alertas
 ```
 
-Lista contas abertas vencendo em ate 7 dias.
+Lista contas abertas com vencimento ate 7 dias a frente; contas vencidas que continuam abertas tambem podem aparecer.
 
 ```http
 PATCH /api/contas-pagar/:id/pagar
@@ -866,7 +886,7 @@ Campos:
 
 1. Usuario cria uma conta.
 2. Conta nasce como `aberta`.
-3. Alertas mostram contas abertas vencendo em ate 7 dias.
+3. Alertas mostram contas abertas com vencimento ate 7 dias no futuro, incluindo as vencidas ainda abertas.
 4. Conta pode ser marcada como `paga`.
 5. Criacao e pagamento entram na fila de sync.
 
@@ -874,28 +894,19 @@ Campos:
 
 ## 9. Interface da V1
 
-A tela principal em `frontend/src/App.tsx` contem:
+A aplicacao web e Android compartilham a interface React. O painel atual oferece:
 
-- tela de login;
-- menu lateral com marca e navegacao;
-- cabecalho "Painel de operacao / Visao geral";
-- indicador de online/pendencias;
-- card de saldo atual do caixa;
-- listagem de lotes;
-- botoes de operacoes V1;
-- botoes desabilitados para categorias futuras;
-- alertas de vencimento;
-- estoque atual;
-- chat operacional;
-- formularios para fechar lote, registrar venda, movimentar estoque e criar conta.
+- login e manutencao de sessao JWT no navegador;
+- navegacao por Visao geral, Caixa e Contas;
+- indicadores de saldo e situacao de conectividade/sincronizacao;
+- listagem de lotes ativos e fechados, com dados de colheita e custo/kg quando disponiveis;
+- resumo do estoque e alertas de contas a pagar;
+- historico de movimentos de caixa;
+- chat operacional para abrir lote, lancar insumo ou consultar saldo;
+- formularios de fechamento de lote, venda, movimentacao de estoque, conta a pagar e movimento manual de caixa;
+- acao para marcar uma conta aberta como paga.
 
-Categorias futuras exibidas apenas como indisponiveis:
-
-- Fruteiras;
-- Granja;
-- Gado.
-
-Elas nao possuem funcionalidade na V1.
+As telas consultam a API. Se a API falhar, o painel informa indisponibilidade; nao ha armazenamento offline no frontend. Nao ha navegacao funcional para fruteiras, granja, gado ou outras producoes.
 
 ---
 
@@ -1055,6 +1066,8 @@ Limites padrao:
 
 ## 14. Checklist de aceite da V1
 
+Esta lista e um roteiro de validacao manual; caixas desmarcadas nao significam que os recursos nao estejam implementados nem atestam que foram testados.
+
 Use esta lista para validar a primeira versao:
 
 - [ ] Backend sobe com `npm run dev`.
@@ -1084,14 +1097,17 @@ Use esta lista para validar a primeira versao:
 
 ## 15. Limitacoes conhecidas da implementacao atual
 
-- O frontend e uma tela unica; componentes vazios existem em `frontend/src/components`, mas a maior parte da UI esta em `App.tsx`.
-- A listagem de lotes no repositorio nao seleciona todos os campos adicionados depois, como `status`, `kg_colhidos` e `custo_por_kg`; a UI trata `status` como opcional.
+- A maior parte do estado e da interface esta concentrada em `frontend/src/App.tsx`; `frontend/src/components/ProductionActions.tsx` agrupa acoes de producao.
+- O frontend depende da API para leitura e escrita; a fila SQLite no backend nao oferece modo offline no aparelho.
 - O endpoint de lancamento de insumo tenta vincular o custo ao lote ativo do tanque informado; se nao houver lote ativo para o tanque, o movimento de caixa fica sem `lote_id`.
 - Sem `DATABASE_URL`, o worker PostgreSQL nao inicia e a sincronizacao remota fica desativada.
-- Nao ha suite de testes automatizados configurada; o script `npm test` do backend ainda retorna erro padrao.
+- A suite automatizada de API cobre fluxos principais com SQLite temporario, mas nao verifica sincronizacao PostgreSQL nem chamadas reais a um modelo de IA.
 - A autenticacao atual e simples, baseada em um usuario/senha via variaveis de ambiente, sem cadastro de usuarios no banco.
 - Nao ha API remota separada implementada neste repositorio; a sincronizacao opcional escreve diretamente em PostgreSQL.
-- O prompt de abertura de lote nao injeta a data atual explicitamente, diferente do fluxo de insumo.
+- O chat embutido no frontend nao encaminha perguntas tecnicas para `POST /api/chat/manejo`; esse endpoint precisa ser chamado separadamente.
+- O lancamento de insumo depende de IA disponivel e de uma resposta estruturada valida; somente a abertura de lote possui fallback de interpretacao local.
+- Marcar conta a pagar como paga nao gera automaticamente saida no caixa.
+- O worker PostgreSQL configura `ssl.rejectUnauthorized: false`; em ambientes de producao, a politica de validacao TLS deve ser revista conforme o provedor.
 
 ---
 
@@ -1137,6 +1153,27 @@ Build frontend:
 ```bash
 cd frontend
 npm run build
+```
+
+Testes automatizados do backend:
+
+```bash
+cd backend
+npm test
+```
+
+Build/typecheck do backend:
+
+```bash
+cd backend
+npm run build
+```
+
+Lint do frontend:
+
+```bash
+cd frontend
+npm run lint
 ```
 
 Sincronizar Android:
@@ -1240,8 +1277,8 @@ curl -X POST http://localhost:3000/api/estoque/movimentos \
 A V1 pode ser considerada pronta quando:
 
 1. todos os fluxos do checklist de aceite passarem;
-2. o app web e Android conseguirem operar contra o backend local;
-3. o SQLite mantiver dados mesmo sem internet;
+2. o app web e Android conseguirem operar enquanto alcancam a API;
+3. o SQLite mantiver dados locais e a operacao continuar quando apenas a sincronizacao remota estiver indisponivel, desde que a API local esteja acessivel;
 4. a fila de sincronizacao armazenar pendencias corretamente;
 5. o chat conseguir abrir lote e registrar insumo com JSON valido;
 6. o custo por kg for conferido manualmente em pelo menos um lote fechado;

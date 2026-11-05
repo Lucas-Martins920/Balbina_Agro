@@ -1,0 +1,8 @@
+{
+	"appId": "br.com.balbinaagro.app",
+	"appName": "Balbina Agro",
+	"webDir": "dist",
+	"android": {
+		"allowMixedContent": true
+	}
+}
