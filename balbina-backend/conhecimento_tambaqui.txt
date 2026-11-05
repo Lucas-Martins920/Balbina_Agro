@@ -1,0 +1,7 @@
+# Conhecimento local de manejo do tambaqui
+# Substitua ou complemente com os parâmetros aprovados para o V1.
+
+especie_principal: tambaqui
+unidade_peso: kg
+unidade_temperatura: celsius
+observacao: Consulte somente os parâmetros cadastrados neste arquivo.

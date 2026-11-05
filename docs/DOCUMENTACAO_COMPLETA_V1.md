@@ -1,25 +1,28 @@
 # Balbina Agro V1 - Documentacao Completa
 
 **Versao:** 1.0  
-**Status:** primeira versao funcional em desenvolvimento  
-**Escopo:** piscicultura de tambaqui, autenticação, caixa, lotes, estoque, contas a pagar, chat operacional e sincronizacao offline-first  
-**Data da documentacao:** 25/08/2026
+**Status:** V1 em desenvolvimento, organizada em monorepo
+**Escopo:** piscicultura, autenticacao, caixa, lotes, estoque, contas a pagar, chat operacional e sincronizacao assincrona  
+**Data da ultima revisao:** 04/11/2026
 
 ---
 
 ## 1. Visao geral
 
-Balbina Agro V1 e um sistema operacional para piscicultura, focado exclusivamente no manejo e controle financeiro/produtivo de lotes de peixe, especialmente tambaqui.
+Balbina Agro V1 e um sistema operacional para piscicultura, com controle financeiro e produtivo de lotes de peixe e conhecimento tecnico local voltado a tambaqui. O campo especie e configuravel e o backend nao restringe os lotes a uma unica especie. O repositorio esta dividido em tres aplicacoes: API compartilhada, app de campo e painel de gestao.
 
-A primeira versao prova cinco pilares:
+A V1 implementa os seguintes pilares:
 
 - registrar operacoes por chat com IA;
 - controlar caixa com entradas, saidas e saldo;
 - abrir e fechar lotes, calculando custo por kg;
 - controlar estoque basico de peixe e racao;
-- operar localmente com SQLite e manter uma fila de sincronizacao para envio posterior.
+- persistir dados e fila de sincronizacao em SQLite no backend;
+- sincronizar opcionalmente os registros para PostgreSQL;
+- disponibilizar um app de campo React/Vite com suporte Android via Capacitor;
+- disponibilizar um painel web separado para gestao financeira e relatorios.
 
-Esta versao nao cobre outras culturas, sensores, voz, notas fiscais, fornecedores completos, integracao bancaria, visao computacional ou multi-producao.
+O termo local-first descreve a persistencia SQLite no backend e o envio remoto assincrono. O frontend ainda depende de conectividade com a API para carregar e gravar dados; nao ha banco/cache local no dispositivo para continuar operando quando a API estiver indisponivel. A V1 nao cobre sensores, voz, notas fiscais, fornecedores completos, integracao bancaria, visao computacional ou multi-producao.
 
 ---
 
@@ -27,28 +30,27 @@ Esta versao nao cobre outras culturas, sensores, voz, notas fiscais, fornecedore
 
 ```text
 Balbina_Agro/
-├── backend/                     # Backend Node.js/Express em TypeScript
+├── balbina-backend/             # API Node.js/Express, SQLite, IA e sync PostgreSQL
 │   ├── src/
-│   │   ├── server.ts            # API REST principal
-│   │   ├── auth.ts              # Login, JWT e protecao de rotas
-│   │   ├── db.ts                # Inicializacao do SQLite e schema local
-│   │   ├── chatService.ts       # Integracao com modelo local via Ollama/OpenAI-compatible API
-│   │   ├── knowledgeLoader.ts   # Carregamento de conhecimento local de tambaqui
-│   │   ├── structuredOutputHandler.ts
-│   │   ├── schemas.ts           # Schemas Zod para structured output
-│   │   ├── repositories/        # Persistencia SQLite
-│   │   └── services/            # Regras de producao, manejo e sync
+│   │   ├── server.ts             # API REST principal
+│   │   ├── auth.ts               # Login, JWT e protecao de rotas
+│   │   ├── db.ts                 # Inicializacao do SQLite e schema local
+│   │   ├── repositories/         # Persistencia SQLite por dominio
+│   │   └── services/             # Producao, manejo e sincronizacao
 │   ├── conhecimento_tambaqui.txt
-│   ├── balbina_v1.db
 │   └── package.json
-├── frontend/                    # App React/Vite + Capacitor Android
-│   ├── src/App.tsx              # Tela operacional principal
-│   ├── src/index.css            # Estilos da interface
-│   ├── capacitor.config.ts      # Configuracao do app Android
-│   └── android/                 # Projeto Android gerado pelo Capacitor
-├── app/                         # Arquivos auxiliares do app e exemplos
-├── docs/                        # Documentacao da V1
-└── README.md                    # Indice operacional do projeto
+├── balbina-campo/                # App React/Vite das operacoes de viveiro
+│   ├── src/App.tsx               # Login, operacao de campo e chat
+│   ├── src/api/client.ts         # Cliente HTTP autenticado
+│   ├── src/components/           # Acoes de producao
+│   ├── capacitor.config.ts       # Configuracao do Capacitor
+│   └── android/                  # Projeto Android
+├── balbina-gestao/               # Painel React/Vite financeiro e administrativo
+│   ├── src/App.tsx               # Caixa, contas, vendas e visao gerencial
+│   └── src/api/client.ts         # Cliente HTTP autenticado
+├── docs/                         # Documentacao funcional e tecnica
+├── CLAUDE.md                     # Resumo das responsabilidades do monorepo
+└── README.md                     # Guia rapido e documentacao
 ```
 
 Arquivos de planejamento ja existentes:
@@ -56,7 +58,9 @@ Arquivos de planejamento ja existentes:
 - `docs/V1 — ESCOPO FECHADO — Sistema.md`
 - `docs/# Índice de Documentação — V1.md`
 
-Esta documentacao descreve a V1 conforme implementada no codigo atual.
+As antigas pastas `backend/`, `frontend/` e `app/` foram removidas. Os projetos ativos sao `balbina-backend/`, `balbina-campo/` e `balbina-gestao/`. Esta documentacao descreve a V1 conforme implementada nesses projetos.
+
+O arquivo SQLite e criado em tempo de execucao (por padrao, em `balbina-backend/balbina_v1.db`) e nao e um artefato necessario no repositorio.
 
 ---
 
@@ -70,8 +74,8 @@ Esta documentacao descreve a V1 conforme implementada no codigo atual.
 - better-sqlite3
 - pg
 - Zod
-- node-fetch
 - uuid
+- dotenv
 
 ### Frontend
 
@@ -79,13 +83,15 @@ Esta documentacao descreve a V1 conforme implementada no codigo atual.
 - TypeScript
 - Vite
 - Capacitor 7
-- Android nativo via projeto `frontend/android`
+- App Android via projeto `balbina-campo/android`
+- Painel de gestao web separado em `balbina-gestao/`
 
 ### IA
 
 - API local compativel com OpenAI Chat Completions
 - Padrao atual: `http://localhost:11434/v1/chat/completions`
-- Modelo padrao: `qwen2.5:1.5b`
+- Modelo padrao do chat operacional: `qwen2.5:0.5b`
+- Modelo padrao do manejo tecnico: `qwen2.5:1.5b`
 - Uso principal:
   - extrair JSON estruturado para abertura de lote;
   - extrair JSON estruturado para lancamento de insumo;
@@ -93,9 +99,9 @@ Esta documentacao descreve a V1 conforme implementada no codigo atual.
 
 ### Banco local
 
-- SQLite em `backend/balbina_v1.db`
+- SQLite em `balbina-backend/balbina_v1.db`
 - Caminho configuravel por `DB_PATH`
-- Schema criado automaticamente em `backend/src/db.ts`
+- Schema criado automaticamente em `balbina-backend/src/db.ts`
 
 ### Autenticacao
 
@@ -113,15 +119,15 @@ Esta documentacao descreve a V1 conforme implementada no codigo atual.
 - Node.js instalado
 - npm instalado
 - Ollama rodando localmente, se os endpoints de chat forem usados
-- Modelo `qwen2.5:1.5b` disponivel no Ollama, ou ajuste do modelo no codigo
+- Modelo `qwen2.5:0.5b` para o chat operacional e, se usado, `qwen2.5:1.5b` para manejo; ambos podem ser configurados por variaveis de ambiente
 - Android Studio e SDK Android, se for rodar no emulador/celular
 
 ### 4.2. Backend
 
-Dentro de `backend/`:
+Dentro de `balbina-backend/`:
 
 ```bash
-cd backend
+cd balbina-backend
 npm install
 npm run dev
 ```
@@ -137,7 +143,7 @@ Variaveis de ambiente suportadas:
 ```bash
 PORT=3000
 HOST=0.0.0.0
-DB_PATH=/caminho/para/balbina_v1.db
+DB_PATH=./balbina_v1.db
 JWT_SECRET=troque-por-um-segredo-forte
 AUTH_USER=admin
 AUTH_PASSWORD=senha-local
@@ -147,15 +153,14 @@ DATABASE_URL=postgres://usuario:senha@host:5432/banco
 
 Observacoes:
 
-- `IA_API_KEY` e lida, mas a chamada atual para Ollama local nao envia Bearer Token.
-- `JWT_SECRET` e `AUTH_PASSWORD` sao obrigatorios para login.
-- `AUTH_USER` e opcional e assume `admin` quando nao definido.
-- `DATABASE_URL` ativa a sincronizacao remota com PostgreSQL.
-- Sem `DATABASE_URL`, a aplicacao segue funcionando localmente com SQLite e a fila de sync permanece registrada.
+- `IA_API_KEY` e opcional para uma instalacao Ollama local sem autenticacao; quando definida, e enviada como `Authorization: Bearer ...`.
+- `IA_API_URL` e `IA_MODEL` configuram URL e modelo do chat operacional.
+- `IA_MANEJO_URL` e `IA_MANEJO_MODEL` configuram URL e modelo do endpoint de manejo; por padrao, herdam a URL do chat e usam `qwen2.5:1.5b`.
+- `DATABASE_URL` ativa a sincronizacao remota com PostgreSQL por meio de um worker em segundo plano.
 
 ### 4.3. Frontend web
 
-Dentro de `frontend/`:
+Dentro de `balbina-campo/` para o app de campo:
 
 ```bash
 npm install
@@ -168,11 +173,13 @@ Variavel de ambiente opcional:
 VITE_API_URL=http://localhost:3000
 ```
 
-Se `VITE_API_URL` nao for definida, o frontend usa `http://localhost:3000`.
+Se `VITE_API_URL` nao for definida, o app usa `http://localhost:3000`.
+
+Para iniciar o painel de gestao, use outro terminal e execute os mesmos comandos dentro de `balbina-gestao/`. Ambos os frontends aceitam `VITE_API_URL` e, por padrao, usam a API local na porta 3000.
 
 ### 4.4. Android com Capacitor
 
-Dentro de `frontend/`:
+Dentro de `balbina-campo/`:
 
 ```bash
 npm run android:sync
@@ -214,7 +221,7 @@ O chat no frontend aceita mensagens em texto e decide localmente o fluxo:
 - se contem `abrir lote`, `novo lote` ou `criar lote`, envia para `/api/abrir-lote`;
 - caso contrario, informa que pode abrir lote, registrar insumo ou consultar saldo.
 
-O backend usa `ChatService` para chamar o modelo e validar a resposta com Zod.
+O backend usa `ChatService` para chamar o modelo e validar a resposta com Zod. A abertura de lote tem fallback de interpretacao local quando a IA falha ou retorna JSON invalido; o lancamento de insumo depende de uma resposta valida da IA. O frontend nao encaminha perguntas gerais para o endpoint de manejo tecnico: mensagens sem uma intencao reconhecida recebem uma orientacao de uso.
 
 ### 5.1.1. Login e sessao
 
@@ -237,7 +244,7 @@ Endpoint dedicado:
 POST /api/chat/manejo
 ```
 
-Ele carrega `backend/conhecimento_tambaqui.txt` e instrui a IA a responder somente com base nesse conhecimento. Se nao houver informacao local suficiente, a resposta esperada e:
+Ele carrega `balbina-backend/conhecimento_tambaqui.txt` e instrui a IA a responder somente com base nesse conhecimento. Se nao houver informacao local suficiente, a resposta esperada e:
 
 ```text
 Não há informação cadastrada para essa pergunta.
@@ -280,6 +287,8 @@ O caixa registra:
 - referencia de origem;
 - lote relacionado, quando houver.
 
+O painel tambem permite lancamento manual de entrada/saida e mostra o historico dos movimentos. Compras de insumo com preco unitario geram automaticamente uma saida no caixa; vendas geram uma entrada.
+
 Saldo:
 
 ```text
@@ -292,10 +301,11 @@ Regras implementadas:
 
 - exige lote existente;
 - exige lote com status `fechado`;
+- impede vender mais quilos do que o saldo colhido ainda disponivel no lote;
 - registra venda;
 - cria saida de estoque de peixe;
 - cria entrada de caixa;
-- adiciona operacoes na fila de sincronizacao.
+- grava venda, movimento de estoque, movimento de caixa e fila de sincronizacao em uma transacao atomica.
 
 ### 5.7. Estoque
 
@@ -323,7 +333,7 @@ Funcionalidades:
 
 - criar conta a pagar;
 - listar contas;
-- listar alertas de contas abertas com vencimento em ate 7 dias;
+- listar alertas de contas abertas com vencimento nos proximos 7 dias, incluindo contas vencidas ainda abertas;
 - marcar conta como paga.
 
 Status:
@@ -331,9 +341,11 @@ Status:
 - `aberta`
 - `paga`
 
-### 5.9. Offline-first e sincronizacao
+Marcar como paga atualiza o status e a data de pagamento; nao cria automaticamente um movimento de saida no caixa.
 
-Todas as operacoes principais gravam primeiro no SQLite local.
+### 5.9. Persistencia local e sincronizacao remota
+
+As operacoes suportadas gravam primeiro no SQLite do backend e registram a sincronizacao pendente na mesma transacao quando aplicavel. Isso nao torna o frontend offline: o aplicativo precisa acessar a API para consultar ou enviar operacoes.
 
 Depois, o sistema insere uma entrada em `sync_queue` com:
 
@@ -344,7 +356,7 @@ Depois, o sistema insere uma entrada em `sync_queue` com:
 - tentativas;
 - ultimo erro.
 
-Quando `DATABASE_URL` esta configurado, o `PostgresSyncWorker` roda a cada 5 segundos por padrao:
+Quando `DATABASE_URL` esta configurado, o `PostgresSyncWorker` roda a cada 5 segundos por padrao, processa lotes de ate 10 itens e tenta cada registro no maximo 5 vezes:
 
 - garante a existencia das tabelas remotas no PostgreSQL;
 - busca um lote de pendencias locais;
@@ -354,7 +366,7 @@ Quando `DATABASE_URL` esta configurado, o `PostgresSyncWorker` roda a cada 5 seg
 - incrementa tentativas quando falha;
 - marca como `error` ao atingir o limite.
 
-Sem `DATABASE_URL`, a sincronizacao remota fica desativada, mas as operacoes continuam sendo gravadas localmente e enfileiradas.
+Sem `DATABASE_URL`, a sincronizacao remota fica desativada, mas as operacoes continuam sendo gravadas no SQLite e enfileiradas. O resumo da fila e local ao backend.
 
 ---
 
@@ -512,6 +524,12 @@ Resposta:
 ```
 
 ```http
+GET /api/caixa/movimentos
+```
+
+Lista os movimentos de caixa ordenados por data e criacao, do mais recente para o mais antigo.
+
+```http
 POST /api/caixa/movimento
 Content-Type: application/json
 ```
@@ -562,7 +580,10 @@ Regras:
 - `loteId` e obrigatorio;
 - lote deve existir;
 - lote deve estar fechado;
+- `kgVendidos` nao pode ultrapassar `kg_colhidos` menos os quilos ja vendidos;
 - `kgVendidos` e `valorTotal` devem ser positivos.
+
+O registro da venda, baixa do estoque, entrada no caixa e enfileiramento para sync ocorre em uma unica transacao SQLite.
 
 ```http
 GET /api/vendas
@@ -598,7 +619,7 @@ Lista todas as contas.
 GET /api/contas-pagar/alertas
 ```
 
-Lista contas abertas vencendo em ate 7 dias.
+Lista contas abertas com vencimento ate 7 dias a frente; contas vencidas que continuam abertas tambem podem aparecer.
 
 ```http
 PATCH /api/contas-pagar/:id/pagar
@@ -699,7 +720,7 @@ Resposta:
 
 ## 7. Banco de dados SQLite
 
-O schema e criado automaticamente em `backend/src/db.ts`.
+O schema e criado automaticamente em `balbina-backend/src/db.ts`.
 
 ### 7.1. `lotes`
 
@@ -866,7 +887,7 @@ Campos:
 
 1. Usuario cria uma conta.
 2. Conta nasce como `aberta`.
-3. Alertas mostram contas abertas vencendo em ate 7 dias.
+3. Alertas mostram contas abertas com vencimento ate 7 dias no futuro, incluindo as vencidas ainda abertas.
 4. Conta pode ser marcada como `paga`.
 5. Criacao e pagamento entram na fila de sync.
 
@@ -874,28 +895,19 @@ Campos:
 
 ## 9. Interface da V1
 
-A tela principal em `frontend/src/App.tsx` contem:
+A aplicacao web e Android compartilham a interface React. O painel atual oferece:
 
-- tela de login;
-- menu lateral com marca e navegacao;
-- cabecalho "Painel de operacao / Visao geral";
-- indicador de online/pendencias;
-- card de saldo atual do caixa;
-- listagem de lotes;
-- botoes de operacoes V1;
-- botoes desabilitados para categorias futuras;
-- alertas de vencimento;
-- estoque atual;
-- chat operacional;
-- formularios para fechar lote, registrar venda, movimentar estoque e criar conta.
+- login e manutencao de sessao JWT no navegador;
+- navegacao por Visao geral, Caixa e Contas;
+- indicadores de saldo e situacao de conectividade/sincronizacao;
+- listagem de lotes ativos e fechados, com dados de colheita e custo/kg quando disponiveis;
+- resumo do estoque e alertas de contas a pagar;
+- historico de movimentos de caixa;
+- chat operacional para abrir lote, lancar insumo ou consultar saldo;
+- formularios de fechamento de lote, venda, movimentacao de estoque, conta a pagar e movimento manual de caixa;
+- acao para marcar uma conta aberta como paga.
 
-Categorias futuras exibidas apenas como indisponiveis:
-
-- Fruteiras;
-- Granja;
-- Gado.
-
-Elas nao possuem funcionalidade na V1.
+As telas consultam a API. Se a API falhar, o painel informa indisponibilidade; nao ha armazenamento offline no frontend. Nao ha navegacao funcional para fruteiras, granja, gado ou outras producoes.
 
 ---
 
@@ -998,7 +1010,7 @@ Tipos de insumo aceitos:
 
 ## 12. Conhecimento local de tambaqui
 
-O arquivo `backend/conhecimento_tambaqui.txt` e carregado por `knowledgeLoader.ts`.
+O arquivo `balbina-backend/conhecimento_tambaqui.txt` e carregado por `knowledgeLoader.ts`.
 
 Formatos aceitos:
 
@@ -1055,10 +1067,13 @@ Limites padrao:
 
 ## 14. Checklist de aceite da V1
 
+Esta lista e um roteiro de validacao manual; caixas desmarcadas nao significam que os recursos nao estejam implementados nem atestam que foram testados.
+
 Use esta lista para validar a primeira versao:
 
-- [ ] Backend sobe com `npm run dev`.
-- [ ] Frontend sobe com `npm run dev` dentro de `frontend/`.
+- [ ] Backend sobe com `npm run dev` dentro de `balbina-backend/`.
+- [ ] App de campo sobe com `npm run dev` dentro de `balbina-campo/`.
+- [ ] Painel de gestao sobe com `npm run dev` dentro de `balbina-gestao/`.
 - [ ] `GET /api/health` retorna `{ "ok": true }`.
 - [ ] Login retorna token quando `JWT_SECRET` e `AUTH_PASSWORD` estao configurados.
 - [ ] Endpoints protegidos recusam chamadas sem `Authorization: Bearer <token>`.
@@ -1084,14 +1099,18 @@ Use esta lista para validar a primeira versao:
 
 ## 15. Limitacoes conhecidas da implementacao atual
 
-- O frontend e uma tela unica; componentes vazios existem em `frontend/src/components`, mas a maior parte da UI esta em `App.tsx`.
-- A listagem de lotes no repositorio nao seleciona todos os campos adicionados depois, como `status`, `kg_colhidos` e `custo_por_kg`; a UI trata `status` como opcional.
+- O app de campo e o painel de gestao sao projetos independentes que compartilham a API em `balbina-backend/`.
+- O estado e os fluxos de cada frontend ficam principalmente em `balbina-campo/src/App.tsx` e `balbina-gestao/src/App.tsx`; acoes de producao ficam nos componentes correspondentes de cada projeto.
+- O frontend depende da API para leitura e escrita; a fila SQLite no backend nao oferece modo offline no aparelho.
 - O endpoint de lancamento de insumo tenta vincular o custo ao lote ativo do tanque informado; se nao houver lote ativo para o tanque, o movimento de caixa fica sem `lote_id`.
 - Sem `DATABASE_URL`, o worker PostgreSQL nao inicia e a sincronizacao remota fica desativada.
-- Nao ha suite de testes automatizados configurada; o script `npm test` do backend ainda retorna erro padrao.
+- A suite automatizada de API cobre fluxos principais com SQLite temporario, mas nao verifica sincronizacao PostgreSQL nem chamadas reais a um modelo de IA.
 - A autenticacao atual e simples, baseada em um usuario/senha via variaveis de ambiente, sem cadastro de usuarios no banco.
 - Nao ha API remota separada implementada neste repositorio; a sincronizacao opcional escreve diretamente em PostgreSQL.
-- O prompt de abertura de lote nao injeta a data atual explicitamente, diferente do fluxo de insumo.
+- O chat embutido no frontend nao encaminha perguntas tecnicas para `POST /api/chat/manejo`; esse endpoint precisa ser chamado separadamente.
+- O lancamento de insumo depende de IA disponivel e de uma resposta estruturada valida; somente a abertura de lote possui fallback de interpretacao local.
+- Marcar conta a pagar como paga nao gera automaticamente saida no caixa.
+- O worker PostgreSQL configura `ssl.rejectUnauthorized: false`; em ambientes de producao, a politica de validacao TLS deve ser revista conforme o provedor.
 
 ---
 
@@ -1119,44 +1138,74 @@ Nao implementar nesta versao:
 
 ## 17. Comandos uteis
 
-Backend:
+Cada aplicacao possui seu proprio `package.json`; execute os comandos a partir da raiz do repositorio usando o diretorio do respectivo projeto.
+
+Iniciar a API:
 
 ```bash
+cd balbina-backend
+npm install
 npm run dev
 ```
 
-Frontend:
+Iniciar o app de campo:
 
 ```bash
-cd frontend
+cd balbina-campo
+npm install
 npm run dev
 ```
 
-Build frontend:
+Iniciar o painel de gestao (em outro terminal):
 
 ```bash
-cd frontend
+cd balbina-gestao
+npm install
+npm run dev
+```
+
+Build e testes do backend:
+
+```bash
+cd balbina-backend
 npm run build
+npm test
+```
+
+Build e lint do app de campo:
+
+```bash
+cd balbina-campo
+npm run build
+npm run lint
+```
+
+Build e lint do painel de gestao:
+
+```bash
+cd balbina-gestao
+npm run build
+npm run lint
 ```
 
 Sincronizar Android:
 
 ```bash
-cd frontend
+cd balbina-campo
 npm run android:sync
 ```
 
 Abrir Android Studio:
 
 ```bash
-cd frontend
+cd balbina-campo
 npm run android:open
 ```
 
 Rodar Android:
 
 ```bash
-cd frontend
+cd balbina-campo
 npm run android:run
 ```
 
@@ -1240,8 +1289,8 @@ curl -X POST http://localhost:3000/api/estoque/movimentos \
 A V1 pode ser considerada pronta quando:
 
 1. todos os fluxos do checklist de aceite passarem;
-2. o app web e Android conseguirem operar contra o backend local;
-3. o SQLite mantiver dados mesmo sem internet;
+2. o app web e Android conseguirem operar enquanto alcancam a API;
+3. o SQLite mantiver dados locais e a operacao continuar quando apenas a sincronizacao remota estiver indisponivel, desde que a API local esteja acessivel;
 4. a fila de sincronizacao armazenar pendencias corretamente;
 5. o chat conseguir abrir lote e registrar insumo com JSON valido;
 6. o custo por kg for conferido manualmente em pelo menos um lote fechado;
