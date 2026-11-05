@@ -1,15 +1,15 @@
 # Balbina Agro V1 - Documentacao Completa
 
 **Versao:** 1.0  
-**Status:** V1 funcional em desenvolvimento  
+**Status:** V1 em desenvolvimento, organizada em monorepo
 **Escopo:** piscicultura, autenticacao, caixa, lotes, estoque, contas a pagar, chat operacional e sincronizacao assincrona  
-**Data da ultima revisao:** 03/11/2026
+**Data da ultima revisao:** 04/11/2026
 
 ---
 
 ## 1. Visao geral
 
-Balbina Agro V1 e um sistema operacional para piscicultura, com controle financeiro e produtivo de lotes de peixe e conhecimento tecnico local voltado a tambaqui. O campo especie e configuravel e o backend nao restringe os lotes a uma unica especie.
+Balbina Agro V1 e um sistema operacional para piscicultura, com controle financeiro e produtivo de lotes de peixe e conhecimento tecnico local voltado a tambaqui. O campo especie e configuravel e o backend nao restringe os lotes a uma unica especie. O repositorio esta dividido em tres aplicacoes: API compartilhada, app de campo e painel de gestao.
 
 A V1 implementa os seguintes pilares:
 
@@ -19,7 +19,8 @@ A V1 implementa os seguintes pilares:
 - controlar estoque basico de peixe e racao;
 - persistir dados e fila de sincronizacao em SQLite no backend;
 - sincronizar opcionalmente os registros para PostgreSQL;
-- disponibilizar um painel web responsivo e um app Android via Capacitor.
+- disponibilizar um app de campo React/Vite com suporte Android via Capacitor;
+- disponibilizar um painel web separado para gestao financeira e relatorios.
 
 O termo local-first descreve a persistencia SQLite no backend e o envio remoto assincrono. O frontend ainda depende de conectividade com a API para carregar e gravar dados; nao ha banco/cache local no dispositivo para continuar operando quando a API estiver indisponivel. A V1 nao cobre sensores, voz, notas fiscais, fornecedores completos, integracao bancaria, visao computacional ou multi-producao.
 
@@ -29,30 +30,27 @@ O termo local-first descreve a persistencia SQLite no backend e o envio remoto a
 
 ```text
 Balbina_Agro/
-├── backend/                     # Backend Node.js/Express em TypeScript
+├── balbina-backend/             # API Node.js/Express, SQLite, IA e sync PostgreSQL
 │   ├── src/
-│   │   ├── server.ts            # API REST principal
-│   │   ├── auth.ts              # Login, JWT e protecao de rotas
-│   │   ├── db.ts                # Inicializacao do SQLite e schema local
-│   │   ├── chatService.ts       # Chat operacional para lote e insumo
-│   │   ├── services/manejoService.ts # Respostas tecnicas baseadas em conhecimento local
-│   │   ├── knowledgeLoader.ts   # Carregamento de conhecimento local de tambaqui
-│   │   ├── structuredOutputHandler.ts
-│   │   ├── schemas.ts           # Schemas Zod para structured output
-│   │   ├── repositories/        # Persistencia SQLite por dominio
-│   │   └── services/            # Regras de producao, manejo e sync PostgreSQL
+│   │   ├── server.ts             # API REST principal
+│   │   ├── auth.ts               # Login, JWT e protecao de rotas
+│   │   ├── db.ts                 # Inicializacao do SQLite e schema local
+│   │   ├── repositories/         # Persistencia SQLite por dominio
+│   │   └── services/             # Producao, manejo e sincronizacao
 │   ├── conhecimento_tambaqui.txt
 │   └── package.json
-├── frontend/                    # App React/Vite + Capacitor Android
-│   ├── src/App.tsx              # Login, painel, formularios e chat
-│   ├── src/api/client.ts        # Cliente HTTP autenticado
-│   ├── src/components/          # Acoes operacionais de producao
-│   ├── src/index.css            # Estilos da interface
-│   ├── capacitor.config.ts      # Configuracao do app Android
-│   └── android/                 # Projeto Android gerado pelo Capacitor
-├── app/                         # Arquivos auxiliares do app e exemplos
-├── docs/                        # Documentacao da V1
-└── README.md                    # Indice operacional do projeto
+├── balbina-campo/                # App React/Vite das operacoes de viveiro
+│   ├── src/App.tsx               # Login, operacao de campo e chat
+│   ├── src/api/client.ts         # Cliente HTTP autenticado
+│   ├── src/components/           # Acoes de producao
+│   ├── capacitor.config.ts       # Configuracao do Capacitor
+│   └── android/                  # Projeto Android
+├── balbina-gestao/               # Painel React/Vite financeiro e administrativo
+│   ├── src/App.tsx               # Caixa, contas, vendas e visao gerencial
+│   └── src/api/client.ts         # Cliente HTTP autenticado
+├── docs/                         # Documentacao funcional e tecnica
+├── CLAUDE.md                     # Resumo das responsabilidades do monorepo
+└── README.md                     # Guia rapido e documentacao
 ```
 
 Arquivos de planejamento ja existentes:
@@ -60,9 +58,9 @@ Arquivos de planejamento ja existentes:
 - `docs/V1 — ESCOPO FECHADO — Sistema.md`
 - `docs/# Índice de Documentação — V1.md`
 
-Esta documentacao descreve a V1 conforme implementada no codigo atual.
+As antigas pastas `backend/`, `frontend/` e `app/` foram removidas. Os projetos ativos sao `balbina-backend/`, `balbina-campo/` e `balbina-gestao/`. Esta documentacao descreve a V1 conforme implementada nesses projetos.
 
-O arquivo SQLite e criado em tempo de execucao (por padrao, no diretorio de trabalho do backend) e nao e um artefato necessario no repositorio.
+O arquivo SQLite e criado em tempo de execucao (por padrao, em `balbina-backend/balbina_v1.db`) e nao e um artefato necessario no repositorio.
 
 ---
 
@@ -85,7 +83,8 @@ O arquivo SQLite e criado em tempo de execucao (por padrao, no diretorio de trab
 - TypeScript
 - Vite
 - Capacitor 7
-- Android nativo via projeto `frontend/android`
+- App Android via projeto `balbina-campo/android`
+- Painel de gestao web separado em `balbina-gestao/`
 
 ### IA
 
@@ -100,9 +99,9 @@ O arquivo SQLite e criado em tempo de execucao (por padrao, no diretorio de trab
 
 ### Banco local
 
-- SQLite em `backend/balbina_v1.db`
+- SQLite em `balbina-backend/balbina_v1.db`
 - Caminho configuravel por `DB_PATH`
-- Schema criado automaticamente em `backend/src/db.ts`
+- Schema criado automaticamente em `balbina-backend/src/db.ts`
 
 ### Autenticacao
 
@@ -125,10 +124,10 @@ O arquivo SQLite e criado em tempo de execucao (por padrao, no diretorio de trab
 
 ### 4.2. Backend
 
-Dentro de `backend/`:
+Dentro de `balbina-backend/`:
 
 ```bash
-cd backend
+cd balbina-backend
 npm install
 npm run dev
 ```
@@ -144,7 +143,7 @@ Variaveis de ambiente suportadas:
 ```bash
 PORT=3000
 HOST=0.0.0.0
-DB_PATH=/caminho/para/balbina_v1.db
+DB_PATH=./balbina_v1.db
 JWT_SECRET=troque-por-um-segredo-forte
 AUTH_USER=admin
 AUTH_PASSWORD=senha-local
@@ -161,7 +160,7 @@ Observacoes:
 
 ### 4.3. Frontend web
 
-Dentro de `frontend/`:
+Dentro de `balbina-campo/` para o app de campo:
 
 ```bash
 npm install
@@ -174,11 +173,13 @@ Variavel de ambiente opcional:
 VITE_API_URL=http://localhost:3000
 ```
 
-Se `VITE_API_URL` nao for definida, o frontend usa `http://localhost:3000`.
+Se `VITE_API_URL` nao for definida, o app usa `http://localhost:3000`.
+
+Para iniciar o painel de gestao, use outro terminal e execute os mesmos comandos dentro de `balbina-gestao/`. Ambos os frontends aceitam `VITE_API_URL` e, por padrao, usam a API local na porta 3000.
 
 ### 4.4. Android com Capacitor
 
-Dentro de `frontend/`:
+Dentro de `balbina-campo/`:
 
 ```bash
 npm run android:sync
@@ -243,7 +244,7 @@ Endpoint dedicado:
 POST /api/chat/manejo
 ```
 
-Ele carrega `backend/conhecimento_tambaqui.txt` e instrui a IA a responder somente com base nesse conhecimento. Se nao houver informacao local suficiente, a resposta esperada e:
+Ele carrega `balbina-backend/conhecimento_tambaqui.txt` e instrui a IA a responder somente com base nesse conhecimento. Se nao houver informacao local suficiente, a resposta esperada e:
 
 ```text
 Não há informação cadastrada para essa pergunta.
@@ -719,7 +720,7 @@ Resposta:
 
 ## 7. Banco de dados SQLite
 
-O schema e criado automaticamente em `backend/src/db.ts`.
+O schema e criado automaticamente em `balbina-backend/src/db.ts`.
 
 ### 7.1. `lotes`
 
@@ -1009,7 +1010,7 @@ Tipos de insumo aceitos:
 
 ## 12. Conhecimento local de tambaqui
 
-O arquivo `backend/conhecimento_tambaqui.txt` e carregado por `knowledgeLoader.ts`.
+O arquivo `balbina-backend/conhecimento_tambaqui.txt` e carregado por `knowledgeLoader.ts`.
 
 Formatos aceitos:
 
@@ -1070,8 +1071,9 @@ Esta lista e um roteiro de validacao manual; caixas desmarcadas nao significam q
 
 Use esta lista para validar a primeira versao:
 
-- [ ] Backend sobe com `npm run dev`.
-- [ ] Frontend sobe com `npm run dev` dentro de `frontend/`.
+- [ ] Backend sobe com `npm run dev` dentro de `balbina-backend/`.
+- [ ] App de campo sobe com `npm run dev` dentro de `balbina-campo/`.
+- [ ] Painel de gestao sobe com `npm run dev` dentro de `balbina-gestao/`.
 - [ ] `GET /api/health` retorna `{ "ok": true }`.
 - [ ] Login retorna token quando `JWT_SECRET` e `AUTH_PASSWORD` estao configurados.
 - [ ] Endpoints protegidos recusam chamadas sem `Authorization: Bearer <token>`.
@@ -1097,7 +1099,8 @@ Use esta lista para validar a primeira versao:
 
 ## 15. Limitacoes conhecidas da implementacao atual
 
-- A maior parte do estado e da interface esta concentrada em `frontend/src/App.tsx`; `frontend/src/components/ProductionActions.tsx` agrupa acoes de producao.
+- O app de campo e o painel de gestao sao projetos independentes que compartilham a API em `balbina-backend/`.
+- O estado e os fluxos de cada frontend ficam principalmente em `balbina-campo/src/App.tsx` e `balbina-gestao/src/App.tsx`; acoes de producao ficam nos componentes correspondentes de cada projeto.
 - O frontend depende da API para leitura e escrita; a fila SQLite no backend nao oferece modo offline no aparelho.
 - O endpoint de lancamento de insumo tenta vincular o custo ao lote ativo do tanque informado; se nao houver lote ativo para o tanque, o movimento de caixa fica sem `lote_id`.
 - Sem `DATABASE_URL`, o worker PostgreSQL nao inicia e a sincronizacao remota fica desativada.
@@ -1135,65 +1138,74 @@ Nao implementar nesta versao:
 
 ## 17. Comandos uteis
 
-Backend:
+Cada aplicacao possui seu proprio `package.json`; execute os comandos a partir da raiz do repositorio usando o diretorio do respectivo projeto.
+
+Iniciar a API:
 
 ```bash
+cd balbina-backend
+npm install
 npm run dev
 ```
 
-Frontend:
+Iniciar o app de campo:
 
 ```bash
-cd frontend
+cd balbina-campo
+npm install
 npm run dev
 ```
 
-Build frontend:
+Iniciar o painel de gestao (em outro terminal):
 
 ```bash
-cd frontend
+cd balbina-gestao
+npm install
+npm run dev
+```
+
+Build e testes do backend:
+
+```bash
+cd balbina-backend
 npm run build
-```
-
-Testes automatizados do backend:
-
-```bash
-cd backend
 npm test
 ```
 
-Build/typecheck do backend:
+Build e lint do app de campo:
 
 ```bash
-cd backend
+cd balbina-campo
 npm run build
+npm run lint
 ```
 
-Lint do frontend:
+Build e lint do painel de gestao:
 
 ```bash
-cd frontend
+cd balbina-gestao
+npm run build
 npm run lint
 ```
 
 Sincronizar Android:
 
 ```bash
-cd frontend
+cd balbina-campo
 npm run android:sync
 ```
 
 Abrir Android Studio:
 
 ```bash
-cd frontend
+cd balbina-campo
 npm run android:open
 ```
 
 Rodar Android:
 
 ```bash
-cd frontend
+cd balbina-campo
 npm run android:run
 ```
 

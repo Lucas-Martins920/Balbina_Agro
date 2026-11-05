@@ -1,6 +1,11 @@
-*.db
-*.db-shm
-*.db-wal
-backend/.env
-frontend/.env.local
-frontend/dist/
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.env
+**/.env
+.env.local
+**/.env.local
+balbina_v1.db
+android/app/build/
+android/.gradle/
