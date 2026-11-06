@@ -100,13 +100,13 @@ export function AppCampo({ dados }: { dados: DadosCampo }) {
   return (
     <ProvedorCampo value={campo}>
       <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col">
-        <header data-tour="sinal" className="cristal sticky top-0 z-30 flex items-center justify-between gap-3 rounded-b-[1.5rem] px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3">
+        <header data-tour="sinal" className="cristal sticky top-0 z-30 flex items-center justify-between gap-3 px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3">
           <div className="min-w-0">
             <p className="text-[11px] font-semibold tracking-[0.12em] text-texto-suave uppercase">Balbina Campo</p>
             <h1 className="truncate text-base font-semibold">{dados.empresa.nome}</h1>
           </div>
           <button type="button" onClick={() => setAba("envios")} aria-label={`${online ? "Online" : "Sem sinal"}. ${resumo.total ? `${resumo.total} na fila de envio` : "Nada na fila"}`}
-            className="flex shrink-0 items-center gap-2 rounded-full bg-elevado px-3 py-1.5 text-[13px] font-medium shadow-[inset_0_1px_0_var(--aresta),inset_0_0_0_1px_var(--brilho)] transition-transform duration-150 ease-out active:scale-[0.96]">
+            className="flex shrink-0 items-center gap-2 rounded-lg bg-solido px-3 py-1.5 text-[13px] font-medium ring-1 ring-inset ring-borda transition-transform duration-150 ease-out active:scale-[0.96]">
             <span className="relative flex size-2.5">
               {online && fila.enviando && <span className="absolute inline-flex size-full animate-ping rounded-full bg-positivo opacity-60" />}
               <span className={`relative inline-flex size-2.5 rounded-full ${online ? "bg-positivo" : "bg-perigo"}`} />
@@ -137,15 +137,15 @@ export function AppCampo({ dados }: { dados: DadosCampo }) {
           </div>
         )}
 
-        <nav aria-label="Módulos do app de campo" data-tour="abas-campo" className="cristal fixed inset-x-0 bottom-0 z-30 mx-auto max-w-lg rounded-t-[1.75rem] px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        <nav aria-label="Módulos do app de campo" data-tour="abas-campo" className="igapo cristal fixed inset-x-0 bottom-0 z-30 mx-auto max-w-lg rounded-t-[1.125rem] px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
           <ul className="grid grid-cols-5">
             {ABAS.map(({ chave, nome, icone: Icone }) => {
               const ativa = aba === chave;
               return (
                 <li key={chave}>
                   <button type="button" onClick={() => setAba(chave)} aria-current={ativa ? "page" : undefined}
-                    className={`relative flex h-14 w-full flex-col items-center justify-center gap-0.5 rounded-2xl text-[11px] font-medium transition-[color,transform] duration-150 ease-out active:scale-[0.94] ${ativa ? "text-marca" : "text-texto-suave"}`}>
-                    <span className={`grid h-7 w-12 place-items-center rounded-full transition-colors duration-200 ${ativa ? "bg-marca-suave" : ""}`}>
+                    className={`relative flex h-14 w-full flex-col items-center justify-center gap-0.5 rounded-2xl text-[11px] font-medium transition-[color,transform] duration-150 ease-out active:scale-[0.94] ${ativa ? "text-marca-claro" : "text-texto-suave"}`}>
+                    <span className={`grid h-7 w-12 place-items-center rounded-md transition-colors duration-200 ${ativa ? "bg-marca text-white" : ""}`}>
                       <Icone size={20} strokeWidth={ativa ? 2.3 : 1.9} />
                     </span>
                     {nome}

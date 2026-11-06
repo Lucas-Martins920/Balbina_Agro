@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Calculator } from "lucide-react";
 import { notFound } from "next/navigation";
 import { AcaoConfirmada } from "@/components/acao-confirmada";
 import { ExcluirLinha } from "@/components/excluir-linha";
@@ -10,11 +11,12 @@ import { getEmpresaAtual } from "@/lib/empresa";
 import { formatarData, formatarInteiro, formatarMoeda, formatarNumero, hojeISO } from "@/lib/formato";
 import { exigirAcesso, getPermissoes } from "@/lib/permissoes";
 import { textoKg, textoPeso } from "@/lib/pescado";
-import { mortalidadeSemanal, projetarLote, type CurvaPadrao } from "@/lib/previsao";
+import { baseDoCiclo, custoSemanalVariavel, mortalidadeSemanal, precoRacaoKg, projetarLote, type CurvaPadrao } from "@/lib/previsao";
 import { FASES } from "@/lib/rotulos";
 import { createClient } from "@/lib/supabase/server";
 import { frasesLote, referenciaEspecie, resumoLote, taxaSemana, type SemanaLote } from "@/lib/zootecnico";
 import { encerrarLote, excluirBiometria, reabrirLote, registrarBiometria } from "../actions";
+import { SimuladorCiclo } from "./simulador";
 import { ViveirosDoLote, type Alocacao, type Transferencia } from "./viveiros";
 
 type RacaoSugerida = {
@@ -36,7 +38,7 @@ export default async function PaginaLote({ params }: PageProps<"/lotes/[id]">) {
     .eq("empresa_id", atual.id).eq("id", id).maybeSingle();
   if (!lote) notFound();
 
-  const [{ data: semanas }, { data: ocupacao }, { data: alocacoes }, { data: transferencias }, { data: viveiros }, { pode }, { data: biometrias }, { data: curva }, { data: causas }, { data: despescas }] = await Promise.all([
+  const [{ data: semanas }, { data: ocupacao }, { data: alocacoes }, { data: transferencias }, { data: viveiros }, { pode }, { data: biometrias }, { data: curva }, { data: causas }, { data: despescas }, { data: custos }] = await Promise.all([
     supabase.from("indicadores_lote_semana").select("*").eq("lote_id", id).order("semana"),
     supabase.from("alocacoes_atuais").select("lote_id, lote_codigo, viveiro_id, viveiro_nome, setor_nome, peixes_atuais, dias_cultivo, peso_medio_g, biomassa_kg, peixes_m2, kg_m3, ultima_biometria, carencia_ate").eq("empresa_id", atual.id),
     supabase.from("lote_alocacoes").select("id, viveiro_id, qtd_peixes, periodo, motivo, transferencia_id").eq("lote_id", id),
@@ -47,6 +49,8 @@ export default async function PaginaLote({ params }: PageProps<"/lotes/[id]">) {
     supabase.from("curvas_crescimento").select("semana, peso_g, taxa_alimentacao_pct").eq("especie_id", lote.especie_id).not("peso_g", "is", null).order("semana"),
     supabase.from("mortalidade_causas").select("causa, peixes").eq("empresa_id", atual.id).eq("lote_id", id),
     supabase.from("despescas").select("id, data, viveiro_id, tipo, qtd_peixes, kg_total, peso_medio_g, peixes_perdidos").eq("lote_id", id).order("data"),
+    supabase.from("custo_kg_lote").select("mes, custo_total_cents, alevinos_cents, indiretos_rateados_cents, racao_cents, racao_kg, preco_kg_cents, custo_acumulado_cents")
+      .eq("lote_id", id).order("mes", { ascending: false }).limit(24),
   ]);
   const locais = (ocupacao ?? []).filter((o) => o.lote_id === id);
   const sugestoes = await Promise.all(locais.map(async (l) => {
@@ -72,6 +76,18 @@ export default async function PaginaLote({ params }: PageProps<"/lotes/[id]">) {
     mortalidadeSemanaPct: mortalidadeSemanal(listaSemanas), pesoAlvoG: lote.peso_alvo_g, semanasAFrente: 8,
   });
 
+  // Simulador do resultado do ciclo: projeção até a data da despesca (ou a biomassa de hoje, sem peso de despesca).
+  const semanasAteDespesca = projecao?.despesca
+    ? Math.max(0, Math.ceil((Date.parse(projecao.despesca.data) - Date.parse(hoje)) / (7 * 86_400_000)))
+    : 0;
+  const ateDespesca = projecao && semanasAteDespesca > 0 ? projetarLote({
+    curva: curvaLote, hoje, povoamento: lote.data_povoamento, pesoAtualG: pesoHoje, peixes,
+    fator: projecao.fator, base: projecao.base, mortalidadeSemanaPct: mortalidadeSemanal(listaSemanas),
+    pesoAlvoG: lote.peso_alvo_g, semanasAFrente: semanasAteDespesca,
+  }).pontos : [];
+  const custoMes = custos?.[0] ?? null;
+  const precoVenda = (custos ?? []).find((c) => c.preco_kg_cents !== null && Number(c.preco_kg_cents) > 0)?.preco_kg_cents ?? null;
+
   const ultimaUniformidade = [...(biometrias ?? [])].reverse().find((p) => p.uniformidade_pct !== null)?.uniformidade_pct ?? null;
   const resumo = resumoLote(listaSemanas, {
     povoamento: lote.data_povoamento, pesoInicialG: lote.peso_inicial_g,
@@ -86,6 +102,14 @@ export default async function PaginaLote({ params }: PageProps<"/lotes/[id]">) {
   const podeEditar = pode("lotes.editar");
   const podeBiometria = podeEditar || pode("apontamentos.editar");
   const diasCultivo = locais[0]?.dias_cultivo ?? null;
+  const baseCiclo = encerrado || peixes === 0 ? null : baseDoCiclo({
+    pontos: ateDespesca,
+    custoAteAgoraCents: Number(custoMes?.custo_acumulado_cents ?? lote.custo_aquisicao_cents ?? 0),
+    precoRacaoKgCents: custoMes ? precoRacaoKg(custoMes) : null,
+    outrosSemanaCents: custoMes ? custoSemanalVariavel(custoMes) : 0,
+    kgJaDespescados: kgDespescados,
+    biomassaHojeKg: biomassa,
+  });
 
   const cartoes = [
     { rotulo: "Peixes hoje", valor: locais.length ? formatarInteiro(peixes) : "–", detalhe: `de ${formatarInteiro(lote.qtd_povoada)} povoados` },
@@ -262,6 +286,15 @@ export default async function PaginaLote({ params }: PageProps<"/lotes/[id]">) {
               </tr>
             ))}
           </Tabela>
+        </Cartao>
+      )}
+
+      {baseCiclo && (
+        <Cartao titulo="Resultado previsto do ciclo" icone={Calculator} cor="marca"
+          descricao="Quanto o lote deve deixar até a despesca. Mude o preço do kg e veja na hora o lucro e o preço mínimo para empatar.">
+          <SimuladorCiclo base={baseCiclo} precoSugeridoCents={precoVenda === null ? null : Number(precoVenda)}
+            dataDespesca={ateDespesca.length ? projecao?.despesca?.data ?? null : null}
+            origemPreco={precoVenda !== null ? "Preço sugerido: média do kg vendido no último mês com venda de peixe." : "Ainda não há venda de peixe registrada: digite o preço que você espera receber."} />
         </Cartao>
       )}
 

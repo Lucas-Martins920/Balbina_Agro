@@ -12,7 +12,7 @@ export function MarcaBalbina({ tamanho = 28, comNome = true }: { tamanho?: numbe
         <circle cx="22.9" cy="14.4" r="1.25" className="fill-marca" />
         <path d="M7 26.2c1.6-1.1 3.2-1.1 4.8 0s3.2 1.1 4.8 0 3.2-1.1 4.8 0 3.2 1.1 4.8 0" fill="none" className="stroke-marca-texto" strokeOpacity=".5" strokeWidth="1.1" strokeLinecap="round" />
       </svg>
-      {comNome && <span className="text-[17px] font-semibold tracking-[-0.02em]">Balbina</span>}
+      {comNome && <span className="font-display text-[18px] font-bold tracking-[-0.02em]">Balbina</span>}
     </span>
   );
 }

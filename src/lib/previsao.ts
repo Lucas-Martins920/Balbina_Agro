@@ -242,3 +242,49 @@ export function margemProjetada(pontos: PontoProjecao[], { precoKgCents, precoRa
   });
   return { semanas, semanaNegativa: semanas.find((s) => s.margemCents < 0)?.semana ?? null };
 }
+
+// ---------- Resultado previsto do ciclo (simulador de lucro do lote) ----------
+
+// Quanto o lote deve deixar até a despesca: o custo já apurado (custo_kg_lote acumulado), mais a ração e os outros
+// custos variáveis das semanas que faltam (pela projeção), contra o kg que sai no fim (biomassa na data da despesca)
+// e o que já foi despescado, ao preço do kg informado. O preço de equilíbrio é o custo total dividido pelo kg total:
+// abaixo dele o ciclo dá prejuízo. Puro e sem banco: o simulador do lote roda a mesma conta no navegador quando a
+// pessoa muda o preço.
+export type BaseCiclo = {
+  custoAteAgoraCents: number;
+  custoFuturoCents: number;
+  kgFinal: number;
+  kgJaDespescados: number;
+  semanasRestantes: number;
+};
+
+export function baseDoCiclo({ pontos, custoAteAgoraCents, precoRacaoKgCents, outrosSemanaCents, kgJaDespescados, biomassaHojeKg }: {
+  pontos: PontoProjecao[]; custoAteAgoraCents: number; precoRacaoKgCents: number | null; outrosSemanaCents: number;
+  kgJaDespescados: number; biomassaHojeKg: number;
+}): BaseCiclo {
+  const racao = pontos.reduce((s, p) => s + (p.racaoKg ?? 0), 0) * (precoRacaoKgCents ?? 0);
+  return {
+    custoAteAgoraCents: Math.max(0, Math.round(custoAteAgoraCents)),
+    custoFuturoCents: Math.round(racao + outrosSemanaCents * pontos.length),
+    kgFinal: arred(pontos.at(-1)?.biomassaKg ?? biomassaHojeKg, 1),
+    kgJaDespescados: arred(kgJaDespescados, 1),
+    semanasRestantes: pontos.length,
+  };
+}
+
+export function resultadoCiclo(base: BaseCiclo, precoKgCents: number) {
+  const kgTotal = base.kgFinal + base.kgJaDespescados;
+  const custoTotalCents = base.custoAteAgoraCents + base.custoFuturoCents;
+  const receitaCents = Math.round(kgTotal * Math.max(0, precoKgCents));
+  const lucroCents = receitaCents - custoTotalCents;
+  return {
+    kgTotal: arred(kgTotal, 1),
+    custoTotalCents,
+    receitaCents,
+    lucroCents,
+    margemPct: receitaCents > 0 ? arred((lucroCents / receitaCents) * 100, 1) : null,
+    custoKgCents: kgTotal > 0 ? Math.round(custoTotalCents / kgTotal) : null,
+    // preço mínimo do kg para o ciclo empatar
+    precoEquilibrioCents: kgTotal > 0 ? Math.ceil(custoTotalCents / kgTotal) : null,
+  };
+}

@@ -102,8 +102,8 @@ export function NavegacaoMovel({ marca, visiveis, children }: { marca: ReactNode
         <SeletorVersao />
       </div>
 
-      <nav aria-label="Atalhos" data-tour="abas" className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-30">
-        <div className="cristal flex items-stretch justify-between rounded-full p-1">
+      <nav aria-label="Atalhos" data-tour="abas" className="fixed inset-x-0 bottom-0 z-30">
+        <div className="igapo cristal flex items-stretch justify-between px-1.5 pt-1 pb-[max(0.375rem,env(safe-area-inset-bottom))]">
           {abas.map(({ href, nome, Icone }) => {
             const ativo = estaAtivo(caminho, href);
             return (
@@ -111,8 +111,8 @@ export function NavegacaoMovel({ marca, visiveis, children }: { marca: ReactNode
                 key={href}
                 href={href}
                 aria-current={ativo ? "page" : undefined}
-                className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-full py-1.5 text-[10px] font-medium transition-[background-color,color,transform] duration-200 ease-out active:scale-[0.92] ${
-                  ativo ? "bg-texto/[0.08] text-marca" : "text-texto/75"
+                className={`relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg py-1.5 text-[10px] font-medium transition-[background-color,color,transform] duration-200 ease-out active:scale-[0.94] ${
+                  ativo ? "text-marca-claro before:absolute before:inset-x-5 before:-top-1 before:h-[3px] before:rounded-b before:bg-marca" : "text-texto/70"
                 }`}
               >
                 <Icone aria-hidden size={20} strokeWidth={ativo ? 2.25 : 1.75} />
@@ -125,7 +125,7 @@ export function NavegacaoMovel({ marca, visiveis, children }: { marca: ReactNode
             onClick={() => setAberto(true)}
             aria-label="Abrir menu"
             aria-expanded={aberto}
-            className="flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-full py-1.5 text-[10px] font-medium text-texto/75 transition-transform duration-200 ease-out active:scale-[0.92]"
+            className="flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg py-1.5 text-[10px] font-medium text-texto/70 transition-transform duration-200 ease-out active:scale-[0.94]"
           >
             <Menu aria-hidden size={20} strokeWidth={1.75} />
             Menu
@@ -142,12 +142,12 @@ export function NavegacaoMovel({ marca, visiveis, children }: { marca: ReactNode
         onClick={(e) => {
           if ((e.target as HTMLElement).closest("a")) setAberto(false);
         }}
-        className={`fixed inset-0 z-40 flex flex-col justify-end bg-black/15 transition-opacity duration-300 ease-out ${aberto ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        className={`fixed inset-0 z-40 flex flex-col justify-end bg-black/40 transition-opacity duration-300 ease-out ${aberto ? "opacity-100" : "pointer-events-none opacity-0"}`}
       >
         {/* Cabeçalho fora da rolagem: antes ficava grudado (sticky) e transparente, e a lista passava por baixo
             da marca (o título "Estoque" aparecia atrás do logo). */}
         <div
-          className={`cristal mx-2 mb-2 flex max-h-[85dvh] flex-col overflow-hidden rounded-[2rem] transition-transform duration-500 ease-drawer ${
+          className={`igapo cristal flex max-h-[88dvh] flex-col overflow-hidden rounded-t-[1.125rem] transition-transform duration-500 ease-drawer ${
             aberto ? "translate-y-0" : "translate-y-[105%]"
           }`}
         >
@@ -157,7 +157,7 @@ export function NavegacaoMovel({ marca, visiveis, children }: { marca: ReactNode
               type="button"
               onClick={() => setAberto(false)}
               aria-label="Fechar menu"
-              className="grid size-9 place-items-center rounded-full bg-texto/[0.08] transition-transform duration-150 active:scale-[0.92]"
+              className="grid size-9 place-items-center rounded-lg bg-texto/[0.08] transition-transform duration-150 active:scale-[0.92]"
             >
               <X size={18} strokeWidth={2} aria-hidden />
             </button>

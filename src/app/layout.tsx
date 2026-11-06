@@ -1,23 +1,22 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Figtree, IBM_Plex_Mono, Sora } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AvisoAmbiente } from "@/components/aviso-ambiente";
 import { AvisoCookies } from "@/components/aviso-cookies";
-import { BrilhoVidro, FiltroLente } from "@/components/brilho-vidro";
 import { SCRIPT_TEMA } from "@/components/tema";
 import { SCRIPT_LATERAL } from "@/lib/lateral";
 import { SCRIPT_VERSAO } from "@/lib/versao";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+// Identidade "Várzea": Figtree no texto corrido, Sora nos títulos e números de destaque, Plex Mono em código.
+const figtree = Figtree({ variable: "--font-figtree", subsets: ["latin"] });
+const sora = Sora({ variable: "--font-sora", subsets: ["latin"] });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
   subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 const _testes = process.env.BALBINA_AMBIENTE === "testes";
@@ -32,7 +31,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${figtree.variable} ${sora.variable} ${plexMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
@@ -41,10 +40,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-full flex flex-col font-sans">
         <script nonce={nonce} dangerouslySetInnerHTML={{ __html: SCRIPT_VERSAO }} />
-        <FiltroLente />
         <AvisoAmbiente />
         {children}
-        <BrilhoVidro />
         <AvisoCookies />
         {/* velocidade real de quem usa (Web Vitals), no painel Speed Insights da Vercel */}
         <SpeedInsights />

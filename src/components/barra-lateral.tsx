@@ -75,7 +75,7 @@ function Cracha({ nome, tamanho = "size-10" }: { nome: string; tamanho?: string 
   return (
     <span
       aria-hidden
-      className={`${tamanho} grid shrink-0 place-items-center rounded-full bg-[radial-gradient(circle_at_30%_25%,var(--marca-claro),var(--marca)_60%)] text-base font-bold text-marca-texto shadow-[inset_0_1px_0_rgb(255_255_255/0.5),0_4px_12px_-4px_var(--marca)]`}
+      className={`${tamanho} grid shrink-0 place-items-center rounded-xl bg-marca font-display text-base font-bold text-white`}
     >
       {nome.slice(0, 1).toUpperCase()}
     </span>
@@ -86,7 +86,7 @@ function Avatar({ email }: { email: string }) {
   const online = useOnline();
   return (
     <span className="relative shrink-0">
-      <span aria-hidden className="grid size-9 place-items-center rounded-full bg-marca-suave text-sm font-semibold text-alerta uppercase ring-2 ring-white/60">
+      <span aria-hidden className="grid size-9 place-items-center rounded-full bg-marca-suave text-sm font-semibold text-alerta uppercase ring-2 ring-white/20">
         {email.slice(0, 1)}
       </span>
       {/* Bolinha verde com internet; cinza sem (o app segue funcionando offline nos apontamentos). */}
@@ -108,14 +108,14 @@ function CabecalhoEmpresa({ empresa }: { empresa: DadosBarra["empresa"] }) {
     <>
       <Cracha nome={nome} />
       <span className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate text-[15px] font-semibold tracking-[-0.01em]">{nome}</span>
+        <span className="truncate font-display text-[15px] font-semibold tracking-[-0.01em]">{nome}</span>
         <span className="truncate text-xs text-texto-suave">{empresa.subtitulo}</span>
       </span>
     </>
   );
   if (empresa.opcoes.length < 2) return <div className="flex items-center gap-3 px-1">{conteudo}</div>;
   return (
-    <form action={trocarEmpresa} className="relative flex items-center gap-3 rounded-2xl px-1 py-1 transition-colors duration-150 hover:bg-elevado/60">
+    <form action={trocarEmpresa} className="relative flex items-center gap-3 rounded-lg px-1 py-1 transition-colors duration-150 hover:bg-elevado/60">
       {conteudo}
       <ChevronsUpDown size={14} aria-hidden className="shrink-0 text-texto-suave" />
       <label htmlFor={id} className="sr-only">Empresa</label>
@@ -134,9 +134,10 @@ function CabecalhoEmpresa({ empresa }: { empresa: DadosBarra["empresa"] }) {
   );
 }
 
-const CLASSE_ITEM = "group flex h-10 items-center gap-3 rounded-2xl px-3 text-sm transition-[background-color,color,box-shadow] duration-150";
-const CLASSE_ATIVO = "bg-elevado font-semibold text-texto shadow-[inset_0_1px_0_var(--aresta),inset_0_0_0_1px_var(--borda),0_6px_18px_-8px_rgb(0_0_0/0.3)]";
-const CLASSE_INATIVO = "text-texto/80 hover:bg-elevado/60 hover:text-texto";
+const CLASSE_ITEM = "group flex h-10 items-center gap-3 rounded-lg px-3 text-sm transition-[background-color,color,box-shadow] duration-150";
+// Ativo: fundo suave na cor da marca, texto na cor da marca.
+const CLASSE_ATIVO = "bg-marca-suave font-semibold text-marca";
+const CLASSE_INATIVO = "text-texto/80 hover:bg-elevado hover:text-texto";
 
 function ItemLinkAberto({ item, ativo }: { item: ItemLink; ativo: boolean }) {
   const Icone = ICONES[item.slug] ?? ICONES_PRINCIPAL[item.slug] ?? House;
@@ -182,7 +183,7 @@ function ItemGrupoAberto({ grupo, aberto, alternar, ativoHref }: { grupo: Grupo;
                 <Link
                   href={f.href}
                   aria-current={ativo ? "page" : undefined}
-                  className={`my-0.5 flex h-9 items-center gap-2.5 rounded-xl px-2.5 text-[13px] transition-colors duration-150 ${ativo ? `${CLASSE_ATIVO} text-texto` : "text-texto/75 hover:bg-elevado/60 hover:text-texto"}`}
+                  className={`my-0.5 flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-[13px] transition-colors duration-150 ${ativo ? `${CLASSE_ATIVO} text-texto` : "text-texto/75 hover:bg-elevado hover:text-texto"}`}
                 >
                   <span aria-hidden className={`size-2 shrink-0 rounded-full ${visual?.ponto ?? "bg-marca"} ${ativo ? "" : "opacity-70"} shadow-[0_0_0_3px_rgb(255_255_255/0.12)]`} />
                   <span className="truncate">{f.nome}</span>
@@ -361,7 +362,7 @@ export function BarraLateral({ dados, movel = false }: { dados: DadosBarra; move
         <div data-tour="empresa" className={movel ? "" : "pr-6"}>
           <CabecalhoEmpresa empresa={empresa} />
         </div>
-        <label className="flex h-11 items-center gap-2.5 rounded-2xl bg-texto/[0.06] px-3.5 text-sm shadow-[inset_0_1px_2px_rgb(0_0_0/0.08)] ring-1 ring-borda/60 transition-shadow focus-within:ring-2 focus-within:ring-marca/60">
+        <label className="flex h-10 items-center gap-2.5 rounded-lg bg-texto/[0.07] px-3 text-sm ring-1 ring-borda transition-shadow focus-within:ring-2 focus-within:ring-marca/60">
           <Search aria-hidden size={17} strokeWidth={1.9} className="shrink-0 text-texto-suave" />
           <span className="sr-only">Buscar telas</span>
           <input
@@ -427,7 +428,7 @@ export function BarraLateral({ dados, movel = false }: { dados: DadosBarra; move
 
       <div className={`flex flex-col gap-1 ${movel ? "mt-4" : "px-3 pb-3"}`}>
         {!movel && plano && (
-          <Link href="/assinatura" className="mb-1 flex items-start gap-2.5 rounded-2xl bg-elevado/60 px-3 py-2.5 text-sm transition-colors duration-150 hover:bg-elevado">
+          <Link href="/assinatura" className="mb-1 flex items-start gap-2.5 rounded-lg bg-elevado px-3 py-2.5 text-sm transition-colors duration-150 hover:bg-elevado">
             <Sparkles size={16} strokeWidth={1.75} aria-hidden className="mt-0.5 shrink-0 text-marca" />
             <span className="flex min-w-0 flex-col">
               <span className="font-medium">{plano.nome}</span>
@@ -446,7 +447,7 @@ export function BarraLateral({ dados, movel = false }: { dados: DadosBarra; move
             aria-haspopup="menu"
             aria-expanded={perfil}
             onClick={() => setPerfil((p) => !p)}
-            className="flex w-full items-center gap-3 rounded-2xl px-2 py-2 text-left transition-colors duration-150 hover:bg-elevado/60"
+            className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors duration-150 hover:bg-elevado/60"
           >
             <Avatar email={email} />
             <span className="flex min-w-0 flex-1 flex-col">
@@ -464,8 +465,8 @@ export function BarraLateral({ dados, movel = false }: { dados: DadosBarra; move
 
   // ---- Trilho recolhido ----
   const classeTrilho = (ativo: boolean) =>
-    `grid size-11 shrink-0 place-items-center rounded-full transition-[background-color,color,transform,box-shadow] duration-150 active:scale-[0.92] ${
-      ativo ? "bg-elevado text-texto shadow-[inset_0_1px_0_var(--aresta),inset_0_0_0_1px_var(--borda),0_6px_18px_-8px_rgb(0_0_0/0.35)]" : "text-texto/75 hover:bg-elevado/60 hover:text-texto"
+    `grid size-11 shrink-0 place-items-center rounded-lg transition-[background-color,color,transform,box-shadow] duration-150 active:scale-[0.94] ${
+      ativo ? "bg-marca-suave text-marca" : "text-texto/75 hover:bg-elevado hover:text-texto"
     }`;
   const nomeEmpresa = empresa.opcoes.find((o) => o.id === empresa.atual)?.nome ?? "";
   const trilho = (
@@ -476,7 +477,7 @@ export function BarraLateral({ dados, movel = false }: { dados: DadosBarra; move
       onBlur={() => setDica(null)}
       className="lateral-entra hidden h-full flex-col items-center py-4 recolhida:flex"
     >
-      <button type="button" onClick={() => definirLateral(false)} aria-label={`Abrir a barra lateral (${nomeEmpresa})`} data-dica={nomeEmpresa} className="rounded-full transition-transform active:scale-[0.92]">
+      <button type="button" onClick={() => definirLateral(false)} aria-label={`Abrir a barra lateral (${nomeEmpresa})`} data-dica={nomeEmpresa} className="rounded-[10px] transition-transform active:scale-[0.94]">
         <Cracha nome={nomeEmpresa} tamanho="size-11" />
       </button>
       <button type="button" onClick={abrirBusca} aria-label="Buscar telas" data-dica={`Buscar telas  ${mac ? "⌘K" : "Ctrl K"}`} className={`${classeTrilho(false)} mt-3`}>
@@ -534,10 +535,10 @@ export function BarraLateral({ dados, movel = false }: { dados: DadosBarra; move
       onPointerEnter={entrar}
       onPointerLeave={deixar}
       onBlur={(e) => espiando && !caixa.current?.contains(e.relatedTarget as Node | null) && agendarRecolher()}
-      className="sticky top-0 z-30 hidden h-dvh p-3 pr-0 md:block"
+      className="sticky top-0 z-30 hidden h-dvh md:block"
     >
       <div ref={caixa} data-tour="menu" className="lateral-caixa relative h-full">
-        <div className="cristal h-full rounded-[1.75rem] recolhida:rounded-[2rem]">
+        <div className="igapo cristal h-full">
           {trilho}
           {painel}
         </div>
@@ -553,7 +554,7 @@ export function BarraLateral({ dados, movel = false }: { dados: DadosBarra; move
           aria-label={espiar ? "Fixar a barra lateral aberta" : recolhida ? "Abrir a barra lateral" : "Recolher a barra lateral"}
           aria-expanded={!recolhida || espiar}
           title={espiar ? "Fixar aberta" : undefined}
-          className="absolute top-6 -right-3.5 z-10 grid size-8 place-items-center rounded-full bg-solido text-texto shadow-[0_2px_8px_rgb(0_0_0/0.18),inset_0_0_0_1px_var(--linha)] transition-transform duration-150 hover:scale-105 active:scale-[0.92] recolhida:top-7"
+          className="absolute top-6 -right-3 z-10 grid size-6 place-items-center rounded-md bg-marca text-white shadow-[0_2px_8px_rgb(0_0_0/0.25)] transition-transform duration-150 hover:scale-105 active:scale-[0.92] recolhida:top-7"
         >
           {espiar ? (
             <Pin aria-hidden size={14} strokeWidth={2.25} className="rotate-45" />
@@ -573,7 +574,7 @@ export function BarraLateral({ dados, movel = false }: { dados: DadosBarra; move
         <span
           role="tooltip"
           style={{ left: dica.x, top: dica.y }}
-          className="cristal pointer-events-none fixed z-50 -translate-y-1/2 rounded-full px-3 py-1.5 text-[13px] font-medium whitespace-pre text-texto"
+          className="igapo cristal pointer-events-none fixed z-50 -translate-y-1/2 rounded-md px-2.5 py-1.5 text-[13px] font-medium whitespace-pre text-texto"
         >
           {dica.texto}
         </span>

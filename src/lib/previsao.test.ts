@@ -162,3 +162,34 @@ test("margem da semana: kg ganho vale o preço de venda menos ração e outros c
   assert.deepEqual(m.semanas.map((x) => x.margemCents), [245000, -12500, -210000]);
   assert.equal(m.semanaNegativa, 2);
 });
+
+test("resultado do ciclo soma o custo já apurado com a ração e os outros custos das semanas que faltam", async () => {
+  const { baseDoCiclo, resultadoCiclo } = await import("./previsao.ts");
+  const pontos = [
+    { semana: 20, data: "2026-11-13", pesoG: 1100, peixes: 6000, biomassaKg: 6600, ganhoKg: 300, racaoKg: 500 },
+    { semana: 21, data: "2026-11-20", pesoG: 1150, peixes: 5990, biomassaKg: 6888.5, ganhoKg: 288.5, racaoKg: 480 },
+  ];
+  const base = baseDoCiclo({ pontos, custoAteAgoraCents: 4_000_000, precoRacaoKgCents: 300, outrosSemanaCents: 50_000, kgJaDespescados: 1000, biomassaHojeKg: 6300 });
+  assert.deepEqual(base, { custoAteAgoraCents: 4_000_000, custoFuturoCents: 980 * 300 + 2 * 50_000, kgFinal: 6888.5, kgJaDespescados: 1000, semanasRestantes: 2 });
+
+  const r = resultadoCiclo(base, 1200);
+  assert.equal(r.kgTotal, 7888.5);
+  assert.equal(r.custoTotalCents, 4_394_000);
+  assert.equal(r.receitaCents, Math.round(7888.5 * 1200));
+  assert.equal(r.lucroCents, r.receitaCents - 4_394_000);
+  assert.equal(r.precoEquilibrioCents, Math.ceil(4_394_000 / 7888.5), "abaixo deste preço o ciclo dá prejuízo");
+  assert.ok(r.margemPct! > 50);
+});
+
+test("resultado do ciclo sem projeção usa a biomassa de hoje e preço zero não divide por zero", async () => {
+  const { baseDoCiclo, resultadoCiclo } = await import("./previsao.ts");
+  const base = baseDoCiclo({ pontos: [], custoAteAgoraCents: 100_000, precoRacaoKgCents: null, outrosSemanaCents: 9_999, kgJaDespescados: 0, biomassaHojeKg: 500 });
+  assert.deepEqual(base, { custoAteAgoraCents: 100_000, custoFuturoCents: 0, kgFinal: 500, kgJaDespescados: 0, semanasRestantes: 0 });
+  const r = resultadoCiclo(base, 0);
+  assert.equal(r.receitaCents, 0);
+  assert.equal(r.margemPct, null);
+  assert.equal(r.precoEquilibrioCents, 200);
+  const vazio = resultadoCiclo({ ...base, kgFinal: 0 }, 1000);
+  assert.equal(vazio.custoKgCents, null);
+  assert.equal(vazio.precoEquilibrioCents, null);
+});

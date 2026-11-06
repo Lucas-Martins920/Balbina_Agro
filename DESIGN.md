@@ -1,63 +1,70 @@
 # Design do Balbina
 
-Direção: **Liquid Glass**, a linguagem do iOS 26 / macOS Tahoe aplicada a um ERP. O app inteiro é vidro sobre um papel de parede de luz colorida (quatro campos: azul-petróleo, azul, verde-água e âmbar, fixos atrás da página), como a luz na água do viveiro. Cartões, tabelas, botões, campos e abas são lâminas translúcidas sobre o papel de parede, com aresta de luz por dentro e um reflexo que acompanha o mouse. A navegação (lateral flutuante, barra de abas do celular, menu e painel lateral) é a lâmina mais líquida: mais clara, mais desfocada e, no Chromium, com refração nas bordas. O azul-petróleo da água (`--marca`) é a cor da marca. Verde e vermelho só dizem bom ou ruim.
+Direção: **Várzea**, a planície fértil de beira-rio onde o tambaqui engorda. Superfícies limpas e opacas sobre um fundo de folha nova (`#f5f8f2`), verde fresco como marca (`#2e7d32`), barra lateral clara com fio de borda, cantos arredondados (cards `rounded-2xl`/20px, botões em cápsula `rounded-full`). Sora nos títulos, Figtree no texto. Sem vidro, sem ondas, sem blur: a identidade vem do verde vivo, dos cantos pill e do tom de folhagem no fundo.
 
 ## Material (src/app/globals.css)
 
-- `body::before`: papel de parede (`--papel-1..4` sobre `--fundo`). Parado de propósito: fundo animado obrigaria cada lâmina a refazer o desfoque a cada quadro.
-- `.vidro`: lâmina de conteúdo (`--superficie`, arestas `--aresta`/`--brilho`, reflexo `--reflexo` em `--mx`/`--my`). Sem `backdrop-filter`: atrás dela só há o papel de parede, que já é luz difusa, e cada lâmina desfocada custava uma passada da placa de vídeo por quadro de rolagem.
-- `.cristal`: lâmina de navegação (`--cristal`, blur 28px, saturação 200%). Com `html.lente` (Chromium, marcado por `SCRIPT_TEMA`) usa o filtro SVG `#lente` (`FiltroLente` em `src/components/brilho-vidro.tsx`) para refratar as bordas. Com `html.leve` (toque, até 4 núcleos ou 4 GB, economia de dados) fica sem refração, com blur 16px, e o reflexo do mouse desliga.
-- Em CSS escreva só `backdrop-filter` (sem a versão `-webkit-`): com as duas, o build guarda só a prefixada e o Chrome fica sem desfoque.
-- `BrilhoVidro` (mesmo arquivo): um ouvinte de `pointermove` no documento escreve `--mx`/`--my` na lâmina sob o mouse, no máximo uma vez por quadro; desligado no toque e com reduced-motion.
-- `.popover` é sólido: listas abertas precisam ler bem. `prefers-reduced-transparency` troca vidro por `solido`.
+- `body::before`: dois brilhos radiais suaves de sol e mato sobre `--fundo`, fixos e sem animação.
+- `.vidro`: cartão de conteúdo opaco (`--superficie` branco, bordas `--borda`, sombra `--sombra`). Sem backdrop-filter, sem reflexo.
+- `.cristal`: barra de navegação quase opaca (`--cristal`, 94% alpha). Sem blur.
+- `.igapo`: escopo que tinge a barra lateral e o menu móvel. No Várzea a lateral é branca com um fio de borda à direita (`box-shadow: inset -1px 0 0 var(--borda)`), separando-a do conteúdo.
+- `.folha`: modificador para cartões com tom verde: `--elevado: #e8f0e4`, `--borda: #dde7d7`, `--etiqueta-neutro: #e4eedf`. Usado nos cards do painel financeiro.
+- `.popover` é sólido: listas abertas precisam ler bem.
 - Ficam em `@layer components`, então utilitários do Tailwind (bg-*, transition-*) valem por cima.
 
 ## Tokens
 
 | Token | Uso |
 | --- | --- |
-| `fundo` / `papel-1..4` | papel de parede |
-| `superficie` / `cristal` | tinta do vidro de conteúdo / da navegação |
-| `aresta` / `brilho` / `reflexo` | luz da borda de cima / bordas / reflexo do ponteiro |
-| `elevado` | vidro claro dentro de vidro: botões secundários, trilho das abas, campos, hover |
+| `fundo` | fundo da página (#f5f8f2 dia, #0f1a14 noite) |
+| `superficie` / `cristal` | branco do cartão / tinta da navegação |
+| `elevado` | fundo leve dentro de cartão: botões secundários, trilho das abas, campos, hover |
 | `solido` | superfície opaca: popovers, aba ativa, campo em foco |
 | `texto` / `texto-suave` | tinta e texto secundário |
-| `borda` / `linha` | aresta clara das lâminas / fios entre linhas |
-| `marca` / `marca-suave` / `marca-texto` | azul-petróleo: botão principal (vidro tingido; texto branco no dia, escuro no noturno), foco, aba ativa do celular e do `/campo` |
+| `borda` / `linha` | aresta dos cartões / fios entre linhas de tabela |
+| `marca` / `marca-suave` / `marca-texto` | verde (#2e7d32): botão principal (preenchido; texto branco), foco, aba ativa do celular e do `/campo`, item ativo da lateral |
+| `marca-claro` | verde mais vivo (#7cc36b) para detalhes decorativos |
 | `azul` / `verde` / `laranja` / `violeta` / `rosa` / `amarelo` | cores de apoio (paleta validada para daltonismo): ícones do menu, `Ficha` e séries dos gráficos. Nunca em texto |
 | `positivo` / `perigo` / `alerta` | entrada e em dia / vencido e erro / atenção |
 | `--etiqueta-*` | etiquetas |
 
-Dois temas com os mesmos nomes; o noturno é vidro fumê sobre luz escura. Escolha no `SeletorTema` (`src/components/tema.tsx`), salva em `localStorage` (`balbina-tema`), aplicada antes da pintura por `SCRIPT_TEMA`. Todo valor de cor existe nos três blocos de globals.css.
+Dois temas com os mesmos nomes; o noturno é verde-escuro profundo (#0f1a14). Escolha no `SeletorTema` (`src/components/tema.tsx`), salva em `localStorage` (`balbina-tema`), aplicada antes da pintura por `SCRIPT_TEMA`. Todo valor de cor existe nos três blocos de globals.css.
 
 ## Forma
 
-- Fonte: SF Pro nos aparelhos Apple (`-apple-system`), Geist nos outros. Título grande 34px bold (30px no celular), tracking −0,03em; título de cartão 17px semibold; corpo 14px.
-- Cantos concêntricos: cartões `rounded-2xl` (24px), lateral, menu e painéis `rounded-3xl`/2rem, campos `rounded-xl`, botões e abas em cápsula.
-- Botões: cápsulas de vidro. Principal = azul-petróleo translúcido com brilho e sombra da mesma cor (um por tela); secundário = vidro claro; fantasma = só hover. Ao apertar encolhem para 0,95 com mola (`ease-mola`).
-- Nada de texto sublinhado como ação. Ação solta (extrato, voltar, exportar, cancelar, “Assinar agora”) é cápsula `classeBotao("secundario", "sm")` (o pequeno tem área de toque de 44px; texto longo usa o terceiro parâmetro `quebrar`). Link dentro de uma frase é o chip `CLASSE_LINK_CHIP`. Só o número ou nome numa célula de tabela continua link de texto, com sublinhado no hover.
-- Abas (`Segmentos`, `AbasFiltro`): trilho de vidro com pílula sólida; no celular rolam na horizontal.
-- Celular: barra fina de vidro no alto com o nome da tela e **barra de abas de vidro** embaixo (Painel, três módulos que a pessoa pode ver e Menu); o Menu sobe como uma folha de vidro.
+- Fonte título: **Sora** (`--font-display`, `font-display`). Título grande 34px bold (30px no celular), tracking −0,03em; título de cartão 17px semibold.
+- Fonte corpo: **Figtree** (`--font-sans`, `font-sans`). Corpo 14px.
+- Fonte código: **IBM Plex Mono** (`--font-mono`).
+- Cantos concêntricos: cartões `rounded-2xl` (20px), lateral, menu e painéis `rounded-3xl`/24px, campos `rounded-xl`.
+- Botões: **cápsulas pill** (`rounded-full`). Principal = verde preenchido com texto branco (um por tela); secundário = fundo claro com borda; fantasma = só hover. Ao apertar encolhem para 0,95 com mola (`ease-mola`).
+- Nada de texto sublinhado como ação. Ação solta (extrato, voltar, exportar, cancelar, "Assinar agora") é cápsula `classeBotao("secundario", "sm")` (o pequeno tem área de toque de 44px; texto longo usa o terceiro parâmetro `quebrar`). Link dentro de uma frase é o chip `CLASSE_LINK_CHIP`. Só o número ou nome numa célula de tabela continua link de texto, com sublinhado no hover.
+- Abas (`Segmentos`, `AbasFiltro`): trilho pill com pílula sólida (`rounded-full`); no celular rolam na horizontal.
+- Barra lateral: fundo branco com fio de borda (`box-shadow: inset -1px 0 0 var(--borda)`). Item ativo: `bg-marca-suave font-semibold text-marca` (verde claro com texto verde). Recolhida vira trilho de ícones com as mesmas cores.
+- Celular: barra fina no alto com o nome da tela e **barra de abas** embaixo (Painel, três módulos que a pessoa pode ver e Menu); o Menu sobe como uma folha.
 - Celular tem duas versões. A **simples** (padrão) mostra no Menu só a operação do dia (`MODULOS_CELULAR` em `src/lib/menu.ts`), esconde no Painel os blocos com a classe `so-completo` e mostra tabelas como lista de cartões. A **versão completa** desenha a página com 1280px, como no computador (cookie `balbina-versao`, lido por `generateViewport` em `src/app/(app)/layout.tsx`; o Safari ignorava o viewport trocado por script). A troca é o `SeletorVersao` (`src/components/versao.tsx`, celular × monitor, no formato do seletor dia/noite): fica na barra do alto do celular e, na versão completa, flutua no canto de baixo aumentado por `--escala-versao` para não ficar minúsculo com a página encolhida.
 - Tabelas no celular: `Tabela` vira cartões (`.tabela-cartoes` em globals.css + `RotulosCelular`). Use `principal` para a coluna que dá título ao cartão, `ocultarNoCelular` para detalhes e `celular="rolar"` só em tabela de análise larga (semana a semana, viabilidade).
 - Nada pode passar da largura da tela: grade sempre com `grid-cols-1` no celular (itens de grade já têm `min-width: 0`) e filtros em cápsula com `max-w-full overflow-x-auto`. Uma peça larga faz o Safari do iPhone afastar o zoom e a tela fica descentralizada.
 - Aparência: só dia e noite. Sem escolha salva, segue o aparelho.
-- `Ficha`: quadrado colorido com glifo branco, como os Ajustes do iPhone.
+- `Ficha`: quadrado colorido com glifo branco.
+
+## Marca sobre títulos
+
+A marca de página é o texto "● Balbina" em verde (`--marca`) acima do título, via `.titulo-igapo::before`. Simples, sem ícone SVG — apenas um bullet e o nome.
 
 ## App de campo (`/campo`)
 
-- Uma coluna de até 32rem, barra de vidro no alto (nome da piscicultura e o selo de sinal, que abre os Envios) e barra
-  de abas de vidro embaixo: Chat, Viveiros, Ração, Biometria, Envios. A aba aberta fica salva no aparelho.
+- Uma coluna de até 32rem, barra no alto (nome da piscicultura e o selo de sinal, que abre os Envios) e barra
+  de abas embaixo: Chat, Viveiros, Ração, Biometria, Envios. A aba aberta fica salva no aparelho.
 - Formulários abrem numa folha que sobe de baixo (`src/components/campo/folha.tsx`, `<dialog>` nativo, arrastar para
   fechar). Botão principal grande (56px) no rodapé da folha; contadores −/+ para sacos e mortes; Sim/Não do checklist
   em cápsulas.
-- Peças em `src/components/campo/pecas.tsx`. Nada de tabela: listas de cartões de vidro com o número que importa grande.
+- Peças em `src/components/campo/pecas.tsx`. Nada de tabela: listas de cartões com o número que importa grande.
 - O chat mostra a conversa e as propostas da IA como cartões para confirmar; nada é lançado sem o toque de quem está
   no viveiro. Foco do teclado visível no contorno da caixa de texto, não no campo.
 
 ## Regras
 
-- Painel de conteúdo = `vidro rounded-2xl border border-borda`. Navegação flutuante = `cristal`. Dentro de uma lâmina não use outra `.vidro`: use `bg-elevado` (vidro claro). Botões, campos e abas não levam `backdrop-blur`; desfoque só no que flutua sobre conteúdo que rola (navegação, barras fixas, fundo de modal).
+- Painel de conteúdo = `vidro rounded-2xl border border-borda`. Navegação = `cristal`. Dentro de um cartão não use outro `.vidro`: use `bg-elevado`. Nada de backdrop-blur.
 - Use os primitivos de `src/components/ui.tsx`: `Titulo`, `Cartao`, `Botao`/`LinkBotao`/`classeBotao`, `Campo`, `Selecao`, `Tabela` (com `direita`), `Etiqueta`, `Segmentos`, `Faixa` + `Indicador`, `CartaoKpi`, `Aviso`, `Vazio`. Nada de cor fixa.
 - Barra lateral (`src/components/barra-lateral.tsx`, estrutura em `src/lib/menu.ts`): aberta mostra empresa, busca de telas (⌘K/Ctrl K), seções Principal/Operação/Administração com cada grupo de módulos abrindo em árvore, interruptor de modo noturno e perfil (bolinha verde = com internet); recolhida vira um trilho de ícones com dica ao passar o mouse. O estado fica em `<html class="lateral-recolhida">` (`src/lib/lateral.ts`, padrão recolhida abaixo de 1280px) e o CSS usa a variante `recolhida:`. No celular a mesma lista aberta vai na folha do botão Menu.
 - Cadastros seguem `ListaCadastro` + `PainelLateral` + `FormPainel` de `src/components/cadastro.tsx`. Ação em várias linhas de uma vez: prop `emLote` da `ListaCadastro` (caixa por linha, "selecionar todos" vale para o que a busca e o filtro mostram, barra no rodapé) com `BotaoLote`, que confirma na própria barra antes de rodar.
@@ -74,15 +81,14 @@ Dois temas com os mesmos nomes; o noturno é vidro fumê sobre luz escura. Escol
 ## Movimento
 
 - Uma entrada orquestrada por tela: os blocos sobem em cascata (`.cascata` no layout, 40ms entre blocos), as colunas dos gráficos crescem da base (`.crescer-y`), barras e faixas crescem da esquerda (`.crescer-x`, incluindo a linha do tempo) e linhas se revelam (`.revelar-x`). Atraso por item via `--i`.
-- Troca de tela mostra na hora o esqueleto de `src/app/(app)/loading.tsx` (`.esqueleto`, reflexo de vidro passando).
+- Troca de tela mostra na hora o esqueleto de `src/app/(app)/loading.tsx` (`.esqueleto`).
 - Só `transform`, `opacity` e `clip-path`; `ease-out` exponencial (`--ease-out`, `--ease-drawer`); botões encolhem para 0,97 ao apertar. `prefers-reduced-motion` zera duração e atraso.
 
 ## Desempenho
 
-- O vidro custa GPU: a página tem um só papel de parede parado e o desfoque fica só na navegação (28px, 16px no modo leve). Nada anima o fundo.
+- Sem vidro, sem blur na navegação: custo de GPU praticamente zero.
 - Entradas curtas: a cascata dura 300 ms (atraso máximo 120 ms) e os gráficos crescem em 500 ms. O esqueleto anima com `transform` numa camada (`::after`), nunca `background-position`.
 - A luz do fundo fica em `body::before` fixo, não em `background-attachment: fixed`.
-- O reflexo do ponteiro escreve no máximo uma vez por quadro e só no elemento sob o mouse.
 - Leituras do servidor em paralelo (`Promise.all`), regra `async-parallel` da skill vercel-react-best-practices.
 
 ## Painel e gráficos
