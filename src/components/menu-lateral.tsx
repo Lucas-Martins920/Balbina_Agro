@@ -50,6 +50,7 @@ export const ICONES: Record<string, LucideIcon> = {
   apontamentos: ClipboardList,
   despescas: Anchor,
   sanidade: Syringe,
+  sondas: Radar,
   "contas-a-pagar": ReceiptText,
   "contas-a-receber": HandCoins,
   contas: Landmark,
