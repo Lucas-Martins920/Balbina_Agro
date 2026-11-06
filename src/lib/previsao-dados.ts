@@ -98,7 +98,7 @@ export async function carregarPrevisoes({ projetar, verCaixa, verCusto, abastece
   ]);
 
   const diasLote: DiaLote[] = (dias ?? []).filter((d) => codigo.has(d.lote_id)).map((d) => ({ ...d, lote_codigo: codigo.get(d.lote_id)! }));
-  const tendencia: AlertaTendencia[] = alertasTendencia(diasLote);
+  const tendencia: AlertaTendencia[] = alertasTendencia(diasLote, hoje);
 
   const somaEstoque = new Map<string, { produto_id: string; nome: string; unidade: string; saldo: number }>();
   for (const e of estoque ?? []) {

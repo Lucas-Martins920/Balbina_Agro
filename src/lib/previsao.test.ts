@@ -96,6 +96,19 @@ test("um sinal fora da tendência vira atenção; dois sinais juntos viram crít
   assert.match(doisSinais[0].titulo, /Lote 07/);
 });
 
+test("o dia de hoje, com tratos ainda por lançar, não conta na ração nem na mortalidade", () => {
+  // dia 12 é hoje: só o trato da manhã foi lançado (metade da ração do dia) e ninguém contou as baixas da tarde
+  const manha = dias(12, (i) => (i === 11 ? { consumo_g_peixe_dia: 3, mortalidade_dia_pct: 0 } : {}));
+  assert.equal(alertasTendencia(manha).length, 1);
+  assert.deepEqual(alertasTendencia(manha, "2026-10-12"), []);
+  // queda de verdade nos dias já fechados continua alertando
+  const queda = dias(12, (i) => (i >= 8 ? { consumo_g_peixe_dia: 4.8 } : {}));
+  assert.deepEqual(alertasTendencia(queda, "2026-10-12")[0].sinais.map((s) => s.tipo), ["racao"]);
+  // o oxigênio mínimo é medido de madrugada: o de hoje já vale
+  const oxigenio = dias(12, (i) => ({ oxigenio_min_mg_l: i >= 9 ? 4.2 : 5.8 }));
+  assert.deepEqual(alertasTendencia(oxigenio, "2026-10-12")[0].sinais.map((s) => s.tipo), ["oxigenio"]);
+});
+
 test("queda pequena de ração não alerta", () => {
   assert.deepEqual(alertasTendencia(dias(12, (i) => (i >= 9 ? { consumo_g_peixe_dia: 5.4 } : {}))), []);
 });
