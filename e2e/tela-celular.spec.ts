@@ -79,3 +79,19 @@ test.describe("app de campo no celular", () => {
     await esperarEnvio(page);
   });
 });
+
+test.describe("app de campo na tela do celular", () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
+
+  test("as cinco abas do rodapé respondem e a ajuda abre pelo topo", async ({ page }) => {
+    await page.goto("/campo");
+    const abas = page.getByRole("navigation", { name: "Módulos do app de campo" });
+    for (const nome of ["Viveiros", "Ração", "Biometria", "Envios", "Chat"]) {
+      // nada pode ficar por cima das abas (o botão de ajuda tapava a aba Envios)
+      await abas.getByRole("button", { name: nome, exact: true }).click({ timeout: 5_000 });
+      await expect(page.getByRole("region", { name: nome })).toBeVisible();
+    }
+    await page.getByRole("banner").getByRole("button", { name: "Ajuda e tutoriais" }).click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+  });
+});

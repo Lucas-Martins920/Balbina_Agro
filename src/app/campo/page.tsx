@@ -52,7 +52,7 @@ export default async function PaginaCampo() {
           sugestoes: campo.sugestoes,
         }}
       />
-      <Tutorial usuario={usuario.id} vistos={vistos} permitidas={chavesPermitidas(pode, master)} comGeral={false} />
+      <Tutorial usuario={usuario.id} vistos={vistos} permitidas={chavesPermitidas(pode, master)} comGeral={false} botaoFlutuante={false} />
     </>
   );
 }

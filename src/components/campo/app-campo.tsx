@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import { CloudUpload, MessageCircle, Scale, WavesHorizontal, Wheat, type LucideIcon } from "lucide-react";
+import { CircleHelp, CloudUpload, MessageCircle, Scale, WavesHorizontal, Wheat, type LucideIcon } from "lucide-react";
+import { alternarAjuda } from "@/components/tutorial";
 import { hojeISO } from "@/lib/formato";
 import { useOnline } from "@/lib/online";
 import { turnoAgora } from "@/lib/rotulos";
@@ -105,17 +106,24 @@ export function AppCampo({ dados }: { dados: DadosCampo }) {
             <p className="text-[11px] font-semibold tracking-[0.12em] text-texto-suave uppercase">Balbina Campo</p>
             <h1 className="truncate text-base font-semibold">{dados.empresa.nome}</h1>
           </div>
-          <button type="button" onClick={() => setAba("envios")} aria-label={`${online ? "Online" : "Sem sinal"}. ${resumo.total ? `${resumo.total} na fila de envio` : "Nada na fila"}`}
-            className="flex shrink-0 items-center gap-2 rounded-lg bg-solido px-3 py-1.5 text-[13px] font-medium ring-1 ring-inset ring-borda transition-transform duration-150 ease-out active:scale-[0.96]">
-            <span className="relative flex size-2.5">
-              {online && fila.enviando && <span className="absolute inline-flex size-full animate-ping rounded-full bg-positivo opacity-60" />}
-              <span className={`relative inline-flex size-2.5 rounded-full ${online ? "bg-positivo" : "bg-perigo"}`} />
-            </span>
-            {online ? (fila.enviando ? "enviando" : "online") : "sem sinal"}
-            {resumo.total > 0 && (
-              <span className={`rounded-full px-1.5 text-[12px] tabular-nums ${resumo.precisam ? "bg-perigo/15 text-perigo" : "bg-alerta/15 text-alerta"}`}>{resumo.total}</span>
-            )}
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            <button type="button" onClick={() => setAba("envios")} aria-label={`${online ? "Online" : "Sem sinal"}. ${resumo.total ? `${resumo.total} na fila de envio` : "Nada na fila"}`}
+              className="flex shrink-0 items-center gap-2 rounded-lg bg-solido px-3 py-1.5 text-[13px] font-medium ring-1 ring-inset ring-borda transition-transform duration-150 ease-out active:scale-[0.96]">
+              <span className="relative flex size-2.5">
+                {online && fila.enviando && <span className="absolute inline-flex size-full animate-ping rounded-full bg-positivo opacity-60" />}
+                <span className={`relative inline-flex size-2.5 rounded-full ${online ? "bg-positivo" : "bg-perigo"}`} />
+              </span>
+              {online ? (fila.enviando ? "enviando" : "online") : "sem sinal"}
+              {resumo.total > 0 && (
+                <span className={`rounded-full px-1.5 text-[12px] tabular-nums ${resumo.precisam ? "bg-perigo/15 text-perigo" : "bg-alerta/15 text-alerta"}`}>{resumo.total}</span>
+              )}
+            </button>
+            {/* a ajuda fica no topo: o rodapé é das cinco abas */}
+            <button type="button" data-tour="ajuda" onClick={alternarAjuda} aria-haspopup="dialog" aria-label="Ajuda e tutoriais" title="Ajuda e tutoriais (?)"
+              className="grid size-8 shrink-0 place-items-center rounded-lg bg-solido text-texto ring-1 ring-inset ring-borda transition-transform duration-150 ease-out active:scale-[0.92]">
+              <CircleHelp size={18} strokeWidth={1.9} aria-hidden />
+            </button>
+          </div>
         </header>
 
         <main className="flex-1 px-4 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom))]">
