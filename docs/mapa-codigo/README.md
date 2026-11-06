@@ -2,7 +2,7 @@
 
 > Gerado automaticamente por `scripts/mapa-codigo.mjs`. **Não edite à mão**: depois de mudar o código, rode `npm run mapa` e a pasta `docs/mapa-codigo/` é refeita. Em conflito de merge nesses arquivos, rode `npm run mapa` de novo e aceite o resultado.
 
-Resumo: 517 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2112 funções/componentes/tipos, 352 funções do banco, 106 tabelas, 30 views, 79 triggers, 175 policies, 119 migrations.
+Resumo: 517 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2114 funções/componentes/tipos, 352 funções do banco, 106 tabelas, 30 views, 79 triggers, 175 policies, 119 migrations.
 
 **Versão com busca (recomendada):** abra [mapa.html](mapa.html) no navegador (duplo clique no arquivo `docs/mapa-codigo/mapa.html`). Nas páginas Markdown, use Ctrl+F.
 
@@ -115,8 +115,8 @@ Resumo: 517 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2112 funç
 | `public` | 6 | Arquivos estáticos (ícones, service worker do modo offline). |
 | `scripts` | 11 | Scripts de apoio: rodar local, backup, testes do banco, aplicar migrations, este mapa. |
 | `src` | 519 | Todo o código do app Next.js (telas, componentes, regras em TypeScript). |
-| `src/app` | 252 | Rotas do Next.js: cada pasta é um endereço; page.tsx é a tela, route.ts é API, actions.ts são as ações de formulário (server actions). |
-| `src/app/(app)` | 163 | Telas do sistema logado (com menu lateral). O nome entre parênteses não aparece na URL. |
+| `src/app` | 253 | Rotas do Next.js: cada pasta é um endereço; page.tsx é a tela, route.ts é API, actions.ts são as ações de formulário (server actions). |
+| `src/app/(app)` | 164 | Telas do sistema logado (com menu lateral). O nome entre parênteses não aparece na URL. |
 | `src/app/(app)/_cadastro-rapido` | 1 | Endereço /_cadastro-rapido. |
 | `src/app/(app)/_titulos` | 3 | Código compartilhado por Contas a pagar e Contas a receber (lista, página e ações). |
 | `src/app/(app)/apontamentos` | 7 | Tela /apontamentos (Produção > Apontamento diário). |
@@ -151,8 +151,8 @@ Resumo: 517 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2112 funç
 | `src/app/(app)/fluxo-de-caixa` | 1 | Tela /fluxo-de-caixa (Financeiro > Fluxo de caixa). |
 | `src/app/(app)/historico` | 1 | Tela /historico (Configurações > Histórico de alterações). |
 | `src/app/(app)/insumos` | 1 | Tela /insumos (Cadastros > Insumos da piscicultura). |
-| `src/app/(app)/lotes` | 6 | Tela /lotes (Produção > Lotes). |
-| `src/app/(app)/lotes/[id]` | 2 | Endereço /lotes/[id]. |
+| `src/app/(app)/lotes` | 7 | Tela /lotes (Produção > Lotes). |
+| `src/app/(app)/lotes/[id]` | 3 | Endereço /lotes/[id]. |
 | `src/app/(app)/lotes/especies` | 1 | Endereço /lotes/especies. |
 | `src/app/(app)/medicamentos` | 3 | Tela /medicamentos (Cadastros > Medicamentos e vitaminas). |
 | `src/app/(app)/notas` | 5 | Tela /notas (Comercial > Notas fiscais). |
@@ -271,7 +271,7 @@ Resumo: 517 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2112 funç
 | `src/app/privacidade` | 1 | Endereço /privacidade. |
 | `src/app/termos` | 1 | Endereço /termos. |
 | `src/app/vendedor` | 1 | App do vendedor (pedidos no celular). |
-| `src/components` | 63 | Componentes React reutilizados pelas telas. ui.tsx tem os primitivos visuais (botões, cartões, tabelas). |
+| `src/components` | 62 | Componentes React reutilizados pelas telas. ui.tsx tem os primitivos visuais (botões, cartões, tabelas). |
 | `src/components/campo` | 17 |  |
 | `src/components/vendas` | 9 | Componentes de vendas: PDV, nova venda, NFC-e, app do vendedor. |
 | `src/lib` | 203 | Regras e utilitários em TypeScript (cálculos puros, consultas, integrações). Arquivo .test.ts ao lado = teste. |
@@ -279,7 +279,9 @@ Resumo: 517 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2112 funç
 | `src/lib/app-celular` | 3 |  |
 | `src/lib/campo` | 16 |  |
 | `src/lib/supabase` | 8 | Clientes do Supabase: server.ts (servidor com sessão), client.ts (navegador), admin.ts (chave de serviço), proxy.ts (sessão no proxy). |
-| `supabase` | 207 | Banco de dados Supabase (Postgres). |
+| `supabase` | 209 | Banco de dados Supabase (Postgres). |
+| `supabase/.branches` | 1 |  |
+| `supabase/.temp` | 1 |  |
 | `supabase/migrations` | 119 | Migrations SQL em ordem de data. Tabelas, views, funções, triggers e policies (RLS). Nunca editar uma antiga: criar outra. |
 | `supabase/seed` | 1 |  |
 | `supabase/templates` | 1 |  |
