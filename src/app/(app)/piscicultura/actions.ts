@@ -30,7 +30,7 @@ export async function salvarSetor(_: EstadoAcao, form: FormData): Promise<Estado
   if (uf && !/^[A-Z]{2}$/.test(uf)) return falha("UF com duas letras.");
   const dados = {
     nome,
-    registro_sanitario: t("registro_sanitario") || null,
+    licenca_ambiental: t("licenca_ambiental") || null,
     endereco: { logradouro: t("logradouro"), cidade: t("cidade"), uf },
     ativo: form.get("ativo") === "on",
   };

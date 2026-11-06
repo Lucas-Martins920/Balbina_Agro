@@ -11,7 +11,7 @@ export default async function PaginaPiscicultura() {
   const { atual } = await getEmpresaAtual();
   const supabase = await createClient();
   const [{ data: setores }, { data: viveiros }, { data: ocupacao }, { data: classes }] = await Promise.all([
-    supabase.from("setores").select("id, nome, registro_sanitario, endereco, ativo").eq("empresa_id", atual.id).order("nome"),
+    supabase.from("setores").select("id, nome, licenca_ambiental, endereco, ativo").eq("empresa_id", atual.id).order("nome"),
     supabase.from("viveiros").select("id, nome, setor_id, finalidade, sistema, capacidade_peixes, area_m2, volume_m3, profundidade_m, aeracao, ativo")
       .eq("empresa_id", atual.id).order("nome"),
     supabase.from("alocacoes_atuais").select("viveiro_id, lote_codigo, peixes_atuais").eq("empresa_id", atual.id),

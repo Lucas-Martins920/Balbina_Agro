@@ -1987,7 +1987,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `Serie` | tipo | `src/components/graficos.tsx:10` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `serieIndicador` | função | `src/lib/zootecnico.ts:134` | Produção | 1 arquivo |
 | `SerieSlide` | tipo | `src/lib/apresentacao.ts:18` | Planejamento, previsões, custo do kg e relatórios | — |
-| `SESSAO_DONO` | constante | `e2e/apoio.ts:30` | Comum | 12 arquivos |
+| `SESSAO_DONO` | constante | `e2e/apoio.ts:30` | Comum | 13 arquivos |
 | `SessaoApp` | tipo | `src/lib/app-celular/sessao.ts:19` | Comum | 1 arquivo |
 | `sessaoDoApp` | função | `src/lib/app-celular/sessao.ts:26` | Comum | 10 arquivos |
 | `sessoes_2fa` | tabela | `supabase/migrations/20261028034500_mfa_obrigatorio.sql:20` | Login, segurança, usuários e permissões | 1 arquivo |
@@ -2048,7 +2048,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `telasVistas` | função | `src/lib/tutoriais-dados.ts:6` | Início, painel, ajuda e configurações | 2 arquivos |
 | `Tema` | tipo | `src/components/tema.tsx:10` | Comum | — |
 | `temPermissao` | função | `src/lib/permissoes-regras.ts:78` | Login, segurança, usuários e permissões | 6 arquivos |
-| `test` | constante | `e2e/apoio.ts:7` | Comum | 13 arquivos |
+| `test` | constante | `e2e/apoio.ts:7` | Comum | 14 arquivos |
 | `textoBaseConhecimento` | função | `src/lib/campo/conhecimento-tambaqui.ts:165` | Produção | 2 arquivos |
 | `textoDadosPiscicultura` | função | `src/lib/campo/contexto-chat.ts:33` | Produção | 2 arquivos |
 | `textoFaltam` | função | `src/lib/assistente.ts:63` | Início, painel, ajuda e configurações | 3 arquivos |

@@ -8,7 +8,7 @@ import { faixaClasse } from "@/lib/pescado";
 import { FINALIDADES_VIVEIRO as FINALIDADES, SISTEMAS_VIVEIRO as SISTEMAS } from "@/lib/rotulos";
 import { excluirViveiro, excluirSetor, salvarClasse, salvarViveiro, salvarSetor } from "./actions";
 
-export type Setor = { id: string; nome: string; registro_sanitario: string | null; endereco: { logradouro?: string; cidade?: string; uf?: string } | null; ativo: boolean };
+export type Setor = { id: string; nome: string; licenca_ambiental: string | null; endereco: { logradouro?: string; cidade?: string; uf?: string } | null; ativo: boolean };
 export type Viveiro = {
   id: string; nome: string; setor_id: string; finalidade: string; sistema: string; capacidade_peixes: number;
   area_m2: number | string | null; volume_m3: number | string | null; profundidade_m: number | string | null;
@@ -43,8 +43,8 @@ function FormSetor({ setor, podeEditar }: { setor?: Setor; podeEditar: boolean }
       {setor && <input type="hidden" name="id" value={setor.id} />}
       <SecaoForm titulo="Setor">
         <Campo rotulo="Nome" id="n_nome" name="nome" defaultValue={setor?.nome} placeholder="Ex.: Sede, Setor 2" required />
-        <Campo rotulo="Registro ou licença" id="n_reg" name="registro_sanitario" defaultValue={setor?.registro_sanitario ?? ""}
-          placeholder="Licença ambiental, outorga de água ou registro sanitário" />
+        <Campo rotulo="Licença ambiental" id="n_licenca" name="licenca_ambiental" defaultValue={setor?.licenca_ambiental ?? ""}
+          placeholder="Número da licença de operação (LO) ou da outorga de água" />
       </SecaoForm>
       <SecaoForm titulo="Localização">
         <Campo rotulo="Endereço" id="n_end" name="logradouro" defaultValue={e.logradouro ?? ""} placeholder="Estrada, ramal ou comunidade" />
@@ -194,7 +194,7 @@ export function CadastroPiscicultura({ setores, viveiros, classes, podeEditar, p
           const e = n.endereco ?? {};
           return {
             id: n.id,
-            busca: [n.nome, e.cidade, n.registro_sanitario].filter(Boolean).join(" "),
+            busca: [n.nome, e.cidade, n.licenca_ambiental].filter(Boolean).join(" "),
             ordem: [n.nome, dele.length, dele.reduce((s, g) => s + g.capacidade_peixes, 0), e.cidade ?? null],
             inativa: !n.ativo,
             celulas: [

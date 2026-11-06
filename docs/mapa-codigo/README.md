@@ -111,9 +111,9 @@ Resumo: 517 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2112 funç
 | `docs/legado/balbina-v1` | 8 |  |
 | `docs/legado/finavi` | 4 |  |
 | `docs/legado/finavi/replica` | 3 |  |
-| `e2e` | 17 | Testes de ponta a ponta com Playwright (npm run test:e2e). |
+| `e2e` | 18 | Testes de ponta a ponta com Playwright (npm run test:e2e). |
 | `public` | 6 | Arquivos estáticos (ícones, service worker do modo offline). |
-| `scripts` | 10 | Scripts de apoio: rodar local, backup, testes do banco, aplicar migrations, este mapa. |
+| `scripts` | 11 | Scripts de apoio: rodar local, backup, testes do banco, aplicar migrations, este mapa. |
 | `src` | 519 | Todo o código do app Next.js (telas, componentes, regras em TypeScript). |
 | `src/app` | 252 | Rotas do Next.js: cada pasta é um endereço; page.tsx é a tela, route.ts é API, actions.ts são as ações de formulário (server actions). |
 | `src/app/(app)` | 163 | Telas do sistema logado (com menu lateral). O nome entre parênteses não aparece na URL. |

@@ -174,6 +174,7 @@
 - [e2e/financeiro.spec.ts](../../e2e/financeiro.spec.ts) — Testes de e2e/financeiro.spec.ts.
 - [e2e/login-local.spec.ts](../../e2e/login-local.spec.ts) — Testes de e2e/login-local.spec.ts.
 - [e2e/login.setup.ts](../../e2e/login.setup.ts) — Testes de e2e/login.setup.ts.
+- [e2e/piscicultura.spec.ts](../../e2e/piscicultura.spec.ts) — Testes de e2e/piscicultura.spec.ts.
 - [e2e/preparar.ts](../../e2e/preparar.ts) — Testes de e2e/preparar.ts.
 - [e2e/producao-vendas.spec.ts](../../e2e/producao-vendas.spec.ts) — Testes de e2e/producao-vendas.spec.ts.
 - [e2e/rotina.spec.ts](../../e2e/rotina.spec.ts) — Testes de e2e/rotina.spec.ts.
@@ -215,6 +216,7 @@
 
 - [scripts/aplicar-migracoes.sh](../../scripts/aplicar-migracoes.sh) — Aplica no banco as migrations de supabase/migrations que ainda não rodaram.
 - [scripts/backup-banco.sh](../../scripts/backup-banco.sh) — Gera um backup cifrado do banco do Balbina.
+- [scripts/conferir-consultas.mjs](../../scripts/conferir-consultas.mjs) — Confere se o que o site (src/) e o app (mobile/src/) pedem ao banco existe depois das migrations:
 - [scripts/focus-homologacao.ts](../../scripts/focus-homologacao.ts) — Teste ponta a ponta da NF-e/NFC-e no ambiente de HOMOLOGAÇÃO da Focus NFe (notas sem valor fiscal).
 - [scripts/local.mjs](../../scripts/local.mjs) — Roda o Balbina na sua máquina com um banco Supabase local (Docker), sem tocar na produção.
 - [scripts/mapa-codigo.mjs](../../scripts/mapa-codigo.mjs) — Gera o mapa do código do Balbina: onde fica cada tela, função, componente, rota de API,

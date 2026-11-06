@@ -13,7 +13,7 @@ Antes de enviar uma mudança, rode os que cobrem o que você mexeu. Mudou o banc
 
 ### Como é um teste do banco
 
-`scripts/test-db.sh` cria um banco temporário, roda `00_prelude_postgres.sql` (que imita o `auth` do Supabase), aplica as migrations em ordem e executa cada `supabase/tests/[1-9]*.sql`. Cada arquivo:
+`scripts/test-db.sh` cria um banco temporário, roda `00_prelude_postgres.sql` (que imita o `auth` do Supabase), aplica as migrations em ordem, confere com `scripts/conferir-consultas.mjs` se as tabelas, colunas e funções que o site e o app pedem ao banco existem (`.from(...)`, `.from(...).select(...)` e `.rpc(...)` em `src/` e `mobile/src/`) e executa cada `supabase/tests/[1-9]*.sql`. Cada arquivo:
 
 ```sql
 \set ON_ERROR_STOP on
@@ -33,6 +33,7 @@ Testes que valem para o sistema inteiro e costumam falhar com tabela nova:
 - `99_desempenho.sql`: funções usadas linha a linha não refazem o RLS.
 - `99_funcoes_sem_anon.sql`: `anon` não executa função nenhuma.
 - `99_historico.sql`: o histórico está ligado nas tabelas da empresa.
+- `scripts/conferir-consultas.mjs`: nenhuma consulta do código pede coluna, tabela ou função que a migration renomeou ou apagou (a tela ficaria vazia sem erro).
 
 ## Onde o código roda
 
