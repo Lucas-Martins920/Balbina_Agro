@@ -513,8 +513,9 @@ begin
       if v.viveiro = 'v4' and d between 30 and 36 then v_mortes := v_mortes + 18 + floor(random() * 25)::int; end if;
       if v.viveiro = 'v3' and d = 41 then v_mortes := v_mortes + 35; end if;
 
+      -- Hoje também leva o trato da tarde: a conta fica parada até o script rodar de novo, e um dia só com o trato
+      -- da manhã viraria, a partir de amanhã, uma falsa queda da ração aceita no painel (ontem já conta como fechado).
       foreach t in array array['manha', 'tarde'] loop
-        continue when d = 0 and t = 'tarde';
         v_kg := round(v_kg_dia * 0.5, 1);
         if v.viveiro = 'v3' and d = 41 and t = 'manha' then v_kg := 0; end if;   -- oxigênio baixo: ração da manhã suspensa
 
