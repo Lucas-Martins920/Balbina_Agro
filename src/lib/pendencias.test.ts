@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { organizarRotina } from "./pendencias.ts";
+import { organizarRotina, resumoWhatsApp } from "./pendencias.ts";
 
 test("rotina do dia agrupa por área, pendentes e urgentes no alto, feitos embaixo", () => {
   const r = organizarRotina([
@@ -14,4 +14,28 @@ test("rotina do dia agrupa por área, pendentes e urgentes no alto, feitos embai
   assert.deepEqual(r.areas[1].itens.map((p) => p.chave), ["vencidas", "extrato", "nfe"]);
   assert.equal(r.areas[1].pendentes, 2);
   assert.deepEqual({ feitos: r.feitos, total: r.total, pendentes: r.pendentes }, { feitos: 2, total: 4, pendentes: 2 });
+});
+
+test("resumoWhatsApp com pendências lista por área e marca urgentes", () => {
+  const rotina = organizarRotina([
+    { chave: "vencidas", area: "financeiro", titulo: "Contas a pagar vencidas", quantidade: 2, link: "/", urgente: true },
+    { chave: "extrato", area: "financeiro", titulo: "Extrato para conciliar", quantidade: 5, link: "/", urgente: false },
+    { chave: "nfe", area: "financeiro", titulo: "Notas de compra", quantidade: 0, link: "/", urgente: false },
+    { chave: "viveiro-1", area: "viveiro", titulo: "Apontar viveiro 1", quantidade: 1, link: "/", urgente: false },
+  ]);
+  const texto = resumoWhatsApp(rotina, "Piscicultura Teste", "06/11/2026");
+  assert.ok(texto.includes("*Piscicultura Teste — Rotina do dia*"));
+  assert.ok(texto.includes("📅 06/11/2026"));
+  assert.ok(texto.includes("🔴 Contas a pagar vencidas (2)"));
+  assert.ok(texto.includes("⚠️ Extrato para conciliar (5)"));
+  assert.ok(texto.includes("⚠️ Apontar viveiro 1"));
+  assert.ok(!texto.includes("Notas de compra"), "feitos não aparecem");
+});
+
+test("resumoWhatsApp tudo em dia", () => {
+  const rotina = organizarRotina([
+    { chave: "nfe", area: "financeiro", titulo: "Notas", quantidade: 0, link: "/", urgente: false },
+  ]);
+  const texto = resumoWhatsApp(rotina, "Fazenda", "06/11/2026");
+  assert.ok(texto.includes("✅ Tudo em dia!"));
 });

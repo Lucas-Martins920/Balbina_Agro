@@ -208,6 +208,18 @@ export const TUTORIAIS: Tutorial[] = [
     ],
   },
   {
+    tela: "/sondas",
+    nome: "Sondas IoT",
+    permissao: "lotes.ver",
+    passos: [
+      { alvo: t("titulo"), titulo: "Sondas IoT", texto: "Leituras em tempo real de oxigênio, temperatura, pH e amônia das sondas instaladas nos viveiros." },
+      { alvo: t("lista"), titulo: "Painel", texto: "Cada sonda mostra a última leitura com indicadores coloridos: normal, atenção ou crítico." },
+    ],
+    duvidas: [
+      { pergunta: "Como cadastro uma sonda?", resposta: "Em Configurações > API, cadastre a sonda com o nome e o viveiro. O token gerado vai na configuração do equipamento." },
+    ],
+  },
+  {
     tela: "/medicamentos",
     nome: "Medicamentos e vitaminas",
     permissao: "sanidade.ver",

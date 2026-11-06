@@ -78,6 +78,9 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `GET` *constante* L8 · `POST` *constante* L40
 - **[src/app/api/v1/route.ts](../../src/app/api/v1/route.ts)** (rota `/api/v1`) — API GET /api/v1.
   - `GET` *função* L4
+- **[src/app/api/v1/sondas/leituras/route.ts](../../src/app/api/v1/sondas/leituras/route.ts)** (rota `/api/v1/sondas/leituras`) — API POST /api/v1/sondas/leituras.
+  - `POST` *função* L16
+  - internas: `servico` L4 · `erro` L12
 - **[src/app/api/v1/vendas/[id]/route.ts](../../src/app/api/v1/vendas/%5Bid%5D/route.ts)** (rota `/api/v1/vendas/[id]`) — API GET /api/v1/vendas/[id].
   - `GET` *constante* L5
 - **[src/app/api/v1/vendas/route.ts](../../src/app/api/v1/vendas/route.ts)** (rota `/api/v1/vendas`) — API GET /api/v1/vendas.
@@ -726,7 +729,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `Acesso` *tipo* L6 (usado em 6) · `SEM_ACESSO` *constante* L8 (usado em 2) · `Acao` *tipo* L10 · `ModuloPermissao` *tipo* L11 (usado em 1) · `CATALOGO` *constante* L26 (usado em 3) · `GRUPOS_CATALOGO` *constante* L39 (usado em 2) · `CHAVES_VALIDAS` *constante* L41 (usado em 4) · `PERFIS` *constante* L45 (usado em 3) · `chavesDoCargo` *função* L63 (usado em 2) · `planoInclui` *função* L72 (usado em 3) · `temPermissao` *função* L78 (usado em 6) · `podeDispensar2fa` *função* L92 (usado em 2)
   - internas: `modulo` L68
 - **[src/lib/permissoes.ts](../../src/lib/permissoes.ts)** — Acesso do usuário logado na empresa atual. O banco aplica a mesma regra nas policies.
-  - `Permissoes` *tipo* L9 · `getPermissoes` *função* L12 (usado em 72) · `exigirAcesso` *função* L22 (usado em 57) · `exigirMaster` *função* L27 (usado em 6) · `foraDoPlano` *função* L34 (usado em 7)
+  - `Permissoes` *tipo* L9 · `getPermissoes` *função* L12 (usado em 72) · `exigirAcesso` *função* L22 (usado em 58) · `exigirMaster` *função* L27 (usado em 6) · `foraDoPlano` *função* L34 (usado em 7)
 - **[src/lib/supabase/falha-auth.ts](../../src/lib/supabase/falha-auth.ts)** — Erro do Auth ao conferir a sessão: só rede, timeout ou 5xx são temporários (vale tentar de novo). 4xx (refresh token vencido ou já usado, JWT inválido) quer dizer sessão morta: o caminho é o login.
   - `falhaTemporaria` *função* L5 (usado em 2)
 - **[src/lib/supabase/proxy.ts](../../src/lib/supabase/proxy.ts)** — Renova a sessão a cada navegação e manda quem não está logado para /login.
@@ -903,6 +906,9 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - internas: `atualizar` L9
 - **[src/app/(app)/primeiros-passos/page.tsx](../../src/app/(app)/primeiros-passos/page.tsx)** (rota `/primeiros-passos`) — Tela /primeiros-passos.
   - `PrimeirosPassos` *componente* L12
+- **[src/app/(app)/sondas/page.tsx](../../src/app/(app)/sondas/page.tsx)** (rota `/sondas`) — Leituras em tempo real de oxigênio, temperatura, pH e amônia das sondas de qualidade da água.
+  - `PaginaSondas` *componente* L44
+  - internas: `br` L14 · `tempoAtras` L16 · `corNivel` L27 · `Medida` L33
 - **[src/app/api/app/painel/route.ts](../../src/app/api/app/painel/route.ts)** (rota `/api/app/painel`) — API POST /api/app/painel.
   - `POST` *função* L7
 - **[src/app/layout.tsx](../../src/app/layout.tsx)** — Moldura comum das telas desta pasta.
@@ -939,7 +945,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/assistente.ts](../../src/lib/assistente.ts)** — Assistente de início: o que cada passo pede e para onde leva. O banco (assistente_inicio) diz o que já está feito, o que foi pulado e quais passos o plano da empresa inclui.
   - `PassoBanco` *tipo* L4 · `SituacaoAssistente` *tipo* L5 (usado em 3) · `InfoPasso` *tipo* L7 · `PASSOS` *constante* L9 · `passosConhecidos` *função* L49 (usado em 2) · `mostrarNoPainel` *função* L54 (usado em 2) · `proximoPasso` *função* L59 (usado em 3) · `textoFaltam` *função* L63 (usado em 3) · `progresso` *função* L69 (usado em 3)
 - **[src/lib/empresa.ts](../../src/lib/empresa.ts)** — O RLS só devolve as empresas de que o usuário participa.
-  - `COOKIE_EMPRESA` *constante* L8 (usado em 2) · `Empresa` *tipo* L10 (usado em 2) · `nomeEmpresa` *função* L12 (usado em 13) · `listarEmpresas` *função* L17 (usado em 1) · `aceitarConvites` *função* L28 · `getEmpresaAtual` *função* L35 (usado em 122)
+  - `COOKIE_EMPRESA` *constante* L8 (usado em 2) · `Empresa` *tipo* L10 (usado em 2) · `nomeEmpresa` *função* L12 (usado em 13) · `listarEmpresas` *função* L17 (usado em 1) · `aceitarConvites` *função* L28 · `getEmpresaAtual` *função* L35 (usado em 123)
 - **[src/lib/online.ts](../../src/lib/online.ts)** — O navegador está com internet? Muda sozinho quando a conexão cai ou volta; no servidor, sempre true.
   - `useOnline` *hook* L4 (usado em 3)
 - **[src/lib/painel.ts](../../src/lib/painel.ts)** — Contas do painel de acompanhamento: puras, para testar sem banco.
@@ -949,7 +955,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/tutoriais-dados.ts](../../src/lib/tutoriais-dados.ts)** — Telas cujo tutorial a pessoa logada já viu (o RLS só devolve as dela).
   - `telasVistas` *função* L6 (usado em 2) · `chavesPermitidas` *função* L13 (usado em 2)
 - **[src/lib/tutoriais.ts](../../src/lib/tutoriais.ts)** — Tutoriais guiados por tela (balões em cima da tela, com destaque no ponto explicado). Cada tela tem o seu: aparece no primeiro acesso de cada pessoa e pode ser refeito pelo botão de ajuda. Os passos apontam para marcas…
-  - `Passo` *tipo* L8 · `Duvida` *tipo* L16 · `Tutorial` *tipo* L18 (usado em 1) · `TOUR_GERAL` *constante* L34 (usado em 2) · `TUTORIAIS` *constante* L83 (usado em 1) · `tutorialDaTela` *função* L701 (usado em 2) · `podeVerTutorial` *função* L712 (usado em 2) · `passosPermitidos` *função* L716 (usado em 2) · `chavesDosTutoriais` *função* L721 (usado em 2) · `DuvidaEncontrada` *tipo* L726 · `buscarDuvidas` *função* L729 (usado em 2) · `TUTORIAIS_DESLIGADOS` *constante* L742 (usado em 1)
+  - `Passo` *tipo* L8 · `Duvida` *tipo* L16 · `Tutorial` *tipo* L18 (usado em 1) · `TOUR_GERAL` *constante* L34 (usado em 2) · `TUTORIAIS` *constante* L83 (usado em 1) · `tutorialDaTela` *função* L713 (usado em 2) · `podeVerTutorial` *função* L724 (usado em 2) · `passosPermitidos` *função* L728 (usado em 2) · `chavesDosTutoriais` *função* L733 (usado em 2) · `DuvidaEncontrada` *tipo* L738 · `buscarDuvidas` *função* L741 (usado em 2) · `TUTORIAIS_DESLIGADOS` *constante* L754 (usado em 1)
   - internas: `t` L28 · `cartao` L29 · `lancamento` L31
 - **[src/lib/versao.ts](../../src/lib/versao.ts)** — Versão completa no celular: a página passa a ser desenhada com 1280px de largura, como no computador (lateral com todos os módulos, tabelas inteiras), e a pessoa aproxima com os dedos. Sem ela, o celular mostra a versão…
   - `CHAVE_VERSAO` *constante* L5 (usado em 2) · `LARGURA_COMPLETA` *constante* L6 (usado em 1) · `SCRIPT_VERSAO` *constante* L12 (usado em 1)
@@ -1014,7 +1020,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `Tema` *tipo* L10 · `SCRIPT_TEMA` *constante* L17 (usado em 1) · `SeletorTema` *componente* L65 (usado em 3) · `InterruptorTema` *componente* L93 (usado em 1) · `BotaoTema` *componente* L119 (usado em 1)
   - internas: `ler` L22 · `assinar` L32 · `aplicar` L44
 - **[src/components/ui.tsx](../../src/components/ui.tsx)** — `quebrar` deixa um texto longo passar para a linha de baixo (a cápsula cresce na altura) em vez de vazar no celular.
-  - `classeBotao` *função* L21 (usado em 52) · `Botao` *componente* L31 (usado em 40) · `LinkBotao` *componente* L41 (usado em 24) · `CLASSE_BOTAO_TEXTO` *constante* L51 (usado em 35) · `CLASSE_CONTROLE` *constante* L54 (usado em 18) · `Campo` *componente* L66 (usado em 69) · `Selecao` *componente* L75 (usado em 54) · `AreaTexto` *componente* L86 (usado em 15) · `Cartao` *componente* L95 (usado em 47) · `Aviso` *componente* L140 (usado em 54) · `TomEtiqueta` *tipo* L148 (usado em 7) · `Etiqueta` *componente* L150 (usado em 45) · `Tabela` *componente* L165 (usado em 27) · `Vazio` *componente* L206 (usado em 8) · `Titulo` *componente* L215 (usado em 68) · `Secao` *componente* L228 (usado em 3) · `Segmentos` *componente* L244 (usado em 12) · `Cor` *tipo* L266 (usado em 3) · `COR_FICHA` *constante* L267 · `Ficha` *componente* L278 (usado em 3) · `CartaoKpi` *componente* L291 (usado em 2) · `Indicador` *componente* L317 (usado em 8) · `Faixa` *componente* L348 (usado em 8)
+  - `classeBotao` *função* L21 (usado em 52) · `Botao` *componente* L31 (usado em 40) · `LinkBotao` *componente* L41 (usado em 24) · `CLASSE_BOTAO_TEXTO` *constante* L51 (usado em 35) · `CLASSE_CONTROLE` *constante* L54 (usado em 18) · `Campo` *componente* L66 (usado em 69) · `Selecao` *componente* L75 (usado em 54) · `AreaTexto` *componente* L86 (usado em 15) · `Cartao` *componente* L95 (usado em 47) · `Aviso` *componente* L140 (usado em 54) · `TomEtiqueta` *tipo* L148 (usado em 8) · `Etiqueta` *componente* L150 (usado em 46) · `Tabela` *componente* L165 (usado em 27) · `Vazio` *componente* L206 (usado em 9) · `Titulo` *componente* L215 (usado em 69) · `Secao` *componente* L228 (usado em 3) · `Segmentos` *componente* L244 (usado em 12) · `Cor` *tipo* L266 (usado em 3) · `COR_FICHA` *constante* L267 · `Ficha` *componente* L278 (usado em 3) · `CartaoKpi` *componente* L291 (usado em 2) · `Indicador` *componente* L317 (usado em 8) · `Faixa` *componente* L348 (usado em 8)
   - internas: `Rotulo` L57
 - **[src/components/whatsapp-pessoal.tsx](../../src/components/whatsapp-pessoal.tsx)** — H2: o celular da própria pessoa no WhatsApp do Balbina (avisos e envio de documentos).
   - `WhatsAppPessoal` *componente* L11 (usado em 2)
@@ -1046,7 +1052,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `cpfValido` *função* L9 (usado em 4) · `cnpjValido` *função* L15 (usado em 3) · `formatarDocumento` *função* L21 (usado em 2)
   - internas: `digito` L3
 - **[src/lib/env.ts](../../src/lib/env.ts)**
-  - `supabaseEnv` *função* L1 (usado em 7)
+  - `supabaseEnv` *função* L1 (usado em 8)
 - **[src/lib/formato.ts](../../src/lib/formato.ts)** — Conversões entre o que a pessoa digita (pt-BR) e o que o banco guarda.
   - `formatarMoeda` *função* L6 (usado em 60) · `formatarNumero` *função* L10 (usado em 27) · `formatarQuantidade` *função* L16 (usado em 5) · `formatarInteiro` *função* L21 (usado em 25) · `formatarData` *função* L26 (usado em 62) · `centavosParaCampo` *função* L33 (usado em 12) · `somarDias` *função* L38 (usado em 23) · `MESES_CURTOS` *constante* L43 (usado em 2) · `MESES_LONGOS` *constante* L44 (usado em 3) · `rotuloMes` *função* L47 (usado em 8) · `deslocarMes` *função* L52 (usado em 5) · `semAcento` *função* L58 (usado em 9) · `plural` *função* L63 (usado em 3) · `lerCentavos` *função* L68 (usado em 21) · `lerDecimal` *função* L77 (usado em 20) · `lerInteiro` *função* L85 (usado em 10) · `FUSO_PADRAO` *constante* L91 · `FUSOS_BRASIL` *constante* L94 (usado em 2) · `hojeISO` *função* L109 (usado em 78) · `diasAtrasISO` *função* L114 (usado em 10)
 - **[src/lib/ia.ts](../../src/lib/ia.ts)** — Leitura por IA (C3 documentos e A8 mortalidade por foto do estudo de automação). Usa a API da Anthropic com a chave ANTHROPIC_API_KEY do servidor. Tudo que sai daqui é PROPOSTA: a tela mostra preenchido e a pessoa confe…
@@ -1069,12 +1075,12 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `Link` *tipo* L7 (usado em 1) · `Grupo` *tipo* L8 (usado em 1) · `Secao` *tipo* L9 (usado em 1) · `MODULOS_CELULAR` *constante* L12 · `USUARIOS` *constante* L19 · `montarMenu` *função* L21 (usado em 2) · `estaAtivo` *função* L46 (usado em 1) · `hrefAtivo` *função* L51 (usado em 1) · `grupoAtivo` *função* L55 (usado em 2) · `Tela` *tipo* L62 · `buscarTelas` *função* L65 (usado em 2)
   - internas: `normalizar` L60
 - **[src/lib/modulos.ts](../../src/lib/modulos.ts)** — Mapa de navegação. `marco` diz em que etapa do plano original do FINAVI (docs/legado/finavi/replica/architecture.md) o módulo ficou pronto.
-  - `Modulo` *tipo* L2 · `GrupoModulos` *tipo* L13 · `GRUPOS` *constante* L15 (usado em 5) · `podeVerModulo` *função* L89 (usado em 1) · `encontrarModulo` *função* L93 (usado em 3)
+  - `Modulo` *tipo* L2 · `GrupoModulos` *tipo* L13 · `GRUPOS` *constante* L15 (usado em 5) · `podeVerModulo` *função* L90 (usado em 1) · `encontrarModulo` *função* L94 (usado em 3)
 - **[src/lib/ordem.ts](../../src/lib/ordem.ts)** — Ordem das categorias e dos centros de custo escolhida pela piscicultura (arrastando na lista, como no NIBO). No banco a ordem vale entre irmãos; aqui a árvore vira lista plana: pai, filhos dele, próximo pai.
   - `ItemOrdenavel` *tipo* L4 (usado em 1) · `compararOrdem` *função* L11 (usado em 3) · `ordenarArvore` *função* L21 (usado em 1) · `emOrdem` *função* L46 · `moverPara` *função* L51 (usado em 1) · `ordenado` *função* L59 (usado em 9)
   - internas: `posGrupo` L8
 - **[src/lib/pendencias.ts](../../src/lib/pendencias.ts)** — Rotina do dia (antiga caixa de pendências, H1): o checklist do que precisa ser alimentado no sistema hoje, separado por quem faz. Cada item se marca sozinho quando o dado entra. quantidade null = o usuário não vê aquele…
-  - `Area` *tipo* L4 (usado em 1) · `AREAS` *constante* L6 · `Pendencia` *tipo* L13 (usado em 1) · `organizarRotina` *função* L26 (usado em 2)
+  - `Area` *tipo* L4 (usado em 1) · `AREAS` *constante* L6 · `Pendencia` *tipo* L13 (usado em 1) · `organizarRotina` *função* L26 (usado em 2) · `resumoWhatsApp` *função* L41 (usado em 2)
 - **[src/lib/pescado.ts](../../src/lib/pescado.ts)** — Pescado: o estoque, a despesca e a venda do peixe são em kg. O produto de venda diz quantos kg cabem na unidade dele (produtos.fator_kg): kg = 1, caixa de 20 kg = 20. A classe vem do peso do peixe (Pequeno, Médio, Grand…
   - `KG_CAIXA` *constante* L5 (usado em 2) · `numeroKg` *função* L12 (usado em 6) · `textoKg` *função* L19 (usado em 26) · `textoPeso` *função* L25 (usado em 11) · `lerKg` *função* L33 (usado em 5) · `lerPeixes` *função* L43 (usado em 2) · `emKg` *função* L50 (usado em 1) · `vendidoPorKg` *função* L55 (usado em 4) · `textoQuantidade` *função* L60 (usado em 4) · `precoKg` *função* L68 (usado em 1) · `EmbalagemPescado` *tipo* L75 (usado em 1) · `EMBALAGENS_PESCADO` *constante* L77 · `embalagemPescado` *função* L85 (usado em 1) · `agruparPorEmbalagem` *função* L93 (usado em 2) · `faixaClasse` *função* L100 (usado em 5) · `custoKgMes` *função* L111 (usado em 3)
   - internas: `n` L9
@@ -1093,7 +1099,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/supabase/client.ts](../../src/lib/supabase/client.ts)** (navegador) — Cliente do navegador (sessão nos mesmos cookies do servidor). Criado só dentro de efeitos e eventos: no build as páginas são pré-renderizadas sem as variáveis do Supabase.
   - `clienteNavegador` *função* L8 (usado em 7)
 - **[src/lib/supabase/server.ts](../../src/lib/supabase/server.ts)** — Cliente com o JWT do usuário: toda consulta passa pelo RLS do banco.
-  - `createClient` *função* L7 (usado em 145)
+  - `createClient` *função* L7 (usado em 146)
 - **[src/lib/supabase/todas.ts](../../src/lib/supabase/todas.ts)** — O Supabase (PostgREST) devolve no máximo 1.000 linhas por consulta (max_rows em supabase/config.toml, igual na nuvem) e ignora um .limit() maior sem avisar. Toda soma ou relatório que pode passar disso lê por aqui, em p…
   - `PAGINA_SUPABASE` *constante* L5 (usado em 1) · `lerTodas` *função* L11 (usado em 13)
 - **[src/lib/whatsapp-texto.ts](../../src/lib/whatsapp-texto.ts)** — WhatsApp do Balbina (H2): partes sem rede, testadas em whatsapp-texto.test.ts. O envio e o download ficam em whatsapp.ts (servidor).

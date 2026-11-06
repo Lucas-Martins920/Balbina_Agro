@@ -2,7 +2,7 @@
 
 > Gerado automaticamente por `scripts/mapa-codigo.mjs`. **Não edite à mão**: depois de mudar o código, rode `npm run mapa` e a pasta `docs/mapa-codigo/` é refeita. Em conflito de merge nesses arquivos, rode `npm run mapa` de novo e aceite o resultado.
 
-Resumo: 518 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2115 funções/componentes/tipos, 352 funções do banco, 106 tabelas, 30 views, 79 triggers, 175 policies, 119 migrations.
+Resumo: 520 arquivos TypeScript em `src/`, 87 telas, 55 rotas de API, 2124 funções/componentes/tipos, 352 funções do banco, 108 tabelas, 31 views, 79 triggers, 177 policies, 120 migrations.
 
 **Versão com busca (recomendada):** abra [mapa.html](mapa.html) no navegador (duplo clique no arquivo `docs/mapa-codigo/mapa.html`). Nas páginas Markdown, use Ctrl+F.
 
@@ -114,9 +114,9 @@ Resumo: 518 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2115 funç
 | `e2e` | 18 | Testes de ponta a ponta com Playwright (npm run test:e2e). |
 | `public` | 6 | Arquivos estáticos (ícones, service worker do modo offline). |
 | `scripts` | 11 | Scripts de apoio: rodar local, backup, testes do banco, aplicar migrations, este mapa. |
-| `src` | 520 | Todo o código do app Next.js (telas, componentes, regras em TypeScript). |
-| `src/app` | 253 | Rotas do Next.js: cada pasta é um endereço; page.tsx é a tela, route.ts é API, actions.ts são as ações de formulário (server actions). |
-| `src/app/(app)` | 164 | Telas do sistema logado (com menu lateral). O nome entre parênteses não aparece na URL. |
+| `src` | 522 | Todo o código do app Next.js (telas, componentes, regras em TypeScript). |
+| `src/app` | 255 | Rotas do Next.js: cada pasta é um endereço; page.tsx é a tela, route.ts é API, actions.ts são as ações de formulário (server actions). |
+| `src/app/(app)` | 165 | Telas do sistema logado (com menu lateral). O nome entre parênteses não aparece na URL. |
 | `src/app/(app)/_cadastro-rapido` | 1 | Endereço /_cadastro-rapido. |
 | `src/app/(app)/_titulos` | 3 | Código compartilhado por Contas a pagar e Contas a receber (lista, página e ações). |
 | `src/app/(app)/apontamentos` | 7 | Tela /apontamentos (Produção > Apontamento diário). |
@@ -188,6 +188,7 @@ Resumo: 518 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2115 funç
 | `src/app/(app)/sanidade` | 2 | Tela /sanidade (Produção > Sanidade). |
 | `src/app/(app)/seguranca` | 4 | Endereço /seguranca. |
 | `src/app/(app)/sem-acesso` | 1 | Endereço /sem-acesso. |
+| `src/app/(app)/sondas` | 1 | Tela /sondas (Produção > Sondas IoT). |
 | `src/app/(app)/tabelas-de-preco` | 3 | Tela /tabelas-de-preco (Cadastros > Tabelas de preço). |
 | `src/app/(app)/vendas` | 11 | Tela /vendas (Comercial > Vendas). |
 | `src/app/(app)/vendas/[id]` | 1 | Endereço /vendas/[id]. |
@@ -198,7 +199,7 @@ Resumo: 518 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2115 funç
 | `src/app/(app)/vendas/pdv/caixa` | 1 | Endereço /vendas/pdv/caixa. |
 | `src/app/(app)/vendas/precos` | 1 | Endereço /vendas/precos. |
 | `src/app/aceitar-termos` | 3 | Endereço /aceitar-termos. |
-| `src/app/api` | 45 | Rotas de API do servidor (JSON). |
+| `src/app/api` | 46 | Rotas de API do servidor (JSON). |
 | `src/app/api/abrir-lote` | 1 | API /api/abrir-lote. |
 | `src/app/api/apontamentos` | 1 | API /api/apontamentos. |
 | `src/app/api/app` | 11 | API /api/app. |
@@ -232,7 +233,7 @@ Resumo: 518 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2115 funç
 | `src/app/api/notas/[id]/[tipo]` | 1 | API /api/notas/[id]/[tipo]. |
 | `src/app/api/pedidos` | 1 | API /api/pedidos. |
 | `src/app/api/push` | 1 | API /api/push. |
-| `src/app/api/v1` | 16 | API pública /api/v1 (chave gerada pelo master em Configurações > API). |
+| `src/app/api/v1` | 17 | API pública /api/v1 (chave gerada pelo master em Configurações > API). |
 | `src/app/api/v1/categorias` | 1 | API /api/v1/categorias. |
 | `src/app/api/v1/centros-de-custo` | 1 | API /api/v1/centros-de-custo. |
 | `src/app/api/v1/contas` | 1 | API /api/v1/contas. |
@@ -246,6 +247,8 @@ Resumo: 518 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2115 funç
 | `src/app/api/v1/movimentos` | 1 | API /api/v1/movimentos. |
 | `src/app/api/v1/produtos` | 2 | API /api/v1/produtos. |
 | `src/app/api/v1/produtos/[id]` | 1 | API /api/v1/produtos/[id]. |
+| `src/app/api/v1/sondas` | 1 | API /api/v1/sondas. |
+| `src/app/api/v1/sondas/leituras` | 1 | API /api/v1/sondas/leituras. |
 | `src/app/api/v1/vendas` | 2 | API /api/v1/vendas. |
 | `src/app/api/v1/vendas/[id]` | 1 | API /api/v1/vendas/[id]. |
 | `src/app/api/webhooks` | 4 | Recebe avisos de fora (Asaas, Focus NFe, Pluggy). |
@@ -279,8 +282,10 @@ Resumo: 518 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2115 funç
 | `src/lib/app-celular` | 3 |  |
 | `src/lib/campo` | 16 |  |
 | `src/lib/supabase` | 8 | Clientes do Supabase: server.ts (servidor com sessão), client.ts (navegador), admin.ts (chave de serviço), proxy.ts (sessão no proxy). |
-| `supabase` | 207 | Banco de dados Supabase (Postgres). |
-| `supabase/migrations` | 119 | Migrations SQL em ordem de data. Tabelas, views, funções, triggers e policies (RLS). Nunca editar uma antiga: criar outra. |
+| `supabase` | 210 | Banco de dados Supabase (Postgres). |
+| `supabase/.branches` | 1 |  |
+| `supabase/.temp` | 1 |  |
+| `supabase/migrations` | 120 | Migrations SQL em ordem de data. Tabelas, views, funções, triggers e policies (RLS). Nunca editar uma antiga: criar outra. |
 | `supabase/seed` | 1 |  |
 | `supabase/templates` | 1 |  |
 | `supabase/tests` | 85 | Testes do banco (npm run test:db): regras de negócio, triggers e isolamento entre empresas. |
@@ -364,6 +369,7 @@ Resumo: 518 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2115 funç
 | `/sanidade` | Produção > Sanidade | [src/app/(app)/sanidade/page.tsx](../../src/app/(app)/sanidade/page.tsx) | [src/app/(app)/sanidade/actions.ts](../../src/app/(app)/sanidade/actions.ts) |
 | `/seguranca` |  | [src/app/(app)/seguranca/page.tsx](../../src/app/(app)/seguranca/page.tsx) | [src/app/(app)/seguranca/actions.ts](../../src/app/(app)/seguranca/actions.ts), [src/app/(app)/seguranca/whatsapp-actions.ts](../../src/app/(app)/seguranca/whatsapp-actions.ts) |
 | `/sem-acesso` |  | [src/app/(app)/sem-acesso/page.tsx](../../src/app/(app)/sem-acesso/page.tsx) | — |
+| `/sondas` | Produção > Sondas IoT | [src/app/(app)/sondas/page.tsx](../../src/app/(app)/sondas/page.tsx) | — |
 | `/tabelas-de-preco` | Cadastros > Tabelas de preço | [src/app/(app)/tabelas-de-preco/page.tsx](../../src/app/(app)/tabelas-de-preco/page.tsx) | [src/app/(app)/tabelas-de-preco/actions.ts](../../src/app/(app)/tabelas-de-preco/actions.ts) |
 | `/termos` |  | [src/app/termos/page.tsx](../../src/app/termos/page.tsx) | — |
 | `/vendas` | Comercial > Vendas | [src/app/(app)/vendas/page.tsx](../../src/app/(app)/vendas/page.tsx) | [src/app/(app)/vendas/actions.ts](../../src/app/(app)/vendas/actions.ts) |
@@ -419,6 +425,7 @@ Resumo: 518 arquivos TypeScript em `src/`, 86 telas, 54 rotas de API, 2115 funç
 | GET | `/api/v1/movimentos` | [src/app/api/v1/movimentos/route.ts](../../src/app/api/v1/movimentos/route.ts) |  |
 | GET, POST | `/api/v1/produtos` | [src/app/api/v1/produtos/route.ts](../../src/app/api/v1/produtos/route.ts) |  |
 | GET, PATCH | `/api/v1/produtos/[id]` | [src/app/api/v1/produtos/[id]/route.ts](../../src/app/api/v1/produtos/%5Bid%5D/route.ts) |  |
+| POST | `/api/v1/sondas/leituras` | [src/app/api/v1/sondas/leituras/route.ts](../../src/app/api/v1/sondas/leituras/route.ts) |  |
 | GET | `/api/v1/vendas` | [src/app/api/v1/vendas/route.ts](../../src/app/api/v1/vendas/route.ts) |  |
 | GET | `/api/v1/vendas/[id]` | [src/app/api/v1/vendas/[id]/route.ts](../../src/app/api/v1/vendas/%5Bid%5D/route.ts) |  |
 | POST | `/api/webhooks/asaas` | [src/app/api/webhooks/asaas/route.ts](../../src/app/api/webhooks/asaas/route.ts) |  |

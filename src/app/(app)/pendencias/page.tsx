@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { Calendar, Check, ChevronRight, Fish, Landmark, ShoppingCart, type LucideIcon } from "lucide-react";
+import { Calendar, Check, ChevronRight, Fish, Landmark, MessageCircle, ShoppingCart, type LucideIcon } from "lucide-react";
 import { Cartao, classeBotao, Etiqueta, Titulo, type Cor } from "@/components/ui";
 import { getEmpresaAtual } from "@/lib/empresa";
 import { formatarData, formatarInteiro, hojeISO, somarDias } from "@/lib/formato";
-import { organizarRotina, type Area, type Pendencia } from "@/lib/pendencias";
+import { organizarRotina, resumoWhatsApp, type Area, type Pendencia } from "@/lib/pendencias";
 import { getPermissoes } from "@/lib/permissoes";
 import { createClient } from "@/lib/supabase/server";
 
@@ -98,12 +98,16 @@ export default async function PaginaRotina() {
       quantidade: fechado === null ? null : fechado > 0 ? 0 : 1, detalhe: "confira e trave os lançamentos do mês",
     },
   ];
-  const { areas, feitos, total, pendentes } = organizarRotina(itens);
+  const rotina = organizarRotina(itens);
+  const { areas, feitos, total, pendentes } = rotina;
   const pct = total ? Math.round((feitos / total) * 100) : 100;
+  const textoWa = resumoWhatsApp(rotina, atual.nome_fantasia || atual.razao_social, formatarData(hoje));
+  const linkWa = `https://wa.me/?text=${encodeURIComponent(textoWa)}`;
 
   return (
     <div className="flex max-w-3xl flex-col gap-6">
-      <Titulo descricao="O que precisa entrar no sistema hoje, por área. Cada item se marca sozinho quando o dado entra; o botão leva direto ao lançamento.">
+      <Titulo descricao="O que precisa entrar no sistema hoje, por área. Cada item se marca sozinho quando o dado entra; o botão leva direto ao lançamento."
+        acoes={<a href={linkWa} target="_blank" rel="noopener noreferrer" className={classeBotao("secundario", "sm")}><MessageCircle size={16} /> WhatsApp</a>}>
         Rotina do dia
       </Titulo>
 
