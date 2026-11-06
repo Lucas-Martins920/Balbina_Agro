@@ -69,7 +69,7 @@ jobs:
 
       # Supabase local vazio (supabase start numa pasta sem migrations): mesma versão do Postgres,
       # pg_cron, pg_net, Vault e o auth do GoTrue, como um projeto novo em que se restauraria de verdade
-      - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3
+      - uses: supabase/setup-cli@689adcfb80d947100a1eab127289b97d1fb07b13 # v3
         if: env.pular != '1'
         with:
           version: 2.122.0

@@ -86,7 +86,7 @@ jobs:
       # Com E2E, o build usa o Supabase local (um build só serve aos dois); sem E2E, valores de exemplo.
       - name: Supabase local com as migrations
         if: env.E2E == 'true'
-        uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3
+        uses: supabase/setup-cli@689adcfb80d947100a1eab127289b97d1fb07b13 # v3
         with:
           version: 2.122.0
       - name: Sobe o Supabase
