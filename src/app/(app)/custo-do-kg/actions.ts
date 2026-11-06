@@ -6,7 +6,7 @@ import { getEmpresaAtual } from "@/lib/empresa";
 import { ultimosMeses } from "@/lib/relatorios";
 import { createClient } from "@/lib/supabase/server";
 
-// Recalcula os meses em ordem: o custo da recria de um mês entra na amortização dos seguintes.
+// Recalcula o custo de cada mês do período (os alevinos entram no mês do povoamento do lote).
 export async function recalcularCustos(_: EstadoAcao, form: FormData): Promise<EstadoAcao> {
   const ate = String(form.get("ate") ?? "");
   const n = Number(form.get("meses") ?? 12);
