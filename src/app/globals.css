@@ -1,0 +1,900 @@
+@import "tailwindcss";
+/* o código antigo do Balbina em docs/legado não gera classes */
+@source not "../../docs/legado";
+
+/* Barra lateral recolhida (<html class="lateral-recolhida">, src/lib/lateral.ts). Só vale do tablet para cima:
+   no celular a lista vai aberta na folha do botão Menu. Enquanto o mouse a abre por cima (html.lateral-espiando)
+   a variante deixa de valer e o painel aberto aparece, mas a coluna continua estreita (a página não se mexe). */
+@custom-variant recolhida {
+  @media (width >= 48rem) {
+    &:where(.lateral-recolhida:not(.lateral-espiando) *) {
+      @slot;
+    }
+  }
+}
+
+/*
+  Direção "Liquid Glass" (iOS 26 / macOS Tahoe). O app inteiro é vidro sobre um papel de parede de luz colorida:
+  cartões, tabelas, botões e campos são lâminas translúcidas que desfocam e saturam o que está atrás, com aresta
+  de luz e um reflexo que segue o ponteiro. A navegação (lateral, barra de abas do celular) é a lâmina mais
+  líquida: mais clara, mais desfocada e, no Chromium, com refração nas bordas (filtro SVG #lente).
+  O azul-petróleo da água do viveiro é a cor da marca. O tema segue o sistema e pode ser fixado em <html data-theme>.
+*/
+:root {
+  --fundo: #dce8ee;
+  --papel-1: rgb(20 184 196 / 0.85);
+  --papel-2: rgb(70 140 255 / 0.85);
+  --papel-3: rgb(40 200 150 / 0.75);
+  --papel-4: rgb(255 176 72 / 0.6);
+  --superficie: rgb(255 255 255 / 0.4);
+  --cristal: rgb(255 255 255 / 0.3);
+  --solido: #ffffff;
+  --elevado: rgb(255 255 255 / 0.45);
+  --texto: #16181d;
+  --texto-suave: #545a66;
+  --borda: rgb(255 255 255 / 0.65);
+  --linha: rgb(20 24 34 / 0.08);
+  --brilho: rgb(255 255 255 / 0.85);
+  --aresta: rgb(255 255 255 / 0.9);
+  --reflexo: rgb(255 255 255 / 0.55);
+  --destaque: #16181d;
+  --destaque-texto: #ffffff;
+  --marca: #0b7285;
+  --marca-suave: #d3eef2;
+  --marca-texto: #ffffff;
+  --marca-claro: #3cc4d0;
+  /* Cores de apoio: módulos do menu, ícones e séries dos gráficos (paleta validada para daltonismo). */
+  --azul: #2a78d6;
+  --verde: #1baf7a;
+  --laranja: #eb6834;
+  --violeta: #6250d6;
+  --rosa: #e87ba4;
+  /* Ilustração de embalagem do PDV: papelão da caixa. */
+  --papelao: #c9965a;
+  --amarelo: #eda100;
+  --positivo: #13753a;
+  --perigo: #c62a26;
+  --alerta: #995400;
+  --sombra: 0 1px 1px rgb(20 24 40 / 0.04), 0 10px 30px -10px rgb(20 24 60 / 0.18);
+  --sombra-cristal: 0 2px 6px rgb(20 24 40 / 0.06), 0 24px 60px -16px rgb(20 24 60 / 0.3);
+
+  --etiqueta-neutro: rgb(255 255 255 / 0.55);
+  --etiqueta-neutro-texto: #343944;
+  --etiqueta-positivo: rgb(22 163 74 / 0.16);
+  --etiqueta-positivo-texto: #0f6630;
+  --etiqueta-perigo: rgb(220 38 38 / 0.14);
+  --etiqueta-perigo-texto: #9e1d1a;
+  --etiqueta-alerta: rgb(245 158 11 / 0.2);
+  --etiqueta-alerta-texto: #844700;
+  --etiqueta-info: rgb(59 130 246 / 0.16);
+  --etiqueta-info-texto: #1b4a9f;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-mola: cubic-bezier(0.34, 1.4, 0.64, 1);
+  color-scheme: light;
+}
+
+/* Escuro: um bloco para quem fixou o modo noturno e outro para quem segue o sistema. */
+:root[data-theme="dark"] {
+  --fundo: #06080e;
+  --papel-1: rgb(20 160 175 / 0.5);
+  --papel-2: rgb(50 100 255 / 0.55);
+  --papel-3: rgb(20 170 130 / 0.45);
+  --papel-4: rgb(230 140 30 / 0.35);
+  --superficie: rgb(24 28 40 / 0.36);
+  --cristal: rgb(40 44 58 / 0.26);
+  --solido: #1a1d26;
+  --elevado: rgb(255 255 255 / 0.08);
+  --texto: #f4f5f8;
+  --texto-suave: #a3a9b6;
+  --borda: rgb(255 255 255 / 0.14);
+  --linha: rgb(255 255 255 / 0.08);
+  --brilho: rgb(255 255 255 / 0.12);
+  --aresta: rgb(255 255 255 / 0.22);
+  --reflexo: rgb(255 255 255 / 0.12);
+  --destaque: #f4f5f8;
+  --destaque-texto: #06080e;
+  --marca: #34c3c9;
+  --marca-suave: rgb(52 195 201 / 0.18);
+  --marca-texto: #04282a;
+  --marca-claro: #8ae3e6;
+  --azul: #3987e5;
+  --verde: #199e70;
+  --laranja: #d95926;
+  --violeta: #9085e9;
+  --rosa: #d55181;
+  --papelao: #a87843;
+  --amarelo: #c98500;
+  --positivo: #4ade80;
+  --perigo: #f87171;
+  --alerta: #fbbf24;
+  --sombra: 0 1px 1px rgb(0 0 0 / 0.3), 0 12px 32px -12px rgb(0 0 0 / 0.7);
+  --sombra-cristal: 0 2px 6px rgb(0 0 0 / 0.3), 0 24px 60px -16px rgb(0 0 0 / 0.8);
+
+  --etiqueta-neutro: rgb(255 255 255 / 0.1);
+  --etiqueta-neutro-texto: #d6d9e0;
+  --etiqueta-positivo: rgb(74 222 128 / 0.15);
+  --etiqueta-positivo-texto: #86efac;
+  --etiqueta-perigo: rgb(248 113 113 / 0.16);
+  --etiqueta-perigo-texto: #fca5a5;
+  --etiqueta-alerta: rgb(251 191 36 / 0.16);
+  --etiqueta-alerta-texto: #fcd34d;
+  --etiqueta-info: rgb(96 165 250 / 0.16);
+  --etiqueta-info-texto: #93c5fd;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fundo: #06080e;
+    --papel-1: rgb(20 160 175 / 0.5);
+    --papel-2: rgb(50 100 255 / 0.55);
+    --papel-3: rgb(20 170 130 / 0.45);
+    --papel-4: rgb(230 140 30 / 0.35);
+    --superficie: rgb(24 28 40 / 0.36);
+    --cristal: rgb(40 44 58 / 0.26);
+    --solido: #1a1d26;
+    --elevado: rgb(255 255 255 / 0.08);
+    --texto: #f4f5f8;
+    --texto-suave: #a3a9b6;
+    --borda: rgb(255 255 255 / 0.14);
+    --linha: rgb(255 255 255 / 0.08);
+    --brilho: rgb(255 255 255 / 0.12);
+    --aresta: rgb(255 255 255 / 0.22);
+    --reflexo: rgb(255 255 255 / 0.12);
+    --destaque: #f4f5f8;
+    --destaque-texto: #06080e;
+    --marca: #34c3c9;
+    --marca-suave: rgb(52 195 201 / 0.18);
+    --marca-texto: #04282a;
+    --marca-claro: #8ae3e6;
+    --azul: #3987e5;
+    --verde: #199e70;
+    --laranja: #d95926;
+    --violeta: #9085e9;
+    --rosa: #d55181;
+    --papelao: #a87843;
+    --amarelo: #c98500;
+    --positivo: #4ade80;
+    --perigo: #f87171;
+    --alerta: #fbbf24;
+    --sombra: 0 1px 1px rgb(0 0 0 / 0.3), 0 12px 32px -12px rgb(0 0 0 / 0.7);
+    --sombra-cristal: 0 2px 6px rgb(0 0 0 / 0.3), 0 24px 60px -16px rgb(0 0 0 / 0.8);
+
+    --etiqueta-neutro: rgb(255 255 255 / 0.1);
+    --etiqueta-neutro-texto: #d6d9e0;
+    --etiqueta-positivo: rgb(74 222 128 / 0.15);
+    --etiqueta-positivo-texto: #86efac;
+    --etiqueta-perigo: rgb(248 113 113 / 0.16);
+    --etiqueta-perigo-texto: #fca5a5;
+    --etiqueta-alerta: rgb(251 191 36 / 0.16);
+    --etiqueta-alerta-texto: #fcd34d;
+    --etiqueta-info: rgb(96 165 250 / 0.16);
+    --etiqueta-info-texto: #93c5fd;
+    color-scheme: dark;
+  }
+}
+
+/* Posição do reflexo: registradas para o navegador interpolar quando o ponteiro anda. */
+@property --mx {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 50%;
+}
+@property --my {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: -30%;
+}
+
+@theme inline {
+  --color-fundo: var(--fundo);
+  --color-superficie: var(--superficie);
+  --color-solido: var(--solido);
+  --color-cristal: var(--cristal);
+  --color-elevado: var(--elevado);
+  --color-texto: var(--texto);
+  --color-texto-suave: var(--texto-suave);
+  --color-borda: var(--borda);
+  --color-linha: var(--linha);
+  --color-destaque: var(--destaque);
+  --color-destaque-texto: var(--destaque-texto);
+  --color-marca: var(--marca);
+  --color-marca-suave: var(--marca-suave);
+  --color-marca-texto: var(--marca-texto);
+  --color-marca-claro: var(--marca-claro);
+  --color-azul: var(--azul);
+  --color-verde: var(--verde);
+  --color-laranja: var(--laranja);
+  --color-violeta: var(--violeta);
+  --color-rosa: var(--rosa);
+  --color-amarelo: var(--amarelo);
+  --color-papelao: var(--papelao);
+  --color-positivo: var(--positivo);
+  --color-perigo: var(--perigo);
+  --color-alerta: var(--alerta);
+  /* SF Pro nos aparelhos da Apple; Geist nos outros, que tem o mesmo desenho neutro. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-geist-sans), system-ui, sans-serif;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+  --font-mono: var(--font-geist-mono);
+  --ease-out: var(--ease-out);
+  --ease-drawer: var(--ease-drawer);
+  --ease-mola: var(--ease-mola);
+}
+
+body {
+  background-color: var(--fundo);
+  color: var(--texto);
+  caret-color: var(--marca);
+  letter-spacing: -0.006em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Papel de parede: quatro campos de luz numa camada fixa própria (background-attachment: fixed repintaria a
+   página a cada rolagem). É o que o vidro desfoca; sem ele, vidro vira cinza. Parado de propósito: um fundo
+   animado obrigaria cada lâmina a refazer o desfoque em todo quadro. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--fundo);
+  background-image:
+    radial-gradient(55% 50% at 8% 6%, var(--papel-1), transparent 72%),
+    radial-gradient(50% 55% at 96% 12%, var(--papel-2), transparent 72%),
+    radial-gradient(60% 50% at 80% 100%, var(--papel-3), transparent 72%),
+    radial-gradient(50% 50% at 12% 88%, var(--papel-4), transparent 72%),
+    radial-gradient(40% 36% at 50% 50%, var(--papel-2), transparent 80%);
+}
+
+::selection {
+  background: var(--marca-suave);
+  color: var(--texto);
+}
+
+/* Fieldset nasce com min-inline-size: min-content e cresce até a opção mais longa de um select,
+   empurrando os campos para fora de painéis e cartões. */
+@layer base {
+  fieldset {
+    min-inline-size: 0;
+  }
+  /* Item de grade sem largura mínima automática: uma grade sem grid-cols-1 no celular (coluna implícita "auto")
+     crescia até o conteúdo mais largo e alargava a página, e o Safari do iPhone afastava o zoom para caber tudo,
+     deixando a tela descentralizada. Utilitários (min-w-*) continuam valendo por cima. */
+  .grid > * {
+    min-width: 0;
+  }
+}
+
+* {
+  scrollbar-color: var(--borda) transparent;
+  scrollbar-width: thin;
+}
+
+table,
+input[type="number"],
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--marca);
+  outline-offset: 2px;
+}
+
+a {
+  text-underline-offset: 3px;
+}
+
+/* Seletor de arquivo nativo: o reset do Tailwind tira o visual de botão e o "Escolher arquivo" vira texto solto. */
+input[type="file"]::file-selector-button {
+  margin-right: 0.75rem;
+  border-radius: 9999px;
+  padding: 0.375rem 0.875rem;
+  background-color: var(--elevado);
+  color: var(--texto);
+  font-weight: 500;
+  box-shadow: inset 0 1px 0 var(--aresta), inset 0 0 0 1px var(--borda);
+  cursor: pointer;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background-color: var(--solido);
+}
+
+/* Coluna da barra lateral: aberta ou só o trilho de ícones. A largura anima; o conteúdo de cada estado entra com
+   um esmaecer curto (.lateral-entra), que reinicia quando o display volta de none. */
+.grade-app {
+  --lateral: 296px;
+  transition: grid-template-columns 360ms var(--ease-drawer);
+}
+.lateral-recolhida .grade-app {
+  --lateral: 92px;
+}
+/* Aberta pelo mouse com a barra recolhida: a caixa cresce até a largura da aberta e passa por cima do conteúdo. */
+.lateral-caixa {
+  width: 100%;
+  transition: width 360ms var(--ease-drawer);
+}
+@media (width >= 48rem) {
+  .lateral-espiando .lateral-caixa {
+    width: calc(296px - 0.75rem);
+  }
+}
+.lateral-entra {
+  animation: lateral-entra 260ms var(--ease-out) backwards;
+}
+@keyframes lateral-entra {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Reduzir movimento (Windows com efeitos de animação desligados, economia de bateria, macOS): cada animação
+   roda uma vez só e acaba na hora. Sem limitar as repetições, as infinitas (o reflexo do esqueleto) rodavam
+   milhares de vezes por segundo e a tela piscava. O esqueleto fica parado, sem reflexo. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  .esqueleto::after {
+    display: none;
+  }
+}
+
+/* <details> usado como menu: sem o triângulo nativo, e o painel abre com um leve zoom a partir do canto do botão. */
+summary {
+  list-style: none;
+  cursor: pointer;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+.popover {
+  transform-origin: top right;
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.97) translateY(-2px);
+  }
+}
+
+/* Gaveta de baixo do app de campo (src/components/campo/folha.tsx): sobe com a curva de gaveta do iOS e desce
+   mais rápido. Só transform e opacity; a saída marca data-saindo e o <dialog> fecha quando a animação acaba. */
+.folha {
+  transition: transform 360ms var(--ease-drawer);
+  @starting-style {
+    transform: translateY(100%);
+  }
+}
+.folha[data-saindo] {
+  transform: translateY(100%);
+  transition-duration: 240ms;
+}
+.folha::backdrop {
+  background-color: rgb(6 10 18 / 0.42);
+  transition: opacity 360ms var(--ease-out);
+  @starting-style {
+    opacity: 0;
+  }
+}
+.folha[data-saindo]::backdrop {
+  opacity: 0;
+  transition-duration: 240ms;
+}
+/* Dentro da gaveta o fundo é sólido: o branco translúcido do vidro (campos, números, botões, etiquetas) sumiria no
+   branco da folha. No claro vira um cinza bem leve; no escuro fica como já é. */
+.folha {
+  --elevado: rgb(20 24 34 / 0.07);
+  --borda: rgb(20 24 34 / 0.1);
+  --brilho: rgb(20 24 34 / 0.05);
+  --aresta: rgb(255 255 255 / 0.6);
+  --etiqueta-neutro: rgb(20 24 34 / 0.07);
+}
+:root[data-theme="dark"] .folha {
+  --elevado: rgb(255 255 255 / 0.08);
+  --borda: rgb(255 255 255 / 0.14);
+  --brilho: rgb(255 255 255 / 0.12);
+  --aresta: rgb(255 255 255 / 0.22);
+  --etiqueta-neutro: rgb(255 255 255 / 0.1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .folha {
+    --elevado: rgb(255 255 255 / 0.08);
+    --borda: rgb(255 255 255 / 0.14);
+    --brilho: rgb(255 255 255 / 0.12);
+    --aresta: rgb(255 255 255 / 0.22);
+    --etiqueta-neutro: rgb(255 255 255 / 0.1);
+  }
+}
+
+/* App de campo: a aba que entra sobe de leve; mensagens e cartões do chat surgem de baixo. */
+.campo-entra {
+  animation: surgir 220ms var(--ease-out) backwards;
+}
+
+/* Vidro: a lâmina de conteúdo. Translúcida sobre o papel de parede, tem aresta de luz por dentro (em cima mais forte,
+   como luz vinda do alto) e um reflexo que segue o ponteiro (--mx/--my, src/components/brilho-vidro.tsx).
+   Sem backdrop-filter de propósito: atrás dos cartões só há o papel de parede, que já é luz difusa, então o desfoque
+   não aparece, mas cada lâmina desfocada custava uma passada extra da placa de vídeo a cada quadro de rolagem.
+   O desfoque fica para o que flutua sobre conteúdo que se mexe: a navegação (.cristal) e as barras fixas. */
+/* Em @layer components para utilitários do Tailwind (bg-*, transition-*, sombras) ainda valerem por cima. */
+@layer components {
+  .vidro,
+  .cristal {
+    background-color: var(--superficie);
+    background-image: radial-gradient(60% 80% at var(--mx) var(--my), var(--reflexo), transparent 70%);
+    box-shadow:
+      inset 0 1px 0 var(--aresta),
+      inset 0 -1px 0 var(--brilho),
+      inset 1px 0 0 var(--brilho),
+      inset -1px 0 0 var(--brilho),
+      var(--sombra);
+    /* O reflexo acompanha o ponteiro quadro a quadro, sem transição: animar --mx/--my repintava a lâmina inteira
+       por mais 400 ms depois de cada movimento. */
+    transition: transform 200ms var(--ease-out);
+  }
+
+  /* Cristal: a lâmina da navegação, que flutua acima de tudo. Mais clara e mais líquida.
+     Só a forma sem prefixo: com as duas, o Lightning CSS do build guardava só -webkit-backdrop-filter, que o
+     Chrome e o Firefox ignoram. */
+  .cristal {
+    background-color: var(--cristal);
+    backdrop-filter: blur(28px) saturate(200%) brightness(1.04);
+    box-shadow:
+      inset 0 1px 0 var(--aresta),
+      inset 0 0 0 1px var(--brilho),
+      inset 0 -8px 24px -12px var(--reflexo),
+      var(--sombra-cristal);
+  }
+
+  /* Refração: no Chromium (que aceita filtro SVG no backdrop-filter) a borda da lâmina entorta o que está atrás,
+     como uma lente. O script do tema marca <html class="lente"> só nesses navegadores; nos outros fica o desfoque. */
+  .lente .cristal {
+    backdrop-filter: url(#lente) blur(14px) saturate(200%) brightness(1.04);
+  }
+
+  /* Modo leve (celular, tablet e computador fraco, marcado pelo script do tema): sem refração e com desfoque menor,
+     que custa menos à placa de vídeo quando o conteúdo rola por baixo da barra de abas. */
+  .leve .cristal {
+    backdrop-filter: blur(16px) saturate(180%);
+  }
+
+  /* Lâmina sólida para popovers e listas abertas: legibilidade antes de efeito. */
+  .popover {
+    background-color: var(--solido);
+  }
+
+  /* Quem pede menos transparência no sistema recebe superfícies opacas. */
+  @media (prefers-reduced-transparency: reduce) {
+    .vidro,
+    .cristal {
+      background-color: var(--solido);
+      backdrop-filter: none;
+    }
+  }
+}
+
+/* A troca de tema não anima: cores mudam de uma vez, sem piscar em cascata. */
+.sem-transicao * {
+  transition: none !important;
+}
+
+/* A lista aberta de um <select> nativo herda a cor do texto, mas o Chrome no Windows desenha
+   o fundo dela pelo fundo do controle; como o controle é translúcido, no modo noturno sobrava
+   texto claro sobre branco. Fundo opaco e cor do tema em cada opção, nos três temas. */
+select option,
+select optgroup {
+  background-color: var(--solido);
+  color: var(--texto);
+}
+select option:disabled {
+  color: var(--texto-suave);
+}
+
+/* Movimento. Uma entrada só, orquestrada: os blocos da tela sobem em cascata, as barras dos gráficos crescem
+   da base, as faixas crescem da esquerda e as linhas se revelam da esquerda para a direita. Tudo em transform,
+   opacity e clip-path (compositor), ease-out exponencial, e desligado por prefers-reduced-motion acima. */
+@keyframes surgir {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes crescer-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes crescer-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes revelar-x {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes brilhar {
+  from {
+    transform: translateX(-100%);
+  }
+  60%,
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* Curta de propósito: a tela já chegou do servidor, a animação só não pode atrasar a leitura.
+   Sempre "backwards", nunca "both": uma animação de transform que segue valendo depois do fim faz o bloco virar
+   referência de position: fixed, e o painel lateral, os avisos e as barras fixas ficavam presos dentro dele. */
+.cascata > * > * {
+  animation: surgir 300ms var(--ease-out) backwards;
+}
+.cascata > * > :nth-child(2) { animation-delay: 25ms; }
+.cascata > * > :nth-child(3) { animation-delay: 50ms; }
+.cascata > * > :nth-child(4) { animation-delay: 75ms; }
+.cascata > * > :nth-child(5) { animation-delay: 100ms; }
+.cascata > * > :nth-child(n + 6) { animation-delay: 120ms; }
+
+.crescer-y {
+  transform-origin: bottom;
+  animation: crescer-y 500ms var(--ease-out) backwards;
+  animation-delay: calc(60ms + var(--i, 0) * 20ms);
+}
+.crescer-x {
+  transform-origin: left;
+  animation: crescer-x 500ms var(--ease-out) backwards;
+  animation-delay: calc(60ms + var(--i, 0) * 20ms);
+}
+.revelar-x {
+  animation: revelar-x 600ms var(--ease-out) 60ms backwards;
+}
+
+/* Esqueleto de carregamento: um reflexo passa devagar, como o brilho de um vidro, e descansa antes de voltar
+   (sem a pausa, nos blocos estreitos ele parecia piscar). O reflexo é uma camada que
+   desliza (transform, no compositor); mover background-position repintava cada bloco a cada quadro, bem na hora
+   em que o navegador está montando a tela nova. */
+.esqueleto {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--elevado);
+}
+.esqueleto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 30%, var(--aresta) 50%, transparent 70%);
+  animation: brilhar 2.4s ease-in-out infinite;
+}
+
+/* Nada passa da largura da tela: uma peça mais larga fazia o Safari do iPhone afastar o zoom da página inteira
+   (cabeçalho mais estreito que a tela, sobra à direita). Tabelas largas rolam dentro da própria lâmina. */
+html,
+body {
+  overflow-x: clip;
+}
+
+/* Celular: tabelas viram lista de cartões. Cada linha é um cartão; a célula principal (data-principal) é o título
+   e as outras mostram o nome da coluna (data-rotulo, posto por RotulosCelular) em cima do valor, duas por linha.
+   Fora de camada de propósito, para valer sobre os utilitários de espaçamento e alinhamento das células.
+   Na versão completa (html.completa) nada disso vale, mesmo que o navegador não aplique a largura de 1280px. */
+@media (width < 48rem) {
+  html:not(.completa) .tabela-cartoes {
+    overflow-x: visible;
+  }
+  html:not(.completa) .tabela-cartoes table,
+  html:not(.completa) .tabela-cartoes tbody,
+  html:not(.completa) .tabela-cartoes tfoot {
+    display: block;
+  }
+  html:not(.completa) .tabela-cartoes thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  html:not(.completa) .tabela-cartoes tr {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.625rem 1rem;
+    padding: 0.875rem 1rem;
+  }
+  html:not(.completa) .tabela-cartoes tr > th {
+    grid-column: 1 / -1;
+    padding: 0;
+  }
+  html:not(.completa) .tabela-cartoes td {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.125rem;
+    padding: 0;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+  html:not(.completa) .tabela-cartoes td::before {
+    content: attr(data-rotulo);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1rem;
+    color: var(--texto-suave);
+  }
+  html:not(.completa) .tabela-cartoes td:not([data-rotulo])::before,
+  html:not(.completa) .tabela-cartoes td[data-rotulo=""]::before,
+  html:not(.completa) .tabela-cartoes td[data-principal]::before {
+    content: none;
+  }
+  html:not(.completa) .tabela-cartoes td[data-principal] {
+    order: -1;
+    grid-column: 1 / -1;
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+  /* Ações (coluna sem nome) no rodapé do cartão, à direita. */
+  html:not(.completa) .tabela-cartoes td[data-rotulo=""] {
+    grid-column: 1 / -1;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+  /* Caixa de seleção no canto do cartão, ao lado do título. */
+  html:not(.completa) .tabela-cartoes td:has(> input[type="checkbox"]) {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+  html:not(.completa) .tabela-cartoes tr:has(> td > input[type="checkbox"]) > td[data-principal] {
+    padding-right: 2rem;
+  }
+  html:not(.completa) .tabela-cartoes td[data-oculto],
+  html:not(.completa) .tabela-cartoes td:empty {
+    display: none;
+  }
+
+  /* Versão simples do celular: blocos de análise (gráficos do mês, rankings) ficam para a versão completa. */
+  html:not(.completa) .so-completo {
+    display: none;
+  }
+}
+
+/* Seletor celular × versão completa: só em tela de toque ou já na versão completa (no computador não faz sentido).
+   Na versão completa ele também flutua no canto de baixo, aumentado por --escala-versao (posto por SCRIPT_VERSAO). */
+.so-toque {
+  display: none;
+}
+@media (pointer: coarse) {
+  .so-toque {
+    display: inline-flex;
+  }
+}
+html.completa .so-toque {
+  display: inline-flex;
+}
+.versao-flutuante {
+  display: none;
+}
+/* Só quando a largura de 1280px valeu; se o navegador manteve a tela estreita, o seletor já está na barra do alto. */
+@media (width >= 48rem) {
+  html.completa .versao-flutuante {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 50;
+    display: block;
+    padding: 0.25rem;
+    border-radius: 9999px;
+    background: var(--solido);
+    box-shadow: var(--sombra);
+    transform: scale(var(--escala-versao, 1));
+    transform-origin: bottom right;
+  }
+}
+
+/* Tutorial por tela e ajuda (src/components/tutorial.tsx). O botão de ajuda fica no canto de baixo: no celular,
+   logo acima da barra de abas; no app de campo (sem abas), no canto; na versão completa, acima do seletor de versão. */
+.ajuda-flutuante {
+  position: fixed;
+  right: 0.75rem;
+  bottom: calc(max(0.75rem, env(safe-area-inset-bottom)) + 4.25rem);
+  z-index: 35;
+  box-shadow:
+    inset 0 1px 0 var(--aresta),
+    0 10px 30px -10px rgb(0 0 0 / 0.35);
+}
+.ajuda-flutuante.ajuda-sem-abas {
+  bottom: max(1rem, env(safe-area-inset-bottom));
+}
+.ajuda-painel {
+  position: fixed;
+  inset-inline: 0.75rem;
+  bottom: calc(max(0.75rem, env(safe-area-inset-bottom)) + 8rem);
+  z-index: 45;
+  max-height: min(70dvh, 40rem);
+  background-color: var(--solido);
+  transform-origin: bottom right;
+}
+.ajuda-painel.ajuda-sem-abas {
+  bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 3.75rem);
+}
+@media (width >= 48rem) {
+  .ajuda-flutuante,
+  .ajuda-flutuante.ajuda-sem-abas {
+    right: 1.25rem;
+    bottom: 1.25rem;
+  }
+  .ajuda-painel,
+  .ajuda-painel.ajuda-sem-abas {
+    inset-inline: auto 1.25rem;
+    bottom: 5rem;
+    width: 23.5rem;
+    max-height: min(75dvh, 42rem);
+  }
+  html.completa .ajuda-flutuante {
+    bottom: calc(1rem + 3.75rem * var(--escala-versao, 1));
+    right: 1rem;
+    transform: scale(var(--escala-versao, 1));
+    transform-origin: bottom right;
+  }
+  html.completa .ajuda-painel {
+    bottom: calc(1rem + 7.5rem * var(--escala-versao, 1));
+    transform: scale(var(--escala-versao, 1));
+  }
+}
+
+/* Balões do Driver.js no visual do Balbina: lâmina sólida (legível sobre o véu), cantos do vidro e botões em cápsula. */
+.driver-popover.balbina-tour {
+  font-family: inherit;
+  color: var(--texto);
+  background-color: var(--solido);
+  border: 1px solid var(--borda);
+  border-radius: 1.25rem;
+  padding: 1.1rem 1.15rem 0.95rem;
+  min-width: 0;
+  width: min(22rem, calc(100vw - 1.5rem));
+  max-width: min(22rem, calc(100vw - 1.5rem));
+  box-shadow:
+    inset 0 1px 0 var(--aresta),
+    0 24px 60px -18px rgb(0 0 0 / 0.45);
+}
+.balbina-tour .driver-popover-title {
+  padding-right: 1.75rem;
+  font-size: 1.0625rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+.balbina-tour .balbina-tour-rotulo {
+  display: block;
+  margin-bottom: 0.2rem;
+  padding-right: 2rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+.balbina-tour .driver-popover-description {
+  margin-top: 0.4rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--texto-suave);
+}
+.balbina-tour .driver-popover-close-btn {
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  color: var(--texto-suave);
+  font-size: 1.25rem;
+  line-height: 2rem;
+}
+.balbina-tour .driver-popover-close-btn:hover,
+.balbina-tour .driver-popover-close-btn:focus-visible {
+  color: var(--texto);
+  background-color: var(--elevado);
+}
+.balbina-tour .driver-popover-footer {
+  margin-top: 1rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.balbina-tour .driver-popover-progress-text {
+  font-size: 0.75rem;
+  color: var(--texto-suave);
+  font-variant-numeric: tabular-nums;
+}
+.balbina-tour .driver-popover-navigation-btns {
+  gap: 0.375rem;
+}
+.balbina-tour .driver-popover-navigation-btns button + button {
+  margin-left: 0;
+}
+.balbina-tour .driver-popover-footer-btn,
+.balbina-tour .balbina-tour-pular {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.25rem;
+  padding-inline: 0.95rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 150ms var(--ease-out),
+    transform 200ms var(--ease-mola);
+}
+.balbina-tour .driver-popover-footer-btn:active,
+.balbina-tour .balbina-tour-pular:active {
+  transform: scale(0.95);
+}
+.balbina-tour .driver-popover-footer-btn:focus-visible,
+.balbina-tour .balbina-tour-pular:focus-visible {
+  outline: 3px solid color-mix(in oklab, var(--marca) 35%, transparent);
+  outline-offset: 2px;
+}
+.balbina-tour .driver-popover-prev-btn {
+  color: var(--texto);
+  background-color: var(--elevado);
+}
+.balbina-tour .driver-popover-next-btn {
+  color: var(--marca-texto);
+  background-color: var(--marca);
+  box-shadow: 0 8px 22px -8px var(--marca);
+}
+.balbina-tour .balbina-tour-pular {
+  margin-right: auto;
+  padding-inline: 0.5rem;
+  color: var(--texto-suave);
+}
+.balbina-tour .balbina-tour-pular:hover {
+  color: var(--texto);
+}
+.balbina-tour .driver-popover-arrow-side-left {
+  border-left-color: var(--solido);
+}
+.balbina-tour .driver-popover-arrow-side-right {
+  border-right-color: var(--solido);
+}
+.balbina-tour .driver-popover-arrow-side-top {
+  border-top-color: var(--solido);
+}
+.balbina-tour .driver-popover-arrow-side-bottom {
+  border-bottom-color: var(--solido);
+}
+/* O alvo destacado ganha um anel na cor da marca por cima do recorte do véu. */
+.driver-active-element {
+  outline: 2px solid color-mix(in oklab, var(--marca) 70%, transparent);
+  outline-offset: 4px;
+  border-radius: 0.75rem;
+}
+@media (width < 30rem) {
+  .balbina-tour .driver-popover-footer {
+    justify-content: flex-end;
+  }
+  .balbina-tour .driver-popover-progress-text {
+    order: -1;
+    width: 100%;
+  }
+}

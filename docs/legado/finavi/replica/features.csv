@@ -1,0 +1,59 @@
+feature,area,priority,original,clone,notes
+Cadastro de empresa (multiempresa) e usuários com perfis e permissões,configuracoes,must,NIBO,no,perfis Sem restrições/Cadastros/Visualização/Personalizado + admin
+Contatos: clientes fornecedores funcionários sócios com importação por planilha,cadastros,must,NIBO,partial,cadastro de cliente/fornecedor na tela de títulos (Marco 2a); importação por planilha depois
+Plano de categorias em 5 grupos (receita op / custo op / despesa op / investimento / financiamento) com subgrupos,financeiro,must,NIBO,yes,plano padrão de granja + tela de configurações (Marco 2a)
+Centros de custo (por lote/galpão/fábrica de ração),financeiro,must,NIBO,yes,criados automaticamente para núcleo/galpão/lote (Marco 1)
+Contas financeiras: corrente caixinha aplicação cartão de crédito,financeiro,must,NIBO,yes,corrente poupança caixa e aplicação (Marco 2a); cartão de crédito (Marco 5b)
+Agendar contas a pagar e a receber com vencimento competência e previsão,financeiro,must,NIBO,yes,a pagar e a receber na mesma tela (Marco 2a)
+Parcelamento e recorrência de títulos,financeiro,must,NIBO,yes,parcelamento (Marco 1) e recorrências com horizonte de 12 meses (Marco 2a)
+Rateio por várias categorias e centros de custo num mesmo título,financeiro,must,NIBO,yes,Marco 1
+Baixa com juros multa desconto e baixa parcial,financeiro,must,NIBO,yes,juros multa desconto e baixa parcial (Marco 2a)
+Transferência entre contas próprias,financeiro,must,NIBO,yes,Marco 2a com saldos por conta
+Importação de extrato OFX e planilha,conciliacao,must,NIBO,partial,OFX pronto (Marco 2b); planilha depois
+Conciliação bancária com sugestão automática e conciliação múltipla (1:N),conciliacao,must,NIBO,partial,sugestão por valor data e CPF/CNPJ + criar lançamento + transferência + desfazer (Marco 2b); 1:N depois
+Fluxo de caixa projetado (aberto + vencido + futuro),relatorios,must,NIBO,yes,semanal com saldo acumulado e vencidos (Marco 2b)
+Painel de acompanhamento caixa x competência com realizado x agendado,relatorios,must,NIBO,yes,painel do mês e DRE gerencial 12 meses nos dois regimes (Marco 2b)
+Relatórios a pagar / pagas / a receber / recebidas com filtros e exportação Excel/PDF,relatorios,must,NIBO,partial,exportação CSV para Excel (Marco 2b); PDF depois
+Histórico de atividades e recuperação de excluídos,configuracoes,should,NIBO,partial,lixeira de contas a pagar/receber com restaurar; histórico de atividades depois
+Regras de conciliação SE/ENTÃO priorizadas,conciliacao,should,NIBO,yes,aplicadas na importação; criar regra ao conciliar (Marco 5a)
+Controle de fatura de cartão de crédito,financeiro,should,NIBO,yes,compras parceladas por fatura e pagamento pela conta pagadora (Marco 5b)
+Recorrência com reajuste automático e histórico,financeiro,should,NIBO,no,
+Marcar recebimento como perda,financeiro,should,NIBO,yes,individual ou em lote; desfaz no filtro Perdas
+Cobrança por boleto e Pix com envio por e-mail e WhatsApp e baixa automática,cobranca,should,NIBO+PosturaWeb,partial,Asaas com e-mail do próprio Asaas e baixa pelo webhook; WhatsApp ainda não (Marco 5c)
+Regerar cobrança expirada com juros e multa,cobranca,should,NIBO,partial,multa e juros configurados no perfil e cobrados pelo Asaas após o vencimento (Marco 5c)
+Análise vertical e horizontal,relatorios,should,NIBO,yes,DRE com margem bruta e resultado operacional (Marco 5a)
+Aging de contas a receber e a pagar,relatorios,should,NIBO,yes,por contato e faixa de atraso (Marco 5a)
+Planejamento orçamentário categoria x mês x centro de custo e realizado x orçado,relatorios,should,NIBO,partial,por categoria e mês; centro de custo fica no schema mas não na tela (Marco 5a)
+Fechamento de mês com pacote de documentos para o contador,contabil,should,NIBO,partial,trava do mês fechado pronta (Marco 2b); pacote para o contador depois
+Indicadores-chave editáveis no painel,relatorios,could,NIBO,no,
+CNAB 240 remessa e retorno de pagamentos,financeiro,could,NIBO,no,
+Open Finance para extrato automático,conciliacao,could,NIBO,no,via agregador (Belvo/Pluggy)
+Leitura de extrato e documentos em PDF com IA (caixa de entrada),ia,could,NIBO,no,
+Categoria sugerida por IA na conciliação,ia,could,NIBO,no,
+API pública e conector BI,integracoes,could,NIBO+PosturaWeb,no,
+Estrutura da granja: núcleos galpões capacidade sistema de criação,avicultura,must,PosturaWeb,yes,Marco 1
+Lotes com linhagem idade quantidade fase e custo da franga,avicultura,must,PosturaWeb,yes,Marco 1
+Apontamento diário por galpão: ovos por classe quebrados mortalidade causa ração água,avicultura,must,PosturaWeb,partial,sem causa de morte ainda
+Apontamento no celular funcionando offline,avicultura,must,PosturaWeb,yes,tela /campo instalável com fila offline e envio idempotente (Marco 3)
+Indicadores do lote: % postura ovos/ave alojada massa de ovo consumo conversão mortalidade viabilidade,avicultura,must,PosturaWeb,partial,sem massa de ovo (falta peso médio)
+Curva padrão da linhagem e comparação real x padrão com alertas,avicultura,must,dominio,yes,alertas de postura abaixo da curva no painel (Marco 3); peso das pesagens e uniformidade contra o peso padrão na página do lote (crescimento da recria)
+Transferência de lote recria -> produção e lote em vários galpões,avicultura,should,dominio,no,
+Manejo sanitário: vacinas medicações carência pesagens uniformidade programa de luz,avicultura,should,dominio,partial,vacinas medicações com carência dos ovos pesagens e programação (Marco 3); programa de luz depois
+Muda forçada e descarte de lote,avicultura,should,dominio,no,
+Estoque multi-depósito de ovos insumos ração embalagens e medicamentos,estoque,must,PosturaWeb,yes,ovos por classe com carência (Marco 3); insumos e ração com custo médio por depósito (Marco 5b)
+Classificação de ovos por peso e embalagem (cx 30 dz / bandeja / estojo),estoque,should,PosturaWeb,partial,dúzia e caixa 30 dz por classe (Marco 3); bandeja e estojo cadastráveis depois
+Fábrica de ração: compras fórmulas por fase ordens de produção custo médio,racao,should,PosturaWeb,yes,fórmulas versionadas e ordens que consomem ingredientes ao custo médio (Marco 5b)
+Consumo de ração baixado do estoque por lote,racao,should,PosturaWeb,partial,saída manual por lote; ainda não ligada ao apontamento diário (Marco 5b)
+Pedido de venda com preço por classe e embalagem,comercial,must,PosturaWeb,yes,pedido com preço por cliente e vigência faturamento que baixa estoque e gera contas a receber (Marco 3)
+App de vendas para vendedor externo,comercial,could,PosturaWeb,no,
+Emissão de NF-e de produto a partir do pedido gerando contas a receber,fiscal,should,PosturaWeb,no,via provedor de NF-e
+Relatórios comerciais: curva ABC vendas por produto região período clientes sem comprar 60+ dias,comercial,should,PosturaWeb,yes,por mês cliente (curva ABC) classe produto cidade e estado; clientes sem comprar há N dias com atalho de WhatsApp
+Custo do ovo por lote e período com rateio de indiretos e amortização da ave,custos,must,PosturaWeb,yes,custo por lote e mês com rateio de indiretos e amortização da ave sobre a competência (Marco 4)
+Margem por cliente e produto,custos,should,PosturaWeb,partial,margem por cliente no mês sobre o custo médio da dúzia (Marco 4); por produto depois
+Dashboards / BI zootécnico e financeiro,relatorios,could,PosturaWeb,no,
+Rastreabilidade do lote de aves até o lote de embalagem,qualidade,could,dominio,no,
+Instalação em servidor local,infra,could,PosturaWeb,skip,começamos só em nuvem
+Emissão de NFS-e municipal,fiscal,could,NIBO,skip,granja vende produto; só se houver serviço
+Nibo Obrigações (gestão de escritório contábil),contabil,could,NIBO,skip,é produto para contador não para granja
+Parcerias bancárias e base de contadores do original,integracoes,could,NIBO,skip,rede do original não é funcionalidade
+Abatedouro frango de corte e matrizes,avicultura,could,PosturaWeb,skip,fora do foco postura

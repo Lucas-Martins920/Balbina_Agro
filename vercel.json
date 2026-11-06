@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["gru1"],
+  "ignoreCommand": "bash scripts/vercel-ignorar.sh",
+  "crons": [
+    { "path": "/api/cron/open-finance", "schedule": "0 9 * * *" },
+    { "path": "/api/cron/webhooks", "schedule": "0 10 * * *" }
+  ]
+}

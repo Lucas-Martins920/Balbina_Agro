@@ -1,0 +1,30 @@
+# Atualizações automáticas de dependências (revisão geral de 2026-10-30, item S7).
+# Os PRs vão para o Teste-Desevolvimento, como todo o resto (docs/fluxo-de-trabalho.md).
+# Mensal e sem rebase automático (economia de minutos, 2026-10-31). Desde 2026-11-02 o PR do Dependabot
+# não roda Actions sozinho (só com o rótulo "verificar"); a thread que junta as atualizações verifica na máquina. Atualização de segurança (Settings > Code security) não espera o mês.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: Teste-Desevolvimento
+    schedule:
+      interval: monthly
+      time: "06:00"
+      timezone: America/Manaus
+    open-pull-requests-limit: 5
+    rebase-strategy: disabled
+    groups:
+      # correções e versões menores num PR só; versão maior (quebra) vem separada
+      menores:
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: Teste-Desevolvimento
+    schedule:
+      interval: monthly
+      time: "06:00"
+      timezone: America/Manaus
+    rebase-strategy: disabled
+    groups:
+      actions:
+        patterns: ["*"]

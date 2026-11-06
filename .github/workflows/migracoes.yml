@@ -1,0 +1,135 @@
+name: Migrations no Supabase
+
+# Aplica as migrations novas:
+# - no banco de PRODUÇÃO no push do master, ou seja, no PR do Teste-Desevolvimento aprovado e mesclado;
+# - no banco do SITE DE TESTE no push do Teste-Desevolvimento (secret SUPABASE_DB_URL_TESTES, docs/site-de-teste.md).
+# Fluxo: docs/fluxo-de-trabalho.md.
+# O master não roda a verificação de novo (é o mesmo código que o PR acabou de testar):
+# antes de aplicar na produção, este workflow confere que o commit veio de um PR mesclado no master cujos jobs
+# "app" e "banco" (test:db) do workflow Verificação passaram. Push direto no master sem PR não aplica nada;
+# nesse caso, rode à mão (Actions > Migrations no Supabase > Run workflow, banco "producao") depois de conferir.
+# O banco de teste não tem essa conferência: quem leva ao Teste-Desevolvimento já rodou o test:db na máquina.
+# O script só aplica as que faltam, então rodar de novo é seguro. Só roda quando uma migration muda.
+# Os secrets são a connection string "Session pooler" de cada projeto do Supabase.
+on:
+  push:
+    branches: [master, Teste-Desevolvimento]
+    paths:
+      - "supabase/migrations/**"
+      - "scripts/aplicar-migracoes.sh"
+      - ".github/workflows/migracoes.yml"
+  workflow_dispatch:
+    inputs:
+      banco:
+        description: "Em qual banco aplicar"
+        type: choice
+        options: [testes, producao]
+        default: testes
+      zerar_testes:
+        description: "Zerar o banco de TESTE antes (apaga os dados e reaplica tudo). Nunca roda na produção."
+        type: boolean
+        default: false
+      conta_teste:
+        description: "Criar (ou recriar) a conta de teste cheia no banco de TESTE — piscicultura completa com 60 dias de dados (supabase/seed/conta-teste.sql). Nunca roda na produção."
+        type: boolean
+        default: false
+
+concurrency:
+  group: migracoes-${{ inputs.banco || (github.ref_name == 'master' && 'producao' || 'testes') }}
+  cancel-in-progress: false
+
+# o GITHUB_TOKEN só lê; nenhum passo escreve no repositório
+permissions:
+  contents: read
+  pull-requests: read
+  checks: read
+
+jobs:
+  aplicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BANCO: ${{ inputs.banco || (github.ref_name == 'master' && 'producao' || 'testes') }}
+    steps:
+      - name: Confere que o commit passou pela Verificação
+        if: github.event_name == 'push' && env.BANCO == 'producao'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pr=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" \
+            --jq '[.[] | select(.merged_at != null and .base.ref == "master")][0].number // empty')
+          if [ -z "$pr" ]; then
+            echo "::error::O commit $GITHUB_SHA não veio de um PR mesclado no master; nada foi aplicado. Confira e rode à mão."
+            exit 1
+          fi
+          cabeca=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$pr" --jq .head.sha)
+          for job in app banco; do
+            r=$(gh api "repos/$GITHUB_REPOSITORY/commits/$cabeca/check-runs?check_name=$job&filter=latest" \
+              --jq '[.check_runs[].conclusion] | if index("success") then "success" else (.[0] // "nenhum") end')
+            echo "PR #$pr ($cabeca): $job = $r"
+            if [ "$r" != success ]; then
+              echo "::error::O job $job da Verificação não passou no PR #$pr; nada foi aplicado."
+              exit 1
+            fi
+          done
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Escolhe o banco
+        env:
+          URL_PRODUCAO: ${{ secrets.SUPABASE_DB_URL }}
+          URL_TESTES: ${{ secrets.SUPABASE_DB_URL_TESTES }}
+          REF_PRODUCAO: ${{ vars.BALBINA_REF_PRODUCAO }}
+        # nunca cai no banco de produção por falta do secret de teste
+        run: |
+          if [ "$BANCO" = producao ]; then url="$URL_PRODUCAO"; nome=SUPABASE_DB_URL; else url="$URL_TESTES"; nome=SUPABASE_DB_URL_TESTES; fi
+          echo "Banco: $BANCO"
+          if [ -z "$url" ]; then
+            echo "::warning::Secret $nome não cadastrado; nada foi aplicado no banco de $BANCO."
+            echo "pular=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          if [ "$BANCO" = testes ]; then
+            if [ "$url" = "$URL_PRODUCAO" ] || { [ -n "$REF_PRODUCAO" ] && echo "$url" | grep -qF "$REF_PRODUCAO"; }; then
+              echo "::error::Recusado: SUPABASE_DB_URL_TESTES aponta para o banco de produção."
+              exit 1
+            fi
+          fi
+          echo "::add-mask::$url"
+          echo "DATABASE_URL=$url" >> "$GITHUB_ENV"
+      - name: Instala o cliente do Postgres
+        if: env.pular != '1'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client >/dev/null
+      - name: Zera o banco de teste
+        if: env.pular != '1' && inputs.zerar_testes && env.BANCO == 'testes'
+        run: |
+          psql "$DATABASE_URL" -X -q -v ON_ERROR_STOP=1 <<'SQL'
+          drop schema if exists balbina_meta cascade;
+          drop schema if exists app cascade;
+          drop schema if exists supabase_migrations cascade;
+          drop schema public cascade;
+          create schema public;
+          grant usage on schema public to postgres, anon, authenticated, service_role;
+          alter default privileges in schema public grant all on tables to postgres, anon, authenticated, service_role;
+          alter default privileges in schema public grant all on functions to postgres, anon, authenticated, service_role;
+          alter default privileges in schema public grant all on sequences to postgres, anon, authenticated, service_role;
+          delete from auth.users;
+          SQL
+          echo "Banco de teste zerado."
+      - name: Aplica as migrations
+        if: env.pular != '1'
+        # erros viram anotações, que aparecem no resumo da execução
+        run: |
+          set -o pipefail
+          ./scripts/aplicar-migracoes.sh 2> erros.txt || {
+            sed 's/^/::error::/' erros.txt | head -20
+            exit 1
+          }
+      - name: Site de teste sem 2º fator obrigatório
+        # o e-mail padrão do Supabase manda poucos códigos por hora; no banco de teste o 2º fator fica opcional
+        # (mesma chave do npm run local, migration 20261028034500_mfa_obrigatorio.sql). Nunca na produção.
+        if: env.pular != '1' && env.BANCO == 'testes'
+        run: psql "$DATABASE_URL" -X -q -v ON_ERROR_STOP=1 -c "update app.parametros set valor = 'nao' where chave = 'exigir_2fa'"
+      - name: Conta de teste cheia
+        if: env.pular != '1' && inputs.conta_teste && env.BANCO == 'testes'
+        run: |
+          echo "Criando (ou recriando) a conta de teste cheia..."
+          psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f supabase/seed/conta-teste.sql

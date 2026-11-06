@@ -1,0 +1,31 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "teste": {
+      "distribution": "internal",
+      "channel": "teste",
+      "env": {
+        "EXPO_PUBLIC_AMBIENTE": "teste",
+        "EXPO_PUBLIC_SITE_URL": "https://SEU-SITE-DE-TESTE.vercel.app",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://SEU-PROJETO-DE-TESTE.supabase.co"
+      },
+      "environment": "preview"
+    },
+    "producao": {
+      "channel": "producao",
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_AMBIENTE": "producao",
+        "EXPO_PUBLIC_SITE_URL": "https://SEU-SITE.vercel.app",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://SEU-PROJETO.supabase.co"
+      },
+      "environment": "production"
+    }
+  },
+  "submit": {
+    "producao": {}
+  }
+}

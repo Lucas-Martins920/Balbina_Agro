@@ -1,0 +1,200 @@
+name: Verificação
+
+# Action único de verificação: junta o CI (lint, tipos, testes,
+# build, test:db), o E2E do Playwright e o teste da NF-e em homologação, numa rodada só por PR.
+# Fluxo e economia de minutos: docs/fluxo-de-trabalho.md.
+#
+# Quando roda:
+# - PR Teste-Desevolvimento → master (o que vai para a produção): tudo, com E2E;
+# - PR para o Teste-Desevolvimento só com o rótulo "verificar" (sem E2E) ou "e2e" (com E2E).
+#   As threads não abrem PR por feature: verificam na máquina e levam direto ao Teste-Desevolvimento;
+# - à mão (Actions > Verificação > Run workflow), com ou sem E2E.
+# Não roda em rascunho, em mudança só de documentação nem no push do master (as migrations conferem
+# que o PR que chegou ao master passou aqui; ver migracoes.yml).
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, labeled]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - ".claude/**"
+      - "graphify-out/**"
+      - "LICENSE"
+  workflow_dispatch:
+    inputs:
+      e2e:
+        description: "Rodar os testes de ponta a ponta (Playwright)"
+        type: boolean
+        default: true
+      nfce:
+        description: "Testar a NF-e em homologação (e a NFC-e também)"
+        type: boolean
+        default: false
+
+concurrency:
+  # Um rótulo qualquer (ou o "e2e" no PR para o master, que já roda tudo) não cancela a rodada em andamento:
+  # cai num grupo próprio e os jobs pulam.
+  group: >-
+    verificacao-${{ github.event.pull_request.number || github.ref }}-${{
+      (github.event.action == 'labeled' &&
+        (github.base_ref == 'master' || (github.event.label.name != 'e2e' && github.event.label.name != 'verificar')))
+      && format('rotulo-{0}', github.event.label.name) || 'codigo' }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  app:
+    name: app
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (!github.event.pull_request.draft && github.head_ref != 'master' &&
+        !(github.event.action == 'labeled' &&
+          (github.base_ref == 'master' || (github.event.label.name != 'e2e' && github.event.label.name != 'verificar'))) &&
+        (github.base_ref == 'master' ||
+          contains(github.event.pull_request.labels.*.name, 'verificar') ||
+          contains(github.event.pull_request.labels.*.name, 'e2e')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+      E2E: >-
+        ${{ (github.event_name == 'workflow_dispatch' && inputs.e2e) ||
+          github.base_ref == 'master' ||
+          contains(github.event.pull_request.labels.*.name, 'e2e') }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: 22
+      - name: Cache do node_modules
+        id: modulos
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: node_modules
+          key: node-modules-${{ runner.os }}-node22-${{ hashFiles('package-lock.json') }}
+      - if: steps.modulos.outputs.cache-hit != 'true'
+        run: npm ci --no-audit --no-fund
+
+      - run: npx next typegen
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+
+      # Com E2E, o build usa o Supabase local (um build só serve aos dois); sem E2E, valores de exemplo.
+      - name: Supabase local com as migrations
+        if: env.E2E == 'true'
+        uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3
+        with:
+          version: 2.122.0
+      - name: Sobe o Supabase
+        if: env.E2E == 'true'
+        run: |
+          supabase start -x realtime,storage-api,imgproxy,studio,mailpit,edge-runtime,logflare,vector,supavisor,postgres-meta
+          supabase status -o env | sed 's/"//g' > /tmp/supabase.env
+          set -a; . /tmp/supabase.env; set +a
+          echo "::add-mask::$SERVICE_ROLE_KEY"
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$ANON_KEY"
+            echo "SUPABASE_SECRET_KEY=$SERVICE_ROLE_KEY"
+            echo "NEXT_PUBLIC_SITE_URL=http://localhost:3000"
+            echo "BALBINA_CHAVE_CRIPTO=$(openssl rand -hex 32)"
+          } >> "$GITHUB_ENV"
+      - name: Supabase de exemplo para o build
+        if: env.E2E != 'true'
+        run: |
+          echo "NEXT_PUBLIC_SUPABASE_URL=https://exemplo.supabase.co" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_ci" >> "$GITHUB_ENV"
+
+      - name: Cache do build do Next
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: .next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+          restore-keys: next-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+      - run: npm run build
+
+      # Testes de ponta a ponta (e2e/): login com 2º fator, assinatura, apontamento, classificação,
+      # PDV, contas a pagar + conciliação OFX, API pública... Nada sai do runner.
+      - name: Cache do Chromium do Playwright
+        if: env.E2E == 'true'
+        id: navegador
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - if: env.E2E == 'true' && steps.navegador.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+      - if: env.E2E == 'true' && steps.navegador.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+      - name: Testes de ponta a ponta
+        if: env.E2E == 'true'
+        run: npx playwright test
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: failure() && env.E2E == 'true'
+        with:
+          name: relatorio-e2e
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+      # NF-e em homologação da Focus (sem valor fiscal): só quando o código da nota muda no PR, ou à mão.
+      # Sem os secrets FOCUS_NFE_TOKEN_HOMOLOGACAO e FOCUS_EMITENTE_DOC, só avisa.
+      - name: A nota fiscal mudou?
+        id: nfe
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          A_MAO: ${{ github.event_name == 'workflow_dispatch' && inputs.nfce }}
+        run: |
+          if [ "$A_MAO" = true ]; then echo "testar=1" >> "$GITHUB_OUTPUT"; exit 0; fi
+          [ -n "$PR" ] || exit 0
+          if gh api "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --paginate --jq '.[].filename' \
+              | grep -qxE 'src/lib/focus-mapa\.ts|scripts/focus-homologacao\.ts'; then
+            echo "testar=1" >> "$GITHUB_OUTPUT"
+          fi
+      - name: NF-e em homologação (emitir, corrigir, cancelar e inutilizar)
+        if: steps.nfe.outputs.testar == '1'
+        env:
+          FOCUS_TOKEN: ${{ secrets.FOCUS_NFE_TOKEN_HOMOLOGACAO }}
+          FOCUS_EMITENTE_DOC: ${{ secrets.FOCUS_EMITENTE_DOC }}
+          FOCUS_EMITENTE_UF: ${{ vars.FOCUS_EMITENTE_UF || 'AM' }}
+          FOCUS_NFCE: ${{ (github.event_name == 'workflow_dispatch' && inputs.nfce) && '1' || vars.FOCUS_NFCE || '0' }}
+        run: |
+          if [ -z "$FOCUS_TOKEN" ] || [ -z "$FOCUS_EMITENTE_DOC" ]; then
+            echo "::notice::Cadastre os secrets FOCUS_NFE_TOKEN_HOMOLOGACAO e FOCUS_EMITENTE_DOC para rodar o teste de homologação da NF-e."
+            exit 0
+          fi
+          node --experimental-strip-types scripts/focus-homologacao.ts
+
+  banco:
+    name: banco
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (!github.event.pull_request.draft && github.head_ref != 'master' &&
+        !(github.event.action == 'labeled' &&
+          (github.base_ref == 'master' || (github.event.label.name != 'e2e' && github.event.label.name != 'verificar'))) &&
+        (github.base_ref == 'master' ||
+          contains(github.event.pull_request.labels.*.name, 'verificar') ||
+          contains(github.event.pull_request.labels.*.name, 'e2e')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - run: ./scripts/test-db.sh
+      - run: ./scripts/test-backup.sh

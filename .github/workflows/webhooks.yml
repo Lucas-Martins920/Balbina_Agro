@@ -1,0 +1,35 @@
+name: Webhooks da API
+
+# Reserva da entrega dos avisos (webhooks) da API pública que estão na fila.
+# Quem entrega a cada 5 minutos é o pg_cron do Supabase (migration 20261029230000_cron_webhooks_no_banco.sql),
+# com a rotina diária da Vercel (vercel.json) de reserva. Aqui fica só uma reserva por dia (05:17 de Manaus): cada
+# rodada custa 1 minuto cobrado do GitHub Actions (economia de 2026-10-31 e 2026-11-02).
+# Precisa do secret CRON_SECRET (o mesmo valor cadastrado na Vercel) e da variável BALBINA_URL (endereço de
+# produção, ex.: https://balbina.vercel.app). Sem eles, não faz nada.
+on:
+  schedule:
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: webhooks-api
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  entregar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+      BALBINA_URL: ${{ vars.BALBINA_URL }}
+    steps:
+      - name: Entrega a fila
+        run: |
+          if [ -z "$CRON_SECRET" ] || [ -z "$BALBINA_URL" ]; then
+            echo "::notice::Cadastre o secret CRON_SECRET e a variável BALBINA_URL para a reserva de entrega dos webhooks."
+            exit 0
+          fi
+          curl -fsS --max-time 90 -H "Authorization: Bearer $CRON_SECRET" "${BALBINA_URL%/}/api/cron/webhooks"

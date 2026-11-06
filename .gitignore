@@ -1,13 +1,55 @@
-node_modules/
-**/node_modules/
-dist/
-**/dist/
-.env
-**/.env
-.env.local
-**/.env.local
-balbina_v1.db
-android/app/build/
-android/.gradle/
-**/android/**/build/
-**/android/.gradle/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# graphify (grafo do código, regerado a cada sessão)
+/graphify-out/
+
+# testes de ponta a ponta (Playwright)
+/e2e/.estado/
+/playwright-report/
+/test-results/
+
+# Supabase local (npm run local)
+supabase/.branches/
+supabase/.temp/
+/carga/.sessoes.json

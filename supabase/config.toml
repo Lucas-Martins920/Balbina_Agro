@@ -1,0 +1,66 @@
+# Supabase local (CLI `supabase start`): o banco do `npm run local` na máquina (docs/rodar-local.md)
+# e dos testes de ponta a ponta no CI (.github/workflows/e2e.yml).
+# Não liga nada na nuvem: as migrations da produção continuam pelo workflow migracoes.yml.
+project_id = "erp_balbina"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+
+[db.seed]
+enabled = false
+
+[realtime]
+enabled = false
+
+# para ver e editar os dados em http://127.0.0.1:54323 (o CI desliga com -x studio)
+[studio]
+enabled = true
+port = 54323
+
+# e-mails do banco local (código do 2º fator, esqueci a senha) aparecem em http://127.0.0.1:54324
+# (o CI desliga com -x mailpit)
+[inbucket]
+enabled = true
+port = 54324
+
+[storage]
+enabled = false
+
+[edge_runtime]
+enabled = false
+
+[analytics]
+enabled = false
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/**"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+
+# o e-mail do 2º fator com o código de 6 números (o modelo padrão do Supabase local só traz o link)
+[auth.email.template.magic_link]
+subject = "Seu código de acesso do Balbina"
+content_path = "./supabase/templates/codigo-acesso.html"
+
+[auth.mfa]
+max_enrolled_factors = 10
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true

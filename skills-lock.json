@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "skills": {
+    "differential-review": {
+      "source": "trailofbits/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/differential-review/skills/differential-review/SKILL.md",
+      "computedHash": "3c330b7d8e2a7a6bba9ff9c7f9971d3b6c17fef84b9382efdd325abdd481371c"
+    },
+    "drawio": {
+      "source": "jgraph/drawio-mcp",
+      "sourceType": "github",
+      "skillPath": "plugins/claude-code/skills/drawio/SKILL.md",
+      "computedHash": "f7738fc49f20b54e9714935691992ce36f043bd5e5194d7e714ec5e1de3beac8"
+    },
+    "entry-point-analyzer": {
+      "source": "trailofbits/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/entry-point-analyzer/skills/entry-point-analyzer/SKILL.md",
+      "computedHash": "781443b6d6b52b7cf96c9d6771dfbb0fd874620839ff5d101e78f0710036ed74"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "computedHash": "913b9d37d0d54047dd65222bb8c67b2bf04e3cb87dcad1729068d7a8b2c8c396"
+    },
+    "fp-check": {
+      "source": "trailofbits/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/fp-check/skills/fp-check/SKILL.md",
+      "computedHash": "b84703ecb023c8bfc77f08d79b932a5f4baf0a3d716550117dcbd7b0e48c81a6"
+    },
+    "improve": {
+      "source": "shadcn/improve",
+      "sourceType": "github",
+      "skillPath": "skills/improve/SKILL.md",
+      "computedHash": "39a9358732dcff385e9e4d3e60b4547856f834e54a58b35e455aa9bd49928c13"
+    },
+    "ponytail": {
+      "source": "DietrichGebert/ponytail",
+      "sourceType": "github",
+      "skillPath": "skills/ponytail/SKILL.md",
+      "computedHash": "061f887d9e3e735f85db3be3655a8936a00f24d5fb65ac4ab74a968a770fe342"
+    },
+    "ponytail-audit": {
+      "source": "DietrichGebert/ponytail",
+      "sourceType": "github",
+      "skillPath": "skills/ponytail-audit/SKILL.md",
+      "computedHash": "1d718f893dabc01caad0dacef86444b5b4b3e1e59409527d66e8b5dd0cd85ae0"
+    },
+    "ponytail-debt": {
+      "source": "DietrichGebert/ponytail",
+      "sourceType": "github",
+      "skillPath": "skills/ponytail-debt/SKILL.md",
+      "computedHash": "f5d1d2ab891ff0a650a90b67235e487828e7d2a189de08a1ae073032de379407"
+    },
+    "ponytail-review": {
+      "source": "DietrichGebert/ponytail",
+      "sourceType": "github",
+      "skillPath": "skills/ponytail-review/SKILL.md",
+      "computedHash": "800dc0c86402978e12359f701b9e0c81ba4607a0cd0027f4596d0f835a67eadc"
+    },
+    "security-audit": {
+      "source": "cloudflare/security-audit-skill",
+      "sourceType": "github",
+      "skillPath": "skills/security-audit/SKILL.md",
+      "computedHash": "98b97aad2873b3b9a8e064007c25e7827b493ba27fda8bfbdb41dab586767973"
+    },
+    "semgrep": {
+      "source": "trailofbits/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/static-analysis/skills/semgrep/SKILL.md",
+      "computedHash": "ba430fc8aa2d1438c71449bcc15a24b7cb2c2796dd244b060b3864917ed561b6"
+    },
+    "sharp-edges": {
+      "source": "trailofbits/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/sharp-edges/skills/sharp-edges/SKILL.md",
+      "computedHash": "63318ab9403b975a63fc0310540a14b632079f63f61414b711305860337a54b6"
+    },
+    "skill-inspector": {
+      "source": "NVIDIA/SkillSpector",
+      "sourceType": "github",
+      "skillPath": "skills/skill-inspector/SKILL.md",
+      "computedHash": "7ee4fd8df9f38aa5345b7145e0ac795c28724aab2440c461f35fbc853bbad0dc"
+    },
+    "supabase": {
+      "source": "supabase/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/supabase/SKILL.md",
+      "computedHash": "211141fd078b4b3645803868528d54221bc7755d24d5c8af45a366785c151dba"
+    },
+    "supabase-postgres-best-practices": {
+      "source": "supabase/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/supabase-postgres-best-practices/SKILL.md",
+      "computedHash": "e14e276241805c97dbcfe40dcbea1a3035269cc7293cac4b1832dda41a835e60"
+    },
+    "supply-chain-risk-auditor": {
+      "source": "trailofbits/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/supply-chain-risk-auditor/skills/supply-chain-risk-auditor/SKILL.md",
+      "computedHash": "1c8dc1f5f5e4321e26fe0d9f3eb123b915efe924f192716e7fe4781a66a4500f"
+    },
+    "variant-analysis": {
+      "source": "trailofbits/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/variant-analysis/skills/variant-analysis/SKILL.md",
+      "computedHash": "9f72278d3264d0ac45969cd78b83be84624a4579784d202ba4463d42e194b834"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-best-practices/SKILL.md",
+      "computedHash": "3219a1944e404ffc14d1d9d6aef6dd2e3855b81387ee0a044ccbfe14d34c2357"
+    }
+  }
+}

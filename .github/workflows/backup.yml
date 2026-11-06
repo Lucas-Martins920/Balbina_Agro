@@ -1,0 +1,131 @@
+name: Backup do banco
+
+# Todo dia às 03:00 de Brasília: dump cifrado do banco de produção, restauração completa
+# num Supabase limpo (o mesmo Postgres, extensões e auth da produção) e upload do arquivo.
+# Se a restauração falhar, o job falha. Política e como restaurar: docs/backup.md.
+# Precisa dos secrets SUPABASE_DB_URL e BACKUP_SENHA. Opcional: BACKUP_S3_* (cópia externa).
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: backup-producao
+  cancel-in-progress: false
+
+# o GITHUB_TOKEN só lê o código; nenhum passo escreve no repositório
+permissions:
+  contents: read
+
+# bash com pipefail: um erro antes de um "| tee" quebra o passo (antes passava verde)
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      DATABASE_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BACKUP_SENHA: ${{ secrets.BACKUP_SENHA }}
+      PGOPTIONS: --client-min-messages=warning
+    steps:
+      - name: Verifica os secrets
+        run: |
+          if [ -z "$DATABASE_URL" ] && [ -z "$BACKUP_SENHA" ]; then
+            echo "::warning::Backup ainda não configurado: cadastre os secrets SUPABASE_DB_URL e BACKUP_SENHA (veja docs/backup.md)."
+            echo "pular=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          if [ -z "$DATABASE_URL" ] || [ -z "$BACKUP_SENHA" ]; then
+            echo "::error::Cadastre os dois secrets, SUPABASE_DB_URL e BACKUP_SENHA (veja docs/backup.md)."
+            exit 1
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        if: env.pular != '1'
+
+      # O pg_dump precisa ser da mesma versão do servidor ou mais novo
+      - name: Instala o Postgres da versão do servidor
+        if: env.pular != '1'
+        run: |
+          versao=$(psql "$DATABASE_URL" -X -tAc 'show server_version_num')
+          M=$((versao / 10000))
+          echo "Servidor: Postgres $M"
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-common >/dev/null
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y >/dev/null
+          sudo apt-get install -y -qq "postgresql-$M" "postgresql-client-$M" >/dev/null
+          echo "/usr/lib/postgresql/$M/bin" >> "$GITHUB_PATH"
+          echo "PG_MAJOR=$M" >> "$GITHUB_ENV"
+
+      - name: Gera o backup
+        if: env.pular != '1'
+        run: |
+          arquivo=$(./scripts/backup-banco.sh backups)
+          echo "ARQUIVO=$arquivo" >> "$GITHUB_ENV"
+          echo "NOME=$(basename "$arquivo" .tar.gpg)" >> "$GITHUB_ENV"
+          ls -lh backups
+
+      # Supabase local vazio (supabase start numa pasta sem migrations): mesma versão do Postgres,
+      # pg_cron, pg_net, Vault e o auth do GoTrue, como um projeto novo em que se restauraria de verdade
+      - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3
+        if: env.pular != '1'
+        with:
+          version: 2.122.0
+      - name: Sobe um Supabase vazio
+        if: env.pular != '1'
+        run: |
+          mkdir -p /tmp/destino && cd /tmp/destino
+          supabase init --force >/dev/null
+          sed -i -E "s/^major_version = .*/major_version = $PG_MAJOR/" supabase/config.toml
+          supabase start -x realtime,storage-api,imgproxy,studio,mailpit,edge-runtime,logflare,vector,supavisor,postgres-meta,kong,postgrest
+          psql "postgresql://postgres:postgres@127.0.0.1:54322/postgres" -X -tAc 'show server_version'
+
+      - name: Restaura o backup completo e confere
+        if: env.pular != '1'
+        env:
+          DESTINO: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+        run: |
+          set +e
+          DATABASE_URL="$DESTINO" ./scripts/restaurar-backup.sh "$ARQUIVO" > resultado.txt 2>&1
+          status=$?
+          set -e
+          # avisos de GRANT em objetos do próprio Supabase não são erro; o resto aparece
+          grep -v 'WARNING:  no privileges' resultado.txt > resumo.txt || true
+          cat resumo.txt
+          { echo "### Backup $NOME"; echo '```'; tail -40 resumo.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$status" != 0 ]; then
+            echo "::error::A restauração de teste falhou: este backup NÃO está provado restaurável."
+            exit 1
+          fi
+
+      # Domingo guarda por 90 dias; os outros dias, por 30
+      - name: Define a retenção
+        if: env.pular != '1'
+        run: |
+          if [ "$(date -u +%u)" = 7 ]; then echo "DIAS=90" >> "$GITHUB_ENV"; else echo "DIAS=30" >> "$GITHUB_ENV"; fi
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: env.pular != '1'
+        with:
+          name: ${{ env.NOME }}
+          path: ${{ env.ARQUIVO }}
+          retention-days: ${{ env.DIAS }}
+          compression-level: 0
+          if-no-files-found: error
+
+      - name: Cópia externa (S3, R2 ou B2)
+        if: env.pular != '1'
+        env:
+          BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.BACKUP_S3_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_S3_SECRET_ACCESS_KEY }}
+          ENDPOINT: ${{ secrets.BACKUP_S3_ENDPOINT }}
+          AWS_DEFAULT_REGION: auto
+        run: |
+          if [ -z "$BUCKET" ]; then
+            echo "::notice::Sem BACKUP_S3_BUCKET: o backup ficou só nos artefatos do GitHub."
+            exit 0
+          fi
+          aws s3 cp "$ARQUIVO" "s3://$BUCKET/balbina/$(basename "$ARQUIVO")" ${ENDPOINT:+--endpoint-url "$ENDPOINT"}

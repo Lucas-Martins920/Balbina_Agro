@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "Balbina",
+    "slug": "balbina",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "br.app.balbina",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0b7285",
+        "foregroundImage": "./assets/android-icon-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "br.app.balbina"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "O Balbina usa o Face ID para abrir o app sem digitar a senha."
+        }
+      ]
+    ],
+    "scheme": "balbina",
+    "experiments": {
+      "typedRoutes": true
+    },
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#dce8ee",
+      "dark": {
+        "backgroundColor": "#06080e"
+      }
+    }
+  }
+}
