@@ -160,6 +160,7 @@
 - [src/lib/sugestao-apontamento.test.ts](../../src/lib/sugestao-apontamento.test.ts) — Testes de src/lib/sugestao-apontamento.ts.
 - [src/lib/supabase/falha-auth.test.ts](../../src/lib/supabase/falha-auth.test.ts) — Testes de src/lib/supabase/falha-auth.ts.
 - [src/lib/supabase/todas.test.ts](../../src/lib/supabase/todas.test.ts) — Testes de src/lib/supabase/todas.ts.
+- [src/lib/titulos.test.ts](../../src/lib/titulos.test.ts) — Testes de src/lib/titulos.ts.
 - [src/lib/tutoriais.test.ts](../../src/lib/tutoriais.test.ts) — Testes de src/lib/tutoriais.ts.
 - [src/lib/vendas.test.ts](../../src/lib/vendas.test.ts) — Testes de src/lib/vendas.ts.
 - [src/lib/whatsapp-texto.test.ts](../../src/lib/whatsapp-texto.test.ts) — Testes de src/lib/whatsapp-texto.ts.

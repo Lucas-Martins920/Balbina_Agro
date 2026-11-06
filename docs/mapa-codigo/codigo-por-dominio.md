@@ -256,8 +256,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `FalarApontamento` *componente* L29 (usado em 1) · `FotoMortes` *componente* L84 (usado em 1)
   - internas: `preencher` L12 · `formulario` L22 · `quadros` L23 · `nada` L25
 - **[src/components/campo/app-campo.tsx](../../src/components/campo/app-campo.tsx)** (navegador) — App de campo (/campo): chat com IA, viveiros, ração e insumos, biometria e a fila de envios. Depois de aberto uma vez com sinal, funciona sem internet e envia sozinho quando o sinal volta.
-  - `AppCampo` *componente* L32 (usado em 1)
-  - internas: `nada` L28
+  - `AppCampo` *componente* L33 (usado em 1)
+  - internas: `nada` L29
 - **[src/components/campo/biometria-campo.tsx](../../src/components/campo/biometria-campo.tsx)** (navegador) — Aba Biometria: o crescimento de cada lote (peso, ganho por dia, conversão, curva contra o padrão da espécie) e a próxima pesagem. Começa pelo viveiro com a biometria mais atrasada.
   - `BiometriaCampo` *componente* L14 (usado em 1)
   - internas: `dias` L10
@@ -594,8 +594,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/previsao-dados.ts](../../src/lib/previsao-dados.ts)** — Mesmo formato da view `alertas`, para o painel juntar os dois
   - `DIAS_TENDENCIA` *constante* L17 · `DIAS_CONSUMO` *constante* L18 (usado em 1) · `SEMANAS_PROJECAO` *constante* L19 (usado em 1) · `LotePrevisto` *tipo* L21 · `AlertaPrevisao` *tipo* L32 · `carregarPrevisoes` *função* L36 (usado em 2)
 - **[src/lib/previsao.ts](../../src/lib/previsao.ts)** — Previsões da piscicultura sem IA: contas sobre o que já é lançado (apontamento, biometria, curva da espécie, estoque, fluxo e custo do kg). Tudo puro, para testar sem banco. Nada aqui decide sozinho: vira sugestão com o…
-  - `CurvaPadrao` *tipo* L20 (usado em 3) · `PontoProjecao` *tipo* L22 · `Projecao` *tipo* L27 (usado em 1) · `SEMANAS_MORTALIDADE` *constante* L37 · `MORTALIDADE_SEMANA_MAX` *constante* L38 · `mortalidadeSemanal` *função* L41 (usado em 3) · `taxaNaCurva` *função* L49 (usado em 1) · `projetarLote` *função* L60 (usado em 3) · `DiaLote` *tipo* L98 (usado em 2) · `TipoSinal` *tipo* L104 · `Sinal` *tipo* L105 · `AlertaTendencia` *tipo* L106 (usado em 1) · `LIMITES` *constante* L114 (usado em 1) · `alertasTendencia` *função* L154 (usado em 2) · `ItemEstoque` *tipo* L180 · `Cobertura` *tipo* L181 (usado em 3) · `COBERTURA_CRITICA` *constante* L182 (usado em 1) · `COBERTURA_ATENCAO` *constante* L183 (usado em 1) · `coberturaRacao` *função* L186 (usado em 2) · `primeiroSaldoNegativo` *função* L205 (usado em 2) · `CustoMes` *tipo* L211 · `custoSemanalVariavel` *função* L222 (usado em 3) · `precoRacaoKg` *função* L228 (usado em 3) · `margemProjetada` *função* L236 (usado em 2) · `BaseCiclo` *tipo* L253 (usado em 1) · `baseDoCiclo` *função* L261 (usado em 1) · `resultadoCiclo` *função* L275 (usado em 1)
-  - internas: `num` L10 · `media` L11 · `arred` L15 · `fmt` L124 · `sinaisDoLote` L126 · `diasDoMes` L215
+  - `CurvaPadrao` *tipo* L20 (usado em 3) · `PontoProjecao` *tipo* L22 · `Projecao` *tipo* L27 (usado em 1) · `SEMANAS_MORTALIDADE` *constante* L37 · `MORTALIDADE_SEMANA_MAX` *constante* L38 · `mortalidadeSemanal` *função* L41 (usado em 3) · `taxaNaCurva` *função* L49 (usado em 1) · `projetarLote` *função* L60 (usado em 3) · `DiaLote` *tipo* L98 (usado em 2) · `TipoSinal` *tipo* L104 · `Sinal` *tipo* L105 · `AlertaTendencia` *tipo* L106 (usado em 1) · `LIMITES` *constante* L114 (usado em 1) · `alertasTendencia` *função* L162 (usado em 2) · `ItemEstoque` *tipo* L188 · `Cobertura` *tipo* L189 (usado em 3) · `COBERTURA_CRITICA` *constante* L190 (usado em 1) · `COBERTURA_ATENCAO` *constante* L191 (usado em 1) · `coberturaRacao` *função* L194 (usado em 2) · `primeiroSaldoNegativo` *função* L213 (usado em 2) · `CustoMes` *tipo* L219 · `custoSemanalVariavel` *função* L230 (usado em 3) · `precoRacaoKg` *função* L236 (usado em 3) · `margemProjetada` *função* L244 (usado em 2) · `BaseCiclo` *tipo* L261 (usado em 1) · `baseDoCiclo` *função* L269 (usado em 1) · `resultadoCiclo` *função* L283 (usado em 1)
+  - internas: `num` L10 · `media` L11 · `arred` L15 · `fmt` L124 · `sinaisDoLote` L129 · `diasDoMes` L223
 - **[src/lib/relatorios-catalogo.ts](../../src/lib/relatorios-catalogo.ts)** — Central de relatórios (Gestão > Relatórios): a lista de tudo o que o sistema emite, num lugar só. Cada relatório mantém a permissão do assunto (vendas pede vendas.ver, indicadores pedem lotes.ver...), então a central ap…
   - `Area` *tipo* L6 (usado em 1) · `Formato` *tipo* L7 · `AREAS` *constante* L9 (usado em 2) · `Relatorio` *tipo* L17 (usado em 1) · `RELATORIOS` *constante* L28 (usado em 1) · `PERMISSOES_RELATORIOS` *constante* L72 (usado em 1) · `relatoriosVisiveis` *função* L74 (usado em 2) · `buscarRelatorios` *função* L78 (usado em 2) · `LinkRapido` *tipo* L85 (usado em 1) · `linksRapidos` *função* L89 (usado em 2) · `doMesmoAssunto` *função* L117 (usado em 2)
 - **[src/lib/relatorios.ts](../../src/lib/relatorios.ts)** — Os 12 meses que terminam em `ate` (AAAA-MM), como AAAA-MM-01
@@ -872,7 +872,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/regras.ts](../../src/lib/regras.ts)** — Vocabulário das regras de conciliação (o banco valida a estrutura em regras_conciliacao)
   - `TIPOS_REGRA` *constante* L2 (usado em 2) · `CAMPOS_REGRA` *constante* L9 (usado em 2) · `OPERADORES_REGRA` *constante* L15 (usado em 2) · `Condicao` *tipo* L24 (usado em 2) · `condicaoDoLancamento` *função* L27 (usado em 4) · `descreverCondicao` *função* L33 (usado em 2)
 - **[src/lib/titulos.ts](../../src/lib/titulos.ts)** — O que muda entre contas a pagar e a receber. O resto da tela e das ações é o mesmo.
-  - `TipoTitulo` *tipo* L2 (usado em 2) · `CONFIG_TITULO` *constante* L4 (usado em 5) · `lerTipo` *função* L41 (usado em 1) · `FREQUENCIAS` *constante* L45 (usado em 2) · `FORMAS_PAGAMENTO` *constante* L55 (usado em 7) · `GRUPOS_CATEGORIA` *constante* L65 (usado em 8) · `COMPONENTES_CUSTO` *constante* L74 (usado em 2)
+  - `TipoTitulo` *tipo* L2 (usado em 2) · `CONFIG_TITULO` *constante* L4 (usado em 5) · `lerTipo` *função* L41 (usado em 1) · `FREQUENCIAS` *constante* L45 (usado em 2) · `FORMAS_PAGAMENTO` *constante* L55 (usado em 7) · `GRUPOS_CATEGORIA` *constante* L65 (usado em 8) · `COMPONENTES_CUSTO` *constante* L74 (usado em 3)
 
 ## Início, painel, ajuda e configurações
 
@@ -926,9 +926,9 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/components/seletor-empresa.tsx](../../src/components/seletor-empresa.tsx)** (navegador)
   - `SeletorEmpresa` *componente* L17 (usado em 1)
   - internas: `Cracha` L9
-- **[src/components/tutorial.tsx](../../src/components/tutorial.tsx)** (navegador)
-  - `Tutorial` *componente* L77 (usado em 2)
-  - internas: `chaveLocal` L33 · `lerLocal` L35 · `gravarLocal` L43 · `visivel` L51 · `acharAlvo` L57 · `montarPassos` L66 · `reduzMovimento` L75 · `PainelAjuda` L262 · `Duvida` L391
+- **[src/components/tutorial.tsx](../../src/components/tutorial.tsx)** (navegador) — Abre ou fecha o painel de ajuda a partir de um botão da própria tela.
+  - `alternarAjuda` *função* L39 (usado em 1) · `Tutorial` *componente* L87 (usado em 2)
+  - internas: `chaveLocal` L43 · `lerLocal` L45 · `gravarLocal` L53 · `visivel` L61 · `acharAlvo` L67 · `montarPassos` L76 · `reduzMovimento` L85 · `PainelAjuda` L279 · `Duvida` L408
 - **[src/components/versao.tsx](../../src/components/versao.tsx)** (navegador) — Alterna a versão do celular e a completa, no mesmo formato do seletor dia/noite. Fica sempre à vista: na barra do alto do celular e, na versão completa, no topo da lateral. No computador não aparece (classe `so-toque`).
   - `SeletorVersao` *componente* L29 (usado em 2)
   - internas: `ler` L9 · `trocar` L13
