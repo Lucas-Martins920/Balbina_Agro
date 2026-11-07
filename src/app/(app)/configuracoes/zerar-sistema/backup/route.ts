@@ -47,6 +47,8 @@ const TABELAS: { tabela: string; ordem: string[]; colunas?: string }[] = [
   { tabela: "eventos_sanitarios", ordem: ["id"] },
   { tabela: "despescas", ordem: ["id"] },
   { tabela: "biometrias", ordem: ["id"] },
+  { tabela: "leituras_sonda", ordem: ["id"] },
+  { tabela: "sondas", ordem: ["id"] },
   // Manutenção e documentos
   { tabela: "documentos", ordem: ["id"] },
   { tabela: "documentos_recebidos", ordem: ["id"] },

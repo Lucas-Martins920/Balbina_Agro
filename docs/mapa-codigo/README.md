@@ -2,7 +2,7 @@
 
 > Gerado automaticamente por `scripts/mapa-codigo.mjs`. **Não edite à mão**: depois de mudar o código, rode `npm run mapa` e a pasta `docs/mapa-codigo/` é refeita. Em conflito de merge nesses arquivos, rode `npm run mapa` de novo e aceite o resultado.
 
-Resumo: 533 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2199 funções/componentes/tipos, 352 funções do banco, 108 tabelas, 31 views, 79 triggers, 177 policies, 120 migrations.
+Resumo: 533 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2199 funções/componentes/tipos, 352 funções do banco, 108 tabelas, 31 views, 79 triggers, 177 policies, 121 migrations.
 
 **Versão com busca (recomendada):** abra [mapa.html](mapa.html) no navegador (duplo clique no arquivo `docs/mapa-codigo/mapa.html`). Nas páginas Markdown, use Ctrl+F.
 
@@ -285,8 +285,8 @@ Resumo: 533 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2199 funç
 | `src/lib/db` | 3 |  |
 | `src/lib/supabase` | 8 | Clientes do Supabase: server.ts (servidor com sessão), client.ts (navegador), admin.ts (chave de serviço), proxy.ts (sessão no proxy). |
 | `src/lib/sync` | 5 |  |
-| `supabase` | 208 | Banco de dados Supabase (Postgres). |
-| `supabase/migrations` | 120 | Migrations SQL em ordem de data. Tabelas, views, funções, triggers e policies (RLS). Nunca editar uma antiga: criar outra. |
+| `supabase` | 209 | Banco de dados Supabase (Postgres). |
+| `supabase/migrations` | 121 | Migrations SQL em ordem de data. Tabelas, views, funções, triggers e policies (RLS). Nunca editar uma antiga: criar outra. |
 | `supabase/seed` | 1 |  |
 | `supabase/templates` | 1 |  |
 | `supabase/tests` | 85 | Testes do banco (npm run test:db): regras de negócio, triggers e isolamento entre empresas. |

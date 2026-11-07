@@ -789,3 +789,4 @@ As migrations rodam em ordem de nome. Aqui aparece a **última** migration que (
 - [supabase/migrations/20261105000006_campo_insumos.sql](../../supabase/migrations/20261105000006_campo_insumos.sql) — App de campo (/campo): insumos aplicados no viveiro pelo celular, com reenvio seguro pela fila offline.
 - [supabase/migrations/20261105000007_chat_campo_uso_ia.sql](../../supabase/migrations/20261105000007_chat_campo_uso_ia.sql) — Balbina: o chat do app de campo (/api/chat/manejo) conta no uso de IA da empresa, como a leitura de boleto e
 - [supabase/migrations/20261106000001_sondas_iot.sql](../../supabase/migrations/20261106000001_sondas_iot.sql) — Sondas IoT de qualidade da água: leituras contínuas de oxigênio, temperatura, pH e amônia
+- [supabase/migrations/20261107000001_zerar_leituras_sonda.sql](../../supabase/migrations/20261107000001_zerar_leituras_sonda.sql) — Zerar o sistema também apaga as leituras das sondas (movimento). As sondas em si são cadastro
