@@ -254,19 +254,19 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/app/api/lotes/[id]/fechar/route.ts](../../src/app/api/lotes/%5Bid%5D/fechar/route.ts)** (rota `/api/lotes/[id]/fechar`) — API POST /api/lotes/[id]/fechar.
   - `POST` *função* L5
 - **[src/app/campo/page.tsx](../../src/app/campo/page.tsx)** (rota `/campo`) — Tela /campo.
-  - `metadata` *constante* L17 · `viewport` *constante* L26 · `PaginaCampo` *componente* L30
+  - `metadata` *constante* L18 · `viewport` *constante* L27 · `PaginaCampo` *componente* L31
 - **[src/components/assistentes-apontamento.tsx](../../src/components/assistentes-apontamento.tsx)** (navegador) — A3: "Viveiro 3, quarenta quilos de ração, duas mortes por falta de oxigênio, oxigênio 2,5" vira os campos. O reconhecimento é o do celular; a interpretação roda aqui, sem internet.
   - `FalarApontamento` *componente* L29 (usado em 1) · `FotoMortes` *componente* L84 (usado em 1)
   - internas: `preencher` L12 · `formulario` L22 · `quadros` L23 · `nada` L25
 - **[src/components/campo/app-campo.tsx](../../src/components/campo/app-campo.tsx)** (navegador) — App de campo (/campo): chat com IA, viveiros, ração e insumos, biometria e a fila de envios. Depois de aberto uma vez com sinal, funciona sem internet e envia sozinho quando o sinal volta.
-  - `AppCampo` *componente* L33 (usado em 1)
-  - internas: `nada` L29
+  - `AppCampo` *componente* L34 (usado em 1)
+  - internas: `nada` L30
 - **[src/components/campo/biometria-campo.tsx](../../src/components/campo/biometria-campo.tsx)** (navegador) — Aba Biometria: o crescimento de cada lote (peso, ganho por dia, conversão, curva contra o padrão da espécie) e a próxima pesagem. Começa pelo viveiro com a biometria mais atrasada.
   - `BiometriaCampo` *componente* L14 (usado em 1)
   - internas: `dias` L10
 - **[src/components/campo/chat-campo.tsx](../../src/components/campo/chat-campo.tsx)** (navegador) — --------------------------------------------------------------------------------------------------------------- Aba Chat: texto ou voz vira lançamento (cartão para confirmar) e as dúvidas de manejo são respondidas pela…
-  - `ChatCampo` *componente* L308 (usado em 1)
-  - internas: `lerBruto` L37 · `assinar` L47 · `lerMensagens` L60 · `useConversa` L71 · `nada` L88 · `racaoDeHoje` L100 · `respostaLocal` L112 · `paraIa` L139 · `perguntarIa` L148 · `CartaoProposta` L178
+  - `ChatCampo` *componente* L287 (usado em 1)
+  - internas: `lerMensagens` L41 · `useConversa` L52 · `nada` L63 · `racaoDeHoje` L75 · `respostaLocal` L87 · `paraIa` L114 · `perguntarIa` L123 · `CartaoProposta` L157
 - **[src/components/campo/contexto.tsx](../../src/components/campo/contexto.tsx)** (navegador) — O que a página /campo traz do servidor (fica no cache do celular para abrir sem sinal)
   - `ItemChecklistCampo` *tipo* L10 (usado em 1) · `DadosCampo` *tipo* L13 (usado em 1) · `Aba` *tipo* L26 (usado em 1) · `AcaoFolha` *tipo* L27 (usado em 3) · `Campo` *tipo* L29 (usado em 1) · `ProvedorCampo` *constante* L47 (usado em 1) · `useCampo` *hook* L49 (usado em 11) · `novoId` *função* L56 (usado em 5)
 - **[src/components/campo/detalhe-tanque.tsx](../../src/components/campo/detalhe-tanque.tsx)** (navegador) — O viveiro na palma da mão: como está o lote, quanto dar de ração hoje, o que falta enviar e os lançamentos.
@@ -275,9 +275,9 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/components/campo/envios-campo.tsx](../../src/components/campo/envios-campo.tsx)** (navegador) — Aba Envios: o que está no celular esperando sinal, o que precisa de decisão e o que já chegou ao servidor.
   - `EnviosCampo` *componente* L74 (usado em 1)
   - internas: `semEstoque` L13 · `textoExistente` L15 · `ItemDaFila` L20
-- **[src/components/campo/fila-cliente.ts](../../src/components/campo/fila-cliente.ts)** (navegador) — Fila de envios do app de campo. Envia na ordem em que foi lançada (o lote aberto chega antes da ração dele).
-  - `EstadoFila` *tipo* L51 (usado em 1) · `useFilaCampo` *hook* L64 (usado em 1) · `usePreferencia` *hook* L172 (usado em 2)
-  - internas: `lerTexto` L12 · `gravar` L20 · `useArmazenado` L31 · `alterar` L47
+- **[src/components/campo/fila-cliente.ts](../../src/components/campo/fila-cliente.ts)** (navegador) — Fila de envios do app de campo. Envia na ordem em que foi lançada (o lote aberto chega antes da ração dele). A sincronização roda sozinha a cada 5 s com internet (src/lib/sync/worker.ts) e, no Android, também com o app…
+  - `EstadoFila` *tipo* L23 (usado em 1) · `useFilaCampo` *hook* L38 (usado em 1) · `usePreferencia` *hook* L137 (usado em 2)
+  - internas: `lerTexto` L15 · `gravar` L16 · `alterar` L19
 - **[src/components/campo/folha.tsx](../../src/components/campo/folha.tsx)** (navegador) — Gaveta de baixo do app de campo (<dialog> modal: foco preso, Esc fecha, fica por cima de tudo). Sobe com a curva de gaveta do iOS e desce mais rápido; dá para arrastar pela alça para fechar. Quem abre e fecha é o pai (a…
   - `RodapeFolha` *componente* L14 · `Folha` *componente* L24 (usado em 1)
 - **[src/components/campo/folhas-campo.tsx](../../src/components/campo/folhas-campo.tsx)** (navegador) — Uma gaveta só para o app inteiro: a ficha do viveiro e cada formulário trocam de conteúdo dentro dela (a ficha leva ao formulário sem fechar e abrir de novo). A versão na key começa o formulário do zero.
@@ -314,19 +314,22 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/apontamento-racao.ts](../../src/lib/apontamento-racao.ts)** — Ração por tipo e checklist do viveiro no formulário do apontamento diário.
   - `LINHAS_RACAO` *constante* L4 (usado em 2) · `RacaoLancada` *tipo* L9 (usado em 1) · `lerRacoes` *função* L12 (usado em 2) · `ItemChecklist` *tipo* L28 · `RespostaChecklist` *tipo* L29 (usado em 2) · `lerChecklist` *função* L32 (usado em 2)
 - **[src/lib/campo/chat.ts](../../src/lib/campo/chat.ts)**
-  - `RespostaChat` *tipo* L68 · `responderManejo` *função* L70 (usado em 1)
+  - `responderManejoLocal` *função* L39 (usado em 1) · `responderManejo` *função* L44 (usado em 1)
+  - internas: `prepararManejo` L24
 - **[src/lib/campo/conhecimento-tambaqui.ts](../../src/lib/campo/conhecimento-tambaqui.ts)** — Base de conhecimento do manejo do tambaqui, usada pelo chat do app de campo: inteira no prompt da IA (com cache) e, sem sinal, buscada por palavra-chave no próprio celular. Só entra aqui o que está nas fontes abaixo; o…
-  - `FonteManejo` *tipo* L9 · `FONTES` *constante* L11 (usado em 1) · `TopicoManejo` *tipo* L17 · `TABELA_ARRACOAMENTO` *constante* L28 (usado em 1) · `TOPICOS_MANEJO` *constante* L45 · `normalizarPergunta` *função* L149 (usado em 1) · `buscarConhecimento` *função* L154 (usado em 2) · `textoBaseConhecimento` *função* L165 (usado em 2)
+  - `FonteManejo` *tipo* L9 · `FONTES` *constante* L11 (usado em 1) · `TopicoManejo` *tipo* L17 · `TABELA_ARRACOAMENTO` *constante* L28 (usado em 1) · `TOPICOS_MANEJO` *constante* L45 · `normalizarPergunta` *função* L149 (usado em 1) · `buscarConhecimento` *função* L154 (usado em 2) · `textoBaseConhecimento` *função* L165 (usado em 3)
   - internas: `v` L39
 - **[src/lib/campo/contexto-chat.ts](../../src/lib/campo/contexto-chat.ts)** — Chat de manejo do app de campo: o que a pessoa manda e os dados da piscicultura que a IA recebe junto. Regra pura (sem chave nem rede), para os testes; a chamada à IA fica em chat.ts.
-  - `MensagemChat` *tipo* L6 (usado em 1) · `MAX_MENSAGENS` *constante* L8 (usado em 2) · `MAX_TEXTO` *constante* L9 (usado em 1) · `validarConversa` *função* L12 (usado em 2) · `textoDadosPiscicultura` *função* L33 (usado em 2)
+  - `MensagemChat` *tipo* L6 (usado em 2) · `MAX_MENSAGENS` *constante* L8 (usado em 2) · `MAX_TEXTO` *constante* L9 (usado em 1) · `validarConversa` *função* L12 (usado em 3) · `textoDadosPiscicultura` *função* L33 (usado em 3)
   - internas: `n` L29 · `dataBr` L30
-- **[src/lib/campo/fila.ts](../../src/lib/campo/fila.ts)** — Fila de envios do app de campo. Tudo que o tratador lança vai primeiro para o celular (localStorage) e sai para o servidor quando há sinal. Cada item leva o client_id: reenviar não duplica nada no banco. Aqui fica só a…
-  - `TipoEnvio` *tipo* L5 (usado em 1) · `Existente` *tipo* L8 (usado em 1) · `ItemFila` *tipo* L10 (usado em 10) · `Enviado` *tipo* L24 (usado em 1) · `marcaDoItem` *função* L30 (usado em 2) · `chaveFila` *função* L36 (usado em 1) · `chaveEnviados` *função* L37 (usado em 1) · `MAX_ENVIADOS` *constante* L38 (usado em 1) · `rotaDoItem` *função* L47 (usado em 2) · `Desfecho` *tipo* L52 · `desfecho` *função* L60 (usado em 2) · `prontosParaEnvio` *função* L72 (usado em 2) · `resumoFila` *função* L76 (usado em 3) · `registrarEnviado` *função* L82 (usado em 2) · `lerFila` *função* L88 (usado em 2) · `apontamentoDoTurno` *função* L101 (usado em 3)
+- **[src/lib/campo/fila.ts](../../src/lib/campo/fila.ts)** — Fila de envios do app de campo. Tudo que o tratador lança vai primeiro para o celular (IndexedDB, pelo armazém de src/lib/db/indexeddb.ts) e sai para o servidor quando há sinal (src/lib/sync/worker.ts, a cada 5 s). Cada…
+  - `TipoEnvio` *tipo* L7 (usado em 1) · `Existente` *tipo* L10 (usado em 1) · `ItemFila` *tipo* L12 (usado em 10) · `Enviado` *tipo* L24 (usado em 1) · `marcaDoItem` *função* L30 (usado em 2) · `chaveFila` *função* L36 (usado em 1) · `chaveEnviados` *função* L37 (usado em 1) · `MAX_ENVIADOS` *constante* L38 (usado em 1) · `rotaDoItem` *função* L47 (usado em 2) · `Desfecho` *tipo* L52 · `desfecho` *função* L60 (usado em 2) · `prontosParaEnvio` *função* L73 (usado em 2) · `resumoFila` *função* L77 (usado em 3) · `registrarEnviado` *função* L83 (usado em 2) · `lerFila` *função* L89 (usado em 2) · `apontamentoDoTurno` *função* L102 (usado em 3)
 - **[src/lib/campo/indicadores.ts](../../src/lib/campo/indicadores.ts)** — Contas pequenas do app de campo, iguais no celular e nos testes.
   - `PESO_BIOMETRIA_QUINZENAL_G` *constante* L6 · `proximaBiometria` *função* L8 (usado em 4) · `racaoPorTurno` *função* L16 (usado em 4) · `pesoMedioAmostra` *função* L22 (usado em 2) · `diferencaPct` *função* L28 (usado em 2) · `sacosParaKg` *função* L34 (usado em 3)
+- **[src/lib/campo/manejo-ia.ts](../../src/lib/campo/manejo-ia.ts)** — Chat de manejo: as instruções e o formato da resposta valem para qualquer IA que responda (Claude no servidor, Ollama no computador da fazenda ou no próprio aparelho). Sem "server-only": o app de campo também usa, para…
+  - `INSTRUCOES_MANEJO` *constante* L11 (usado em 2) · `RespostaManejo` *constante* L53 (usado em 2) · `SaidaManejo` *tipo* L58 · `RespostaChat` *tipo* L59 (usado em 2) · `contextoDosCartoes` *função* L62 (usado em 2) · `respostaDaSaida` *função* L69 (usado em 2)
 - **[src/lib/campo/propostas.ts](../../src/lib/campo/propostas.ts)** — Cartões de confirmação do chat do app de campo. A IA (ou, sem sinal, a leitura local da frase) propõe o lançamento; a tela mostra o cartão, a pessoa confere, corrige e confirma, e só então ele entra na fila. Tudo aqui é…
-  - `Turno` *tipo* L11 (usado em 4) · `CartaoApontamento` *tipo* L13 (usado em 1) · `CartaoBiometria` *tipo* L18 · `CartaoInsumo` *tipo* L21 (usado em 1) · `Cartao` *tipo* L25 (usado em 2) · `PropostaIa` *tipo* L28 (usado em 1) · `ContextoCartoes` *tipo* L52 (usado em 1) · `cartoesDaIa` *função* L74 (usado em 2) · `cartaoDaFala` *função* L105 (usado em 2) · `pendenciaDoCartao` *função* L115 (usado em 3) · `rotuloCartao` *função* L143 (usado em 5) · `itemDoCartao` *função* L166 (usado em 2)
+  - `Turno` *tipo* L11 (usado em 4) · `CartaoApontamento` *tipo* L13 (usado em 1) · `CartaoBiometria` *tipo* L18 · `CartaoInsumo` *tipo* L21 (usado em 1) · `Cartao` *tipo* L25 (usado em 2) · `PropostaIa` *tipo* L28 (usado em 1) · `ContextoCartoes` *tipo* L52 (usado em 5) · `cartoesDaIa` *função* L74 (usado em 2) · `cartaoDaFala` *função* L105 (usado em 2) · `pendenciaDoCartao` *função* L115 (usado em 3) · `rotuloCartao` *função* L143 (usado em 5) · `itemDoCartao` *função* L166 (usado em 2)
   - internas: `positivo` L59 · `inteiro` L60 · `aguaDa` L63 · `num` L141
 - **[src/lib/campo/rota.ts](../../src/lib/campo/rota.ts)** — Rotas que recebem a fila do app de campo (/campo), com a sessão do navegador (cookie). Sessão vencida vira redirecionamento para o login, que o celular reconhece e guarda a fila até a pessoa entrar de novo.
   - `receberDaFila` *função* L12 (usado em 4)
@@ -334,7 +337,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `painelCampo` *função* L33 (usado em 2) · `gravarBiometriaCampo` *função* L128 (usado em 1) · `abrirLoteCampo` *função* L141 (usado em 1) · `fecharLoteCampo` *função* L167 (usado em 1) · `lancarInsumoCampo` *função* L194 (usado em 1)
   - internas: `n` L14 · `recusa` L15 · `racao` L23
 - **[src/lib/campo/tipos.ts](../../src/lib/campo/tipos.ts)** — Dados que a tela /campo recebe do servidor e guarda no celular para usar sem sinal.
-  - `RacaoSugerida` *tipo* L3 (usado em 1) · `PontoCrescimento` *tipo* L15 · `BiometriaRecente` *tipo* L16 (usado em 1) · `LoteTanque` *tipo* L18 (usado em 2) · `Tanque` *tipo* L45 (usado em 8) · `Opcao` *tipo* L56 (usado em 2) · `InsumoOpcao` *tipo* L57 (usado em 1) · `MedicamentoOpcao` *tipo* L58 (usado em 3) · `PainelCampo` *tipo* L60 (usado em 4)
+  - `RacaoSugerida` *tipo* L3 (usado em 1) · `PontoCrescimento` *tipo* L15 · `BiometriaRecente` *tipo* L16 (usado em 1) · `LoteTanque` *tipo* L18 (usado em 2) · `Tanque` *tipo* L45 (usado em 8) · `Opcao` *tipo* L56 (usado em 3) · `InsumoOpcao` *tipo* L57 (usado em 1) · `MedicamentoOpcao` *tipo* L58 (usado em 4) · `PainelCampo` *tipo* L60 (usado em 5)
 - **[src/lib/campo/validar.ts](../../src/lib/campo/validar.ts)** — O que a fila do app de campo manda ao servidor (pode chegar horas depois, quando o celular pega sinal). Conferido aqui antes de chegar ao banco, que confere de novo (permissão, lote no viveiro, saldo, carência).
   - `BiometriaCampo` *tipo* L46 · `validarBiometriaCampo` *função* L51 (usado em 3) · `AbrirLoteCampo` *tipo* L73 · `validarAbrirLote` *função* L78 (usado em 3) · `FecharLoteCampo` *tipo* L103 · `validarFecharLote` *função* L108 (usado em 3) · `TIPOS_INSUMO` *constante* L129 (usado em 3) · `TipoInsumo` *tipo* L137 (usado em 3) · `InsumoCampo` *tipo* L139 · `validarInsumoCampo` *função* L146 (usado em 3)
   - internas: `texto` L10 · `vazio` L11 · `numero` L12 · `uuid` L13 · `dataValida` L15 · `positivo` L20 · `inteiroPositivo` L26 · `base` L31
@@ -472,8 +475,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `Pdv` *componente* L32 (usado em 1)
   - internas: `lerConta` L24
 - **[src/components/vendas/vendedor.tsx](../../src/components/vendas/vendedor.tsx)** (navegador)
-  - `PedidoVendedor` *tipo* L15 (usado em 1) · `AppVendedor` *componente* L78 (usado em 1)
-  - internas: `ler` L35 · `gravar` L43 · `useGuardado` L51
+  - `PedidoVendedor` *tipo* L21 (usado em 1) · `AppVendedor` *componente* L57 (usado em 1)
+  - internas: `ler` L40 · `gravar` L43 · `useGuardado` L46
 - **[src/lib/estoque-carrinho.ts](../../src/lib/estoque-carrinho.ts)** — O estoque do pescado é um só por classe (Pequeno, Médio, Grande...), em kg: vender por kg ou em caixa de 20 kg são formas de vender o MESMO peixe. Ao montar a venda, o que já está no carrinho sai do estoque na hora, em…
   - `ProdutoEstoque` *tipo* L5 · `EstoqueLinha` *tipo* L9 · `quantidadeQueCabe` *função* L12 (usado em 2) · `estoqueNoCarrinho` *função* L18 (usado em 4)
 - **[src/lib/estoque.ts](../../src/lib/estoque.ts)** — Produtos que não são pescado: insumos, ração, embalagens e medicamentos
@@ -737,8 +740,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/termos.ts](../../src/lib/termos.ts)** — Versão vigente dos Termos de uso, da Política de privacidade e da Política de cookies. Ao mudar o texto de qualquer um deles, mude a data: quem aceitou a versão anterior aceita de novo ao entrar (tabela aceites_termos,…
   - `VERSAO_TERMOS` *constante* L4 (usado em 4) · `DOCUMENTOS_LEGAIS` *constante* L6 (usado em 2) · `FORNECEDOR` *constante* L13 (usado em 3) · `destinoSeguro` *função* L21 (usado em 6)
 - **[src/proxy.ts](../../src/proxy.ts)**
-  - `proxy` *função* L36 · `config` *constante* L53
-  - internas: `origemSupabase` L9 · `cspHeader` L19
+  - `proxy` *função* L45 · `config` *constante* L62
+  - internas: `origemSupabase` L9 · `origemOllama` L20 · `cspHeader` L28
 
 ## Financeiro (contas, títulos, conciliação, fluxo de caixa)
 
@@ -893,7 +896,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/app/(app)/insumos/page.tsx](../../src/app/(app)/insumos/page.tsx)** (rota `/insumos`) — O que a piscicultura consome: ração e ingredientes, calcário, embalagens e medicamentos.
   - `PaginaInsumos` *componente* L3
 - **[src/app/(app)/layout.tsx](../../src/app/(app)/layout.tsx)** — Moldura comum das telas desta pasta.
-  - `generateViewport` *função* L24 · `LayoutApp` *componente* L29
+  - `generateViewport` *função* L26 · `LayoutApp` *componente* L31
 - **[src/app/(app)/loading.tsx](../../src/app/(app)/loading.tsx)** — Esqueleto mostrado enquanto a tela carrega.
   - `Carregando` *componente* L3
 - **[src/app/(app)/painel/page.tsx](../../src/app/(app)/painel/page.tsx)** (rota `/painel`) — Tela /painel.
@@ -946,8 +949,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `PassoBanco` *tipo* L4 · `SituacaoAssistente` *tipo* L5 (usado em 3) · `InfoPasso` *tipo* L7 · `PASSOS` *constante* L9 · `passosConhecidos` *função* L49 (usado em 2) · `mostrarNoPainel` *função* L54 (usado em 2) · `proximoPasso` *função* L59 (usado em 3) · `textoFaltam` *função* L63 (usado em 3) · `progresso` *função* L69 (usado em 3)
 - **[src/lib/empresa.ts](../../src/lib/empresa.ts)** — O RLS só devolve as empresas de que o usuário participa.
   - `COOKIE_EMPRESA` *constante* L8 (usado em 2) · `Empresa` *tipo* L10 (usado em 2) · `nomeEmpresa` *função* L12 (usado em 13) · `listarEmpresas` *função* L17 (usado em 1) · `aceitarConvites` *função* L28 · `getEmpresaAtual` *função* L35 (usado em 123)
-- **[src/lib/online.ts](../../src/lib/online.ts)** — O navegador está com internet? Muda sozinho quando a conexão cai ou volta; no servidor, sempre true.
-  - `useOnline` *hook* L4 (usado em 3)
+- **[src/lib/online.ts](../../src/lib/online.ts)** — O aparelho tem internet de verdade? Muda sozinho quando a conexão cai ou volta, e também quando o celular está num Wi-Fi sem internet (src/lib/sync/detector.ts confere com o servidor). No servidor, sempre true.
+  - `useOnline` *hook* L6 (usado em 4)
 - **[src/lib/painel.ts](../../src/lib/painel.ts)** — Contas do painel de acompanhamento: puras, para testar sem banco.
   - `LinhaCaixa` *tipo* L4 (usado em 2) · `rotuloMes` *função* L7 (usado em 2) · `receitasDespesas` *função* L12 (usado em 2) · `ranking` *função* L24 (usado em 2) · `LinhaLoteDia` *tipo* L39 (usado em 1) · `producaoPorDia` *função* L44 (usado em 2)
 - **[src/lib/tutoriais-acoes.ts](../../src/lib/tutoriais-acoes.ts)** (servidor) — Marca telas como vistas pela pessoa logada. Falhar aqui não atrapalha ninguém: o navegador também guarda.
@@ -972,7 +975,9 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/app/api/biometrias/route.ts](../../src/app/api/biometrias/route.ts)** (rota `/api/biometrias`) — API POST /api/biometrias.
   - `POST` *função* L5
 - **[src/app/api/chat/manejo/route.ts](../../src/app/api/chat/manejo/route.ts)** (rota `/api/chat/manejo`) — API POST /api/chat/manejo.
-  - `maxDuration` *constante* L8 · `POST` *função* L11
+  - `maxDuration` *constante* L9 · `POST` *função* L14
+- **[src/app/api/chat/route.ts](../../src/app/api/chat/route.ts)** (rota `/api/chat`) — API GET /api/chat.
+  - `GET` *função* L8
 - **[src/app/api/entrada/email/route.ts](../../src/app/api/entrada/email/route.ts)** (rota `/api/entrada/email`) — API POST /api/entrada/email.
   - `maxDuration` *constante* L8 · `POST` *função* L21
 - **[src/app/api/entrada/whatsapp/route.ts](../../src/app/api/entrada/whatsapp/route.ts)** (rota `/api/entrada/whatsapp`) — API GET/POST /api/entrada/whatsapp.
@@ -1004,9 +1009,12 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/components/marca.tsx](../../src/components/marca.tsx)** — Marca do Balbina: um tambaqui sobre a lâmina d'água, na cor da marca. Desenhada em SVG para seguir o tema (no escuro a marca clareia e o peixe escurece, mantendo o contraste). Os ícones do app (public/icone*.png e mobil…
   - `MarcaBalbina` *componente* L4 (usado em 5)
 - **[src/components/menu-lateral.tsx](../../src/components/menu-lateral.tsx)** (navegador) — No celular: uma barra fina de vidro no alto com o nome da tela e, embaixo, a barra de abas de vidro do iOS (Painel, três módulos e Menu, que abre a lista inteira).
-  - `ICONES` *constante* L47 (usado em 1) · `NavegacaoMovel` *componente* L86 (usado em 1)
+  - `ICONES` *constante* L47 (usado em 1) · `NavegacaoMovel` *componente* L87 (usado em 1)
 - **[src/components/nova-senha.tsx](../../src/components/nova-senha.tsx)** (navegador) — Senha nova com confirmação, para quem já tem sessão (convite ou "esqueci minha senha").
   - `FormNovaSenha` *componente* L8 (usado em 2)
+- **[src/components/offline.tsx](../../src/components/offline.tsx)** (navegador)
+  - `useServiceWorker` *hook* L21 (usado em 2) · `ModoOffline` *componente* L54 (usado em 1)
+  - internas: `guardarArquivos` L16 · `useAquecerTelas` L38
 - **[src/components/opcoes-viveiro.tsx](../../src/components/opcoes-viveiro.tsx)** — Opções de um select de viveiro agrupadas por finalidade (alevinagem, recria, engorda). `bloqueio` devolve o motivo de um viveiro não poder ser escolhido (ex.: ocupado por outro lote).
   - `ViveiroOpcao` *tipo* L4 (usado em 2) · `OpcoesViveiro` *componente* L8 (usado em 2)
 - **[src/components/ordenar.tsx](../../src/components/ordenar.tsx)** (navegador)
@@ -1032,6 +1040,9 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/agua.ts](../../src/lib/agua.ts)** — Qualidade da água do viveiro, medida no turno do apontamento. O banco guarda cada medida no lançamento (apontamento_lancamentos) e o resumo do dia no apontamento; os alertas (view alertas) usam as mesmas faixas. Referên…
   - `ChaveAgua` *tipo* L7 (usado em 1) · `Agua` *tipo* L8 (usado em 6) · `CAMPOS_AGUA` *constante* L10 (usado em 3) · `lerMedida` *função* L21 (usado em 2) · `validarAgua` *função* L28 (usado em 3) · `lerAguaForm` *função* L46 (usado em 1) · `amoniaToxica` *função* L53 (usado em 1) · `NivelAgua` *tipo* L59 · `AvisoAgua` *tipo* L60 · `avisosAgua` *função* L65 (usado em 6) · `resumoAgua` *função* L85 (usado em 3)
   - internas: `br` L62
+- **[src/lib/ai/offline-chat.ts](../../src/lib/ai/offline-chat.ts)** — Chat de IA sem internet, pelo Ollama (https://ollama.com): um modelo aberto (mistral, neural-chat...) rodando num computador da fazenda. Vale nos dois lados: - Servidor (/api/chat/manejo): quando o Balbina roda na fazen…
+  - `OLLAMA_MODELO_PADRAO` *constante* L21 (usado em 1) · `ConfigOllama` *tipo* L24 (usado em 1) · `ErroOllama` *classe* L26 (usado em 2) · `configOllamaServidor` *função* L41 (usado em 4) · `configOllamaNavegador` *função* L46 (usado em 1) · `conversarOllama` *função* L53 · `responderManejoOllama` *função* L100 (usado em 3) · `situacaoOllama` *função* L110 (usado em 2)
+  - internas: `config` L28
 - **[src/lib/app-celular/sessao.ts](../../src/lib/app-celular/sessao.ts)** — Cliente sem sessão, para entrar com senha ou conferir código: não guarda nada.
   - `clienteAvulso` *função* L13 (usado em 2) · `SessaoApp` *tipo* L19 (usado em 1) · `sessaoDoApp` *função* L26 (usado em 10) · `EmpresaApp` *tipo* L40 · `empresaDoApp` *função* L44 (usado em 9) · `permissoesDoApp` *função* L54 (usado em 7)
 - **[src/lib/app-celular/token.ts](../../src/lib/app-celular/token.ts)** — "Authorization: Bearer <token>" → token. Qualquer outro formato = null (a rota responde 401).
@@ -1045,6 +1056,12 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/contraparte.ts](../../src/lib/contraparte.ts)**
   - `nomeDaContraparte` *função* L14 (usado em 2)
   - internas: `titulo` L10
+- **[src/lib/db/indexeddb.ts](../../src/lib/db/indexeddb.ts)** — Armazém do aparelho: os dados que o celular guarda sem internet (filas de envio do campo e do vendedor, conversa do chat, preferências das telas) ficam no IndexedDB, não no localStorage. O localStorage tem uns 5 MB, tra…
+  - `NOME_BANCO` *constante* L16 (usado em 1) · `LOJA` *constante* L17 (usado em 1) · `PREFIXOS_MIGRADOS` *constante* L22 · `deveMigrar` *função* L24 (usado em 1) · `abrirArmazem` *função* L137 (usado em 1) · `armazemPronto` *função* L165 (usado em 2) · `usandoIndexedDB` *função* L169 (usado em 1) · `lerItem` *função* L174 (usado em 5) · `gravarItem` *função* L187 (usado em 5) · `apagarItem` *função* L211 · `lerJson` *função* L213 (usado em 2) · `gravarJson` *função* L223 (usado em 2) · `assinarArmazem` *função* L226 (usado em 2) · `aoFalharGravacao` *função* L233 · `_reiniciarArmazem` *função* L238 (usado em 1)
+  - internas: `avisar` L40 · `req` L44 · `fim` L51 · `abrirBanco` L59 · `lerStorage` L71 · `carregarTudo` L79 · `migrarLocalStorage` L90 · `gravarNoBanco` L114 · `ouvirOutrasAbas` L124
+- **[src/lib/db/use-armazem.ts](../../src/lib/db/use-armazem.ts)** (navegador) — Texto guardado no aparelho (IndexedDB, src/lib/db/indexeddb.ts). No servidor e no primeiro desenho, o padrão.
+  - `useItemArmazenado` *hook* L9 (usado em 3) · `useArmazemPronto` *hook* L14 · `useGravarItem` *hook* L18
+  - internas: `nada` L6
 - **[src/lib/documento-recebido.ts](../../src/lib/documento-recebido.ts)** — C3/C4: um arquivo (foto ou PDF) vira documento recebido com os dados que a IA leu. A linha digitável só fica se os dígitos conferirem; valor e vencimento do boleto valem mais que o que a IA leu.
   - `DadosDocumento` *tipo* L8 (usado em 1) · `tipoAceito` *função* L10 (usado em 2) · `conferirLeitura` *função* L16 · `Arquivo` *tipo* L30 · `receberDocumento` *função* L35 (usado em 3)
   - internas: `data` L14
@@ -1056,7 +1073,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/formato.ts](../../src/lib/formato.ts)** — Conversões entre o que a pessoa digita (pt-BR) e o que o banco guarda.
   - `formatarMoeda` *função* L6 (usado em 60) · `formatarNumero` *função* L10 (usado em 27) · `formatarQuantidade` *função* L16 (usado em 5) · `formatarInteiro` *função* L21 (usado em 25) · `formatarData` *função* L26 (usado em 62) · `centavosParaCampo` *função* L33 (usado em 12) · `somarDias` *função* L38 (usado em 23) · `MESES_CURTOS` *constante* L43 (usado em 2) · `MESES_LONGOS` *constante* L44 (usado em 3) · `rotuloMes` *função* L47 (usado em 8) · `deslocarMes` *função* L52 (usado em 5) · `semAcento` *função* L58 (usado em 9) · `plural` *função* L63 (usado em 3) · `lerCentavos` *função* L68 (usado em 21) · `lerDecimal` *função* L77 (usado em 20) · `lerInteiro` *função* L85 (usado em 10) · `FUSO_PADRAO` *constante* L91 · `FUSOS_BRASIL` *constante* L94 (usado em 2) · `hojeISO` *função* L109 (usado em 78) · `diasAtrasISO` *função* L114 (usado em 10)
 - **[src/lib/ia.ts](../../src/lib/ia.ts)** — Leitura por IA (C3 documentos e A8 mortalidade por foto do estudo de automação). Usa a API da Anthropic com a chave ANTHROPIC_API_KEY do servidor. Tudo que sai daqui é PROPOSTA: a tela mostra preenchido e a pessoa confe…
-  - `MODELO` *constante* L11 (usado em 1) · `TIPOS_ARQUIVO` *constante* L12 (usado em 1) · `TipoArquivo` *tipo* L13 (usado em 1) · `TAMANHO_MAXIMO` *constante* L14 (usado em 3) · `iaConfigurada` *função* L16 (usado em 5) · `ErroIa` *classe* L20 (usado em 4) · `cliente` *função* L22 (usado em 1) · `DocumentoLido` *tipo* L68 (usado em 1) · `lerDocumento` *função* L70 (usado em 1) · `MortalidadeLida` *tipo* L85 (usado em 1) · `contarMortes` *função* L87 (usado em 1)
+  - `MODELO` *constante* L11 (usado em 1) · `TIPOS_ARQUIVO` *constante* L12 (usado em 1) · `TipoArquivo` *tipo* L13 (usado em 1) · `TAMANHO_MAXIMO` *constante* L14 (usado em 3) · `iaConfigurada` *função* L16 (usado em 6) · `ErroIa` *classe* L20 (usado em 4) · `cliente` *função* L22 (usado em 1) · `DocumentoLido` *tipo* L68 (usado em 1) · `lerDocumento` *função* L70 (usado em 1) · `MortalidadeLida` *tipo* L85 (usado em 1) · `contarMortes` *função* L87 (usado em 1)
   - internas: `blocoArquivo` L27 · `ler` L34
 - **[src/lib/imagem-cliente.ts](../../src/lib/imagem-cliente.ts)** — Foto do celular passa de 4 MB; antes de mandar ao servidor, reduz para no máximo 2000 px em JPEG. PDF e arquivos que o navegador não abre como imagem seguem como estão.
   - `reduzirImagem` *função* L3 (usado em 2)
@@ -1072,7 +1089,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `ViveiroFaltando` *tipo* L5 (usado em 1) · `textoLembrete` *função* L7 (usado em 2) · `Resumo` *tipo* L16 (usado em 1) · `textoResumo` *função* L25 (usado em 2) · `textoPacoteContador` *função* L44 (usado em 2)
   - internas: `moeda` L21 · `plural` L22 · `nomeMes` L41
 - **[src/lib/menu.ts](../../src/lib/menu.ts)** — Estrutura da barra lateral (src/components/barra-lateral.tsx), sem React, para testar sem navegador. Os grupos de módulos (src/lib/modulos.ts) ficam em três seções, como no desenho de referência: Principal (Painel e Rot…
-  - `Link` *tipo* L7 (usado em 1) · `Grupo` *tipo* L8 (usado em 1) · `Secao` *tipo* L9 (usado em 1) · `MODULOS_CELULAR` *constante* L12 · `USUARIOS` *constante* L19 · `montarMenu` *função* L21 (usado em 2) · `estaAtivo` *função* L46 (usado em 1) · `hrefAtivo` *função* L51 (usado em 1) · `grupoAtivo` *função* L55 (usado em 2) · `Tela` *tipo* L62 · `buscarTelas` *função* L65 (usado em 2)
+  - `Link` *tipo* L7 (usado em 1) · `Grupo` *tipo* L8 (usado em 1) · `Secao` *tipo* L9 (usado em 1) · `MODULOS_CELULAR` *constante* L12 · `USUARIOS` *constante* L19 · `montarMenu` *função* L21 (usado em 3) · `estaAtivo` *função* L46 (usado em 1) · `hrefAtivo` *função* L51 (usado em 1) · `grupoAtivo` *função* L55 (usado em 2) · `Tela` *tipo* L62 · `buscarTelas` *função* L65 (usado em 2)
   - internas: `normalizar` L60
 - **[src/lib/modulos.ts](../../src/lib/modulos.ts)** — Mapa de navegação. `marco` diz em que etapa do plano original do FINAVI (docs/legado/finavi/replica/architecture.md) o módulo ficou pronto.
   - `Modulo` *tipo* L2 · `GrupoModulos` *tipo* L13 · `GRUPOS` *constante* L15 (usado em 5) · `podeVerModulo` *função* L90 (usado em 1) · `encontrarModulo` *função* L94 (usado em 3)
@@ -1099,9 +1116,19 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/supabase/client.ts](../../src/lib/supabase/client.ts)** (navegador) — Cliente do navegador (sessão nos mesmos cookies do servidor). Criado só dentro de efeitos e eventos: no build as páginas são pré-renderizadas sem as variáveis do Supabase.
   - `clienteNavegador` *função* L8 (usado em 7)
 - **[src/lib/supabase/server.ts](../../src/lib/supabase/server.ts)** — Cliente com o JWT do usuário: toda consulta passa pelo RLS do banco.
-  - `createClient` *função* L7 (usado em 146)
+  - `createClient` *função* L7 (usado em 147)
 - **[src/lib/supabase/todas.ts](../../src/lib/supabase/todas.ts)** — O Supabase (PostgREST) devolve no máximo 1.000 linhas por consulta (max_rows em supabase/config.toml, igual na nuvem) e ignora um .limit() maior sem avisar. Toda soma ou relatório que pode passar disso lê por aqui, em p…
   - `PAGINA_SUPABASE` *constante* L5 (usado em 1) · `lerTodas` *função* L11 (usado em 13)
+- **[src/lib/sync/detector.ts](../../src/lib/sync/detector.ts)** — Tem internet de verdade? O navigator.onLine só diz se o aparelho está ligado a uma rede: no viveiro o celular pega o Wi-Fi da sede sem a sede ter internet e o navegador diz "online". Aqui a resposta vem de um pedido peq…
+  - `conferirConexao` *função* L31 · `conexaoAtual` *função* L61 (usado em 3) · `assinarConexao` *função* L65 (usado em 1) · `aoVoltarConexao` *função* L72 (usado em 2) · `marcarSemRede` *função* L79 (usado em 2) · `marcarComRede` *função* L84
+  - internas: `mudar` L16 · `iniciar` L52
+- **[src/lib/sync/navegador.ts](../../src/lib/sync/navegador.ts)** (navegador) — Instância única do navegador: liga o relógio de 5 s e escuta a volta da internet, a tela voltar para a frente e o pedido do service worker.
+  - `sincronizador` *função* L21 · `useTarefaSync` *hook* L38 (usado em 2)
+  - internas: `pedirSegundoPlano` L10
+- **[src/lib/sync/queue.ts](../../src/lib/sync/queue.ts)** — Regras da fila de envios que valem para qualquer tela que guarda lançamentos sem internet (campo, vendedor): quando tentar de novo, quando desistir e esperar a pessoa. A fila em si mora no armazém do aparelho (src/lib/d…
+  - `MAX_TENTATIVAS` *constante* L7 (usado em 1) · `ESPERA_INICIAL_MS` *constante* L8 · `ESPERA_MAXIMA_MS` *constante* L9 (usado em 1) · `ComRetry` *tipo* L11 (usado em 3) · `esperaAntes` *função* L19 (usado em 1) · `prontoAgora` *função* L24 (usado em 3) · `registrarFalha` *função* L32 (usado em 3) · `liberar` *função* L41 (usado em 3) · `proximaRodada` *função* L46 (usado em 1)
+- **[src/lib/sync/worker.ts](../../src/lib/sync/worker.ts)** — Sincronização automática: cada tela que guarda envios no aparelho (campo, vendedor) registra aqui a sua tarefa. Com internet, a cada 5 s roda as tarefas que têm algo na fila; também roda na hora em que a internet volta,…
+  - `INTERVALO_SYNC_MS` *constante* L9 (usado em 1) · `TAG_SYNC` *constante* L10 (usado em 1) · `Tarefa` *tipo* L12 · `Dependencias` *tipo* L18 · `criarSincronizador` *função* L26 (usado em 2) · `Sincronizador` *tipo* L84 (usado em 1)
 - **[src/lib/whatsapp-texto.ts](../../src/lib/whatsapp-texto.ts)** — WhatsApp do Balbina (H2): partes sem rede, testadas em whatsapp-texto.test.ts. O envio e o download ficam em whatsapp.ts (servidor).
   - `numeroWhatsApp` *função* L7 (usado em 4) · `chaveCelular` *função* L14 (usado em 1) · `formatarCelular` *função* L19 (usado em 2) · `parametroModelo` *função* L25 (usado em 2) · `assinaturaConfere` *função* L31 (usado em 2) · `MensagemRecebida` *tipo* L38 (usado em 1) · `lerWebhook` *função* L50 (usado em 2) · `Comando` *tipo* L73 · `comandoDoTexto` *função* L75 (usado em 2) · `AJUDA` *constante* L84 (usado em 1) · `FaixaCobranca` *tipo* L87 (usado em 1) · `parametrosCobranca` *função* L91 (usado em 2)
 - **[src/lib/whatsapp.ts](../../src/lib/whatsapp.ts)** — Texto livre: só vale como resposta, dentro de 24 horas da última mensagem da pessoa.

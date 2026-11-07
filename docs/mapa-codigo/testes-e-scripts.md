@@ -95,6 +95,7 @@
 - [src/app/movimento.test.ts](../../src/app/movimento.test.ts) — Testes.
 - [src/lib/abastecimento.test.ts](../../src/lib/abastecimento.test.ts) — Testes de src/lib/abastecimento.ts.
 - [src/lib/agua.test.ts](../../src/lib/agua.test.ts) — Testes de src/lib/agua.ts.
+- [src/lib/ai/offline-chat.test.ts](../../src/lib/ai/offline-chat.test.ts) — Testes de src/lib/ai/offline-chat.ts.
 - [src/lib/ambiente.test.ts](../../src/lib/ambiente.test.ts) — Testes de src/lib/ambiente.ts.
 - [src/lib/analise-periodo.test.ts](../../src/lib/analise-periodo.test.ts) — Testes de src/lib/analise-periodo.ts.
 - [src/lib/api/regras.test.ts](../../src/lib/api/regras.test.ts) — Testes de src/lib/api/regras.ts.
@@ -118,6 +119,7 @@
 - [src/lib/contraparte.test.ts](../../src/lib/contraparte.test.ts) — Testes de src/lib/contraparte.ts.
 - [src/lib/crescimento.test.ts](../../src/lib/crescimento.test.ts) — Testes de src/lib/crescimento.ts.
 - [src/lib/cripto.test.ts](../../src/lib/cripto.test.ts) — Testes de src/lib/cripto.ts.
+- [src/lib/db/indexeddb.test.ts](../../src/lib/db/indexeddb.test.ts) — Testes de src/lib/db/indexeddb.ts.
 - [src/lib/documento.test.ts](../../src/lib/documento.test.ts) — Testes de src/lib/documento.ts.
 - [src/lib/dre-exportar.test.ts](../../src/lib/dre-exportar.test.ts) — Testes de src/lib/dre-exportar.ts.
 - [src/lib/estoque-carrinho.test.ts](../../src/lib/estoque-carrinho.test.ts) — Testes de src/lib/estoque-carrinho.ts.
@@ -160,6 +162,7 @@
 - [src/lib/sugestao-apontamento.test.ts](../../src/lib/sugestao-apontamento.test.ts) — Testes de src/lib/sugestao-apontamento.ts.
 - [src/lib/supabase/falha-auth.test.ts](../../src/lib/supabase/falha-auth.test.ts) — Testes de src/lib/supabase/falha-auth.ts.
 - [src/lib/supabase/todas.test.ts](../../src/lib/supabase/todas.test.ts) — Testes de src/lib/supabase/todas.ts.
+- [src/lib/sync/sync.test.ts](../../src/lib/sync/sync.test.ts) — Testes.
 - [src/lib/titulos.test.ts](../../src/lib/titulos.test.ts) — Testes de src/lib/titulos.ts.
 - [src/lib/tutoriais.test.ts](../../src/lib/tutoriais.test.ts) — Testes de src/lib/tutoriais.ts.
 - [src/lib/vendas.test.ts](../../src/lib/vendas.test.ts) — Testes de src/lib/vendas.ts.
@@ -175,6 +178,7 @@
 - [e2e/financeiro.spec.ts](../../e2e/financeiro.spec.ts) — Testes de e2e/financeiro.spec.ts.
 - [e2e/login-local.spec.ts](../../e2e/login-local.spec.ts) — Testes de e2e/login-local.spec.ts.
 - [e2e/login.setup.ts](../../e2e/login.setup.ts) — Testes de e2e/login.setup.ts.
+- [e2e/offline.spec.ts](../../e2e/offline.spec.ts) — Testes de e2e/offline.spec.ts.
 - [e2e/piscicultura.spec.ts](../../e2e/piscicultura.spec.ts) — Testes de e2e/piscicultura.spec.ts.
 - [e2e/preparar.ts](../../e2e/preparar.ts) — Testes de e2e/preparar.ts.
 - [e2e/producao-vendas.spec.ts](../../e2e/producao-vendas.spec.ts) — Testes de e2e/producao-vendas.spec.ts.
@@ -262,6 +266,7 @@
 - [docs/legado/finavi/replica/architecture.md](../../docs/legado/finavi/replica/architecture.md) — Arquitetura: ERP Avicultura de Postura
 - [docs/legado/finavi/replica/recon.md](../../docs/legado/finavi/replica/recon.md) — Recon map: NIBO (financeiro) + PosturaWeb (avicultura de postura) — web
 - [docs/nfe.md](../../docs/nfe.md) — NF-e e NFC-e (Focus NFe)
+- [docs/offline.md](../../docs/offline.md) — Balbina sem internet
 - [docs/piscicultura.md](../../docs/piscicultura.md) — Piscicultura no Balbina
 - [docs/plano-de-categorias.md](../../docs/plano-de-categorias.md) — Plano de categorias da piscicultura
 - [docs/pontos-de-venda.md](../../docs/pontos-de-venda.md) — Pontos de venda

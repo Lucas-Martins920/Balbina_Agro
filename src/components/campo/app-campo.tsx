@@ -9,6 +9,7 @@ import { useOnline } from "@/lib/online";
 import { turnoAgora } from "@/lib/rotulos";
 import { resumoFila, type ItemFila } from "@/lib/campo/fila";
 import type { Turno } from "@/lib/campo/propostas";
+import { useServiceWorker } from "@/components/offline";
 import { ProvedorCampo, type Aba, type AcaoFolha, type Campo, type DadosCampo } from "./contexto";
 import { useFilaCampo, usePreferencia } from "./fila-cliente";
 import { ChatCampo } from "./chat-campo";
@@ -56,7 +57,7 @@ export function AppCampo({ dados }: { dados: DadosCampo }) {
     avisar(n === 1 ? "Enviado." : `${n} envios feitos.`);
     router.refresh();
   }, [avisar, router]);
-  const fila = useFilaCampo(dados.empresa.id, online, aoEnviar);
+  const fila = useFilaCampo(dados.empresa.id, aoEnviar);
 
   const salvar = useCallback((item: ItemFila) => {
     const ok = fila.enfileirar(item);
@@ -83,18 +84,7 @@ export function AppCampo({ dados }: { dados: DadosCampo }) {
   }), [dados, hoje, turno, online, kgSaco, mudarKgSaco, fila, salvar, abrir, avisar, setAba, tanques]);
 
   // service worker: guarda a tela e os arquivos dela para abrir sem sinal
-  useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
-    const guardar = () => {
-      const urls = performance.getEntriesByType("resource").map((e) => e.name).filter((u) => u.startsWith(`${location.origin}/_next/static/`));
-      navigator.serviceWorker.controller?.postMessage({ tipo: "guardar", urls });
-    };
-    navigator.serviceWorker.register("/sw.js").then(() => navigator.serviceWorker.ready).then(guardar).catch(() => undefined);
-    navigator.serviceWorker.addEventListener("controllerchange", guardar);
-    // pede ao navegador para não apagar a fila quando faltar espaço
-    navigator.storage?.persist?.().catch(() => undefined);
-    return () => navigator.serviceWorker.removeEventListener("controllerchange", guardar);
-  }, []);
+  useServiceWorker();
 
   const resumo = resumoFila(fila.fila);
 

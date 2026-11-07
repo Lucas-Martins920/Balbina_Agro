@@ -24,6 +24,42 @@ export const test = base.extend<{ telaNoErro: void }>({
 });
 export { expect };
 
+// Espera o service worker controlar a página: só a partir daí as telas passam por ele e ficam guardadas.
+export async function comServiceWorker(page: Page, caminho: string) {
+  await page.goto(caminho);
+  await page.evaluate(() => navigator.serviceWorker.ready.then(() => undefined));
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) await page.reload();
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+}
+
+// Fila guardada no aparelho: o armazém do Balbina no IndexedDB (src/lib/db/indexeddb.ts). Espera a gravação, que é
+// assíncrona, e devolve o texto da primeira chave com o prefixo (null se não houver).
+export async function filaGuardada(page: Page, prefixo: string): Promise<string | null> {
+  let achado: string | null = null;
+  await expect.poll(async () => {
+    achado = await page.evaluate(async (p) => {
+      const db = await new Promise<IDBDatabase>((ok, falha) => {
+        const r = indexedDB.open("balbina");
+        r.onsuccess = () => ok(r.result);
+        r.onerror = () => falha(r.error);
+      });
+      try {
+        if (!db.objectStoreNames.contains("dados")) return null;
+        const loja = db.transaction("dados").objectStore("dados");
+        const chaves = await new Promise<IDBValidKey[]>((ok) => { const r = loja.getAllKeys(); r.onsuccess = () => ok(r.result); });
+        const chave = chaves.find((k) => typeof k === "string" && k.startsWith(p));
+        if (!chave) return null;
+        const valor = await new Promise<unknown>((ok) => { const r = db.transaction("dados").objectStore("dados").get(chave); r.onsuccess = () => ok(r.result); });
+        return typeof valor === "string" && valor !== "[]" ? valor : null;
+      } finally {
+        db.close();
+      }
+    }, prefixo);
+    return achado;
+  }, { timeout: 10_000 }).not.toBeNull();
+  return achado;
+}
+
 // Arquivos gerados pelo preparo (e2e/preparar.ts); ficam fora do git.
 export const PASTA_ESTADO = path.join(__dirname, ".estado");
 export const ARQUIVO_DADOS = path.join(PASTA_ESTADO, "dados.json");

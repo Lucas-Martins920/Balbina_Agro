@@ -18,6 +18,8 @@ import { Tutorial } from "@/components/tutorial";
 import { chavesPermitidas, telasVistas } from "@/lib/tutoriais-dados";
 import { CHAVE_VERSAO, LARGURA_COMPLETA } from "@/lib/versao";
 import { CLASSE_BOTAO_TEXTO } from "@/components/ui";
+import { ModoOffline } from "@/components/offline";
+import { montarMenu } from "@/lib/menu";
 
 // Versão completa no celular: a largura vem do servidor, pelo cookie. Sem initial-scale, o navegador encolhe os
 // 1280px para caber na tela.
@@ -52,6 +54,9 @@ export default async function LayoutApp({ children }: LayoutProps<"/">) {
     plano: nivel && nivel !== "gestao" ? { nome: nome_plano ?? "Seu plano", convite: CONVITE_UPGRADE[nivel] ?? "Mais módulos nos outros planos." } : null,
   };
 
+  // telas do menu que o service worker guarda de antemão para abrir sem internet (src/components/offline.tsx)
+  const telasOffline = montarMenu(visiveis, { master }).flatMap((s) => s.itens.flatMap((i) => (i.tipo === "link" ? [i.href] : i.filhos.map((f) => f.href))));
+
   return (
     <div className="flex min-h-full flex-1 flex-col grade-app md:grid md:grid-cols-[var(--lateral)_minmax(0,1fr)]">
       <NavegacaoMovel marca={<MarcaBalbina tamanho={26} />} visiveis={visiveis}>
@@ -67,6 +72,7 @@ export default async function LayoutApp({ children }: LayoutProps<"/">) {
       <Tutorial usuario={usuario.id} vistos={vistos} permitidas={chavesPermitidas(pode, master)} master={master} />
       <main className="min-w-0 px-4 pt-6 pb-28 md:px-10 md:py-10">
         <div className="cascata mx-auto w-full max-w-6xl">
+          <ModoOffline telas={telasOffline} />
           {avisoAssinatura && (
             <p className="mb-5 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-elevado/60 px-3.5 py-2.5 text-sm">
               <span>{situacao(assinatura, hojeISO("America/Sao_Paulo"))}</span>

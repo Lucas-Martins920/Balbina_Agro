@@ -1,22 +1,22 @@
-// Fila de envios do app de campo. Tudo que o tratador lança vai primeiro para o celular (localStorage) e sai
-// para o servidor quando há sinal. Cada item leva o client_id: reenviar não duplica nada no banco.
+// Fila de envios do app de campo. Tudo que o tratador lança vai primeiro para o celular (IndexedDB, pelo armazém
+// de src/lib/db/indexeddb.ts) e sai para o servidor quando há sinal (src/lib/sync/worker.ts, a cada 5 s). Cada item leva o client_id: reenviar não duplica nada no banco.
 // Aqui fica só a regra (sem window), para os testes; a tela usa src/components/campo/fila-cliente.ts.
+
+import { prontoAgora, type ComRetry } from "../sync/queue.ts";
 
 export type TipoEnvio = "apontamento" | "biometria" | "insumo" | "abrir_lote" | "fechar_lote";
 
 // Lançamento que o servidor já tinha no mesmo viveiro, dia e turno (resposta 409 do apontamento)
 export type Existente = { origem: string; mortes: number; descartes: number; racao_kg: number | string; criado_em: string };
 
-export type ItemFila = {
+export type ItemFila = ComRetry & {
   client_id: string;
   tipo: TipoEnvio;
   corpo: Record<string, unknown>;
   rotulo: string;            // "Ração · Viveiro 2 · 50 kg", para a pessoa reconhecer o envio
   lote_id?: string;          // fechar_lote: o endereço leva o lote
   criado_em: string;
-  tentativas?: number;
-  erro?: string;
-  parado?: boolean;          // erro que precisa da pessoa (dado recusado): não reenvia sozinho
+  // tentativas, proxima_em, erro e parado (erro que precisa da pessoa: não reenvia sozinho) vêm de ComRetry
   conflito?: Existente[];    // apontamento repetido no turno: espera somar ou descartar
 };
 
@@ -68,9 +68,10 @@ export function desfecho(status: number, opaco: boolean, corpo: { erro?: string;
   return { tipo: "erro", erro: corpo.erro ?? `O servidor respondeu ${status}. Vai de novo sozinho.`, parado };
 }
 
-// Itens que a sincronização manda agora: sem conflito e sem erro que espera a pessoa
-export function prontosParaEnvio(fila: ItemFila[]): ItemFila[] {
-  return fila.filter((i) => !i.conflito && !i.parado);
+// Itens que a sincronização manda agora: sem conflito, sem erro que espera a pessoa e já passada a espera depois
+// de uma falha do servidor (src/lib/sync/queue.ts)
+export function prontosParaEnvio(fila: ItemFila[], agora = Date.now()): ItemFila[] {
+  return fila.filter((i) => !i.conflito && prontoAgora(i, agora));
 }
 
 export function resumoFila(fila: ItemFila[]) {
@@ -84,7 +85,7 @@ export function registrarEnviado(historico: Enviado[], novos: Enviado[]): Enviad
   return [...novos, ...historico.filter((h) => !ids.has(h.client_id))].slice(0, MAX_ENVIADOS);
 }
 
-// Fila lida do localStorage: descarta o que não tem a forma de um envio (versão antiga, cota corrompida)
+// Fila lida do armazém: descarta o que não tem a forma de um envio (versão antiga, cota corrompida)
 export function lerFila(bruto: string | null): ItemFila[] {
   try {
     const v = JSON.parse(bruto ?? "[]");

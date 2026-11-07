@@ -8,6 +8,7 @@ import { getAssinatura } from "@/lib/assinatura";
 import { getUsuario } from "@/lib/auth";
 import { painelCampo } from "@/lib/campo/servidor";
 import { getEmpresaAtual, nomeEmpresa } from "@/lib/empresa";
+import { configOllamaServidor } from "@/lib/ai/offline-chat";
 import { iaConfigurada } from "@/lib/ia";
 import { getPermissoes } from "@/lib/permissoes";
 import { createClient } from "@/lib/supabase/server";
@@ -43,7 +44,7 @@ export default async function PaginaCampo() {
           empresa: { id: atual.id, nome: nomeEmpresa(atual), fuso: atual.fuso },
           hoje: campo.hoje,
           agua: campo.agua,
-          ia: iaConfigurada(),
+          ia: iaConfigurada() || configOllamaServidor() !== null, // Claude ou o Ollama da fazenda
           chavePush,
           painel,
           medicamentos: campo.medicamentos,

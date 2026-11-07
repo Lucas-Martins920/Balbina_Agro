@@ -1,5 +1,5 @@
 import type { BrowserContext, Page } from "@playwright/test";
-import { expect, SESSAO_DONO, test } from "./apoio";
+import { comServiceWorker, expect, filaGuardada, SESSAO_DONO, test } from "./apoio";
 
 test.use({ storageState: SESSAO_DONO });
 
@@ -61,23 +61,50 @@ test.describe("app de campo no celular", () => {
     await esperarEnvio(page);
   });
 
-  // O Playwright não recarrega a página sem rede: aqui a fila é conferida no armazenamento do aparelho
+  // O Playwright não recarrega a página sem rede: aqui a fila é conferida no armazenamento do aparelho (IndexedDB)
   // e, com a conexão de volta, a página recarregada tem que enviar o que ficou guardado.
   test("ao sair da tela, a fila continua guardada no aparelho", async ({ page, context }) => {
     await abrirCampo(page);
     await semSinal(context, page);
     await lancarTarde(page, "2", 0);
     await expect(page.getByRole("button", { name: "Sem sinal. 1 na fila de envio" })).toBeVisible();
-    const guardado = await page.evaluate(() => {
-      const chave = Object.keys(localStorage).find((k) => k.startsWith("balbina:campo:envios:"));
-      return chave ? localStorage.getItem(chave) : null;
-    });
-    expect(guardado).toContain("racao_kg");
+    expect(await filaGuardada(page, "balbina:campo:envios:")).toContain("racao_kg");
 
     await context.setOffline(false);
     await page.reload();
     await esperarEnvio(page);
   });
+});
+
+// Fila no IndexedDB (src/lib/db/indexeddb.ts) e envio automático a cada 5 s (src/lib/sync/worker.ts), sem recarregar
+test.describe("app de campo sem internet", () => {
+  test("a fila mora no IndexedDB e sai sozinha quando a internet volta, sem recarregar", async ({ page, context }) => {
+    await comServiceWorker(page, "/campo");
+    await page.getByRole("navigation", { name: "Módulos do app de campo" }).getByRole("button", { name: "Biometria", exact: true }).click();
+    await context.setOffline(true);
+    await expect(page.getByRole("button", { name: /^Sem sinal\./ })).toBeVisible();
+
+    const aba = page.getByRole("region", { name: "Biometria" });
+    await aba.getByRole("group", { name: "Viveiro" }).getByRole("button", { name: /V1/ }).click();
+    await aba.getByRole("button", { name: /Registrar biometria/ }).click();
+    const folha = page.getByRole("dialog");
+    await folha.getByLabel(/^Peixes pesados/).fill("20");
+    await folha.getByLabel(/^Peso total da amostra/).fill("1");
+    await folha.getByRole("button", { name: "Salvar biometria" }).click();
+    // peso fora do esperado para o lote: a folha pede para conferir antes de salvar
+    const conferir = folha.getByRole("button", { name: "Está certo, salvar" });
+    if (await conferir.isVisible().catch(() => false)) await conferir.click();
+    await expect(page.getByRole("button", { name: "Sem sinal. 1 na fila de envio" })).toBeVisible();
+
+    expect(await filaGuardada(page, "balbina:campo:envios:")).toContain("\"tipo\":\"biometria\"");
+    const noLocalStorage = await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith("balbina:campo:envios:")));
+    expect(noLocalStorage).toEqual([]);
+
+    await context.setOffline(false);
+    await page.getByRole("navigation", { name: "Módulos do app de campo" }).getByRole("button", { name: /^Envios/ }).click();
+    await expect(page.getByRole("region", { name: "Envios" }).getByText("Tudo enviado", { exact: true })).toBeVisible({ timeout: 30_000 });
+  });
+
 });
 
 test.describe("app de campo na tela do celular", () => {

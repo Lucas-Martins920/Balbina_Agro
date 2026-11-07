@@ -16,6 +16,15 @@ function origemSupabase() {
   }
 }
 
+// IA local (Ollama) que o app de campo chama direto quando está sem internet (src/lib/ai/offline-chat.ts)
+function origemOllama() {
+  try {
+    return process.env.NEXT_PUBLIC_OLLAMA_URL ? ` ${new URL(process.env.NEXT_PUBLIC_OLLAMA_URL).origin}` : "";
+  } catch {
+    return "";
+  }
+}
+
 function cspHeader(nonce: string) {
   const dev = process.env.NODE_ENV === "development";
   return [
@@ -24,7 +33,7 @@ function cspHeader(nonce: string) {
     "style-src 'self' 'unsafe-inline'", // Tailwind e tema
     "img-src 'self' blob: data:",
     "font-src 'self'",
-    `connect-src 'self' https://*.supabase.co wss://*.supabase.co${origemSupabase()} https://vitals.vercel-insights.com https://api.pluggy.ai`,
+    `connect-src 'self' https://*.supabase.co wss://*.supabase.co${origemSupabase()} https://vitals.vercel-insights.com https://api.pluggy.ai${origemOllama()}`,
     "frame-src 'self' https://challenges.cloudflare.com https://connect.pluggy.ai",
     "object-src 'none'",
     "base-uri 'self'",

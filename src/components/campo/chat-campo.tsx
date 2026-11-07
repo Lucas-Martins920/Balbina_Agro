@@ -14,6 +14,12 @@ import { cartaoDaFala, itemDoCartao, pendenciaDoCartao, rotuloCartao, type Carta
 import type { Tanque } from "@/lib/campo/tipos";
 import { TIPOS_INSUMO, type TipoInsumo } from "@/lib/campo/validar";
 import { classeReconhecimento, mensagemErroVoz, type Reconhecimento } from "@/lib/reconhecimento-voz";
+import { configOllamaNavegador, responderManejoOllama } from "@/lib/ai/offline-chat";
+import { contextoDosCartoes } from "@/lib/campo/manejo-ia";
+import { textoDadosPiscicultura, validarConversa } from "@/lib/campo/contexto-chat";
+import { conexaoAtual } from "@/lib/sync/detector";
+import { gravarItem, lerItem } from "@/lib/db/indexeddb";
+import { useItemArmazenado } from "@/lib/db/use-armazem";
 import { novoId, useCampo } from "./contexto";
 import { BotaoGrande, CampoNumero, Escolha, fmt, lerNumero, Passo, Selecao, useDoisToques } from "./pecas";
 
@@ -21,41 +27,16 @@ type CartaoChat = { id: string; cartao: Cartao; estado: "aberto" | "salvo" | "de
 type Mensagem = {
   id: string; papel: "pessoa" | "assistente"; texto: string; criado_em: string;
   cartoes?: CartaoChat[];
-  fonte?: "ia" | "celular";   // quem respondeu: a IA do servidor ou a base guardada no celular
+  fonte?: "ia" | "ia-local" | "celular";   // quem respondeu: a IA do servidor, a IA local (Ollama) ou a base do celular
   fontes?: string[];          // referências da base de conhecimento
   aviso?: string;             // por que a resposta veio do celular (sem sinal, IA fora do ar)
 };
 type Resposta = Omit<Mensagem, "id" | "papel" | "criado_em">;
 
 // ---------------------------------------------------------------------------------------------------------------
-// A conversa mora no celular (localStorage, com cópia em memória se o armazenamento falhar)
+// A conversa mora no celular (armazém IndexedDB, src/lib/db/indexeddb.ts; sem IndexedDB, localStorage)
 // ---------------------------------------------------------------------------------------------------------------
-const EVENTO = "balbina-campo-chat";
 const GUARDAR = 40;
-const memoria = new Map<string, string>();
-
-function lerBruto(chave: string) {
-  const m = memoria.get(chave);
-  if (m !== undefined) return m;
-  try {
-    return localStorage.getItem(chave) ?? "[]";
-  } catch {
-    return "[]";
-  }
-}
-
-function assinar(cb: () => void) {
-  const deOutraAba = (e: StorageEvent) => {
-    if (e.key) memoria.delete(e.key);
-    cb();
-  };
-  window.addEventListener(EVENTO, cb);
-  window.addEventListener("storage", deOutraAba);
-  return () => {
-    window.removeEventListener(EVENTO, cb);
-    window.removeEventListener("storage", deOutraAba);
-  };
-}
 
 function lerMensagens(bruto: string): Mensagem[] {
   try {
@@ -69,19 +50,13 @@ function lerMensagens(bruto: string): Mensagem[] {
 }
 
 function useConversa(chave: string) {
-  const bruto = useSyncExternalStore(assinar, () => lerBruto(chave), () => "[]");
+  const bruto = useItemArmazenado(chave, "[]");
   const mensagens = useMemo(() => lerMensagens(bruto), [bruto]);
+  // a memória do armazém guarda mesmo se o IndexedDB recusar (sem espaço): a conversa fica ao menos nesta tela
   const mudar = useCallback((f: (m: Mensagem[]) => Mensagem[]) => {
-    const valor = JSON.stringify(f(lerMensagens(lerBruto(chave))).slice(-GUARDAR));
-    memoria.set(chave, valor);
-    try {
-      localStorage.setItem(chave, valor);
-    } catch {
-      /* sem espaço: a conversa fica só nesta tela */
-    }
-    window.dispatchEvent(new Event(EVENTO));
+    gravarItem(chave, JSON.stringify(f(lerMensagens(lerItem(chave) ?? "[]")).slice(-GUARDAR)));
   }, [chave]);
-  const ler = useCallback(() => lerMensagens(lerBruto(chave)), [chave]);
+  const ler = useCallback(() => lerMensagens(lerItem(chave) ?? "[]"), [chave]);
   return { mensagens, mudar, ler };
 }
 
@@ -143,7 +118,7 @@ function paraIa(m: Mensagem, ctx: Parameters<typeof rotuloCartao>[1]) {
   return { papel: m.papel, texto: `${m.texto}\n${cartoes}`.slice(0, MAX_TEXTO) };
 }
 
-type Pedido = { resposta: string; cartoes: Cartao[] } | { erro: string; sessao?: boolean; semIa?: boolean };
+type Pedido = { resposta: string; cartoes: Cartao[]; motor?: string } | { erro: string; sessao?: boolean; semIa?: boolean };
 
 async function perguntarIa(mensagens: { papel: string; texto: string }[], kgSaco: number): Promise<Pedido> {
   const controle = new AbortController();
@@ -157,9 +132,13 @@ async function perguntarIa(mensagens: { papel: string; texto: string }[], kgSaco
       redirect: "manual",
     });
     if (resp.type === "opaqueredirect" || resp.status === 401) return { erro: "sessão expirada", sessao: true };
-    const corpo = (await resp.json().catch(() => ({}))) as { resposta?: unknown; cartoes?: unknown; erro?: string; sem_ia?: boolean };
+    const corpo = (await resp.json().catch(() => ({}))) as { resposta?: unknown; cartoes?: unknown; erro?: string; sem_ia?: boolean; motor?: unknown };
     if (!resp.ok) return { erro: corpo.erro ?? `erro ${resp.status}`, semIa: corpo.sem_ia === true };
-    return { resposta: typeof corpo.resposta === "string" ? corpo.resposta : "", cartoes: Array.isArray(corpo.cartoes) ? (corpo.cartoes as Cartao[]) : [] };
+    return {
+      resposta: typeof corpo.resposta === "string" ? corpo.resposta : "",
+      cartoes: Array.isArray(corpo.cartoes) ? (corpo.cartoes as Cartao[]) : [],
+      motor: typeof corpo.motor === "string" ? corpo.motor : undefined,
+    };
   } catch {
     return { erro: "sem resposta" };
   } finally {
@@ -342,23 +321,51 @@ export function ChatCampo({ ativo }: { ativo: boolean }) {
     const historico = [...ler(), minha];
     mudar((lista) => [...lista, minha]);
     const tanques = dados.painel.tanques;
-    if (!dados.ia || !navigator.onLine) {
-      responder({ ...respostaLocal(t, tanques, kgSaco), aviso: dados.ia ? "Sem sinal: respondi pela base guardada no celular." : undefined });
-      return;
+    const conversa = historico.map((m) => paraIa(m, campo.cartoes));
+    const comCartoes = (cartoes: Cartao[]) => cartoes.map((cartao) => ({ id: novoId(), cartao, estado: "aberto" as const }));
+
+    // 1. com internet: a IA do servidor (Claude ou o Ollama da fazenda, /api/chat/manejo)
+    let falhou: Exclude<Pedido, { resposta: string }> | null = null;
+    if (dados.ia && conexaoAtual()) {
+      setPensando(true);
+      const r = await perguntarIa(conversa, kgSaco);
+      setPensando(false);
+      if ("resposta" in r) {
+        responder({ texto: r.resposta || "Confira os lançamentos abaixo.", fonte: r.motor === "ollama" ? "ia-local" : "ia", cartoes: comCartoes(r.cartoes) });
+        return;
+      }
+      falhou = r;
     }
-    setPensando(true);
-    const r = await perguntarIa(historico.map((m) => paraIa(m, campo.cartoes)), kgSaco);
-    setPensando(false);
-    if ("resposta" in r) {
-      responder({ texto: r.resposta || "Confira os lançamentos abaixo.", fonte: "ia", cartoes: r.cartoes.map((cartao) => ({ id: novoId(), cartao, estado: "aberto" as const })) });
-    } else {
-      responder({
-        ...respostaLocal(t, tanques, kgSaco),
-        aviso: r.sessao ? "Sua sessão expirou: entre de novo para usar a IA. Respondi pela base do celular."
-          : r.semIa ? undefined : `A IA não respondeu (${r.erro}). Respondi pela base do celular.`,
-      });
+
+    // 2. sem internet (ou o servidor não respondeu): a IA local do aparelho ou do computador da sede, se configurada
+    const ollama = configOllamaNavegador();
+    const v = validarConversa({ mensagens: conversa });
+    if (ollama && "ok" in v && !falhou?.sessao) {
+      setPensando(true);
+      try {
+        const r = await responderManejoOllama({ ...ollama, prazoMs: 45_000 }, {
+          mensagens: v.ok.mensagens,
+          dados: textoDadosPiscicultura({ painel: dados.painel, medicamentos: dados.medicamentos, racoes: dados.racoes, hoje: campo.hoje, kgSaco }),
+          ctx: contextoDosCartoes(dados.painel, dados.medicamentos, dados.racoes),
+        });
+        responder({ texto: r.resposta || "Confira os lançamentos abaixo.", fonte: "ia-local", cartoes: comCartoes(r.cartoes), aviso: "Sem internet: respondeu a IA local (Ollama)." });
+        return;
+      } catch {
+        /* a IA local também não respondeu: fica a base do celular */
+      } finally {
+        setPensando(false);
+      }
     }
-  }, [campo.cartoes, dados.ia, dados.painel.tanques, kgSaco, ler, mudar, responder]);
+
+    // 3. a base guardada no celular, que sempre responde
+    responder({
+      ...respostaLocal(t, tanques, kgSaco),
+      aviso: falhou?.sessao ? "Sua sessão expirou: entre de novo para usar a IA. Respondi pela base do celular."
+        : falhou && !falhou.semIa ? `A IA não respondeu (${falhou.erro}). Respondi pela base do celular.`
+        : dados.ia && !falhou ? "Sem sinal: respondi pela base guardada no celular."
+        : undefined,
+    });
+  }, [campo.cartoes, campo.hoje, dados.ia, dados.painel, dados.medicamentos, dados.racoes, kgSaco, ler, mudar, responder]);
 
   function enviarForm(e: FormEvent) {
     e.preventDefault();
@@ -444,6 +451,7 @@ export function ChatCampo({ ativo }: { ativo: boolean }) {
               {m.texto}
               {m.fontes && <p className="mt-2 text-xs text-texto-suave">Fonte: {m.fontes.join("; ")}.</p>}
               {m.fonte === "celular" && !m.aviso && <p className="mt-2 text-xs text-texto-suave">Resposta da base guardada no celular.</p>}
+              {m.fonte === "ia-local" && !m.aviso && <p className="mt-2 text-xs text-texto-suave">Resposta da IA local da fazenda (Ollama).</p>}
             </div>
             {m.aviso && <p className="flex items-start gap-1.5 px-1 text-xs text-texto-suave"><WifiOff aria-hidden size={13} className="mt-0.5 shrink-0" />{m.aviso}</p>}
             {m.cartoes?.map((c) => (
