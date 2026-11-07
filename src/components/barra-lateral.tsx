@@ -29,7 +29,7 @@ import { sair } from "@/app/login/actions";
 import { ICONES } from "@/components/menu-lateral";
 import { BotaoTema, InterruptorTema } from "@/components/tema";
 import { ATRASO_ABRIR, ATRASO_RECOLHER, CONSULTA_MOUSE, assinarLateral, definirEspiando, definirLateral, lateralRecolhida, podeEspiar } from "@/lib/lateral";
-import { buscarTelas, grupoAtivo, hrefAtivo, montarMenu, type Grupo, type Link as ItemLink, type Secao } from "@/lib/menu";
+import { buscarTelas, grupoAtivo, hrefAtivo, montarMenu, sincronizarGruposAbertos, type Grupo, type Link as ItemLink, type Secao } from "@/lib/menu";
 import { useOnline } from "@/lib/online";
 
 // Barra lateral de vidro no estilo "Glassy Sidebar": aberta (cabeçalho da empresa, busca com ⌘K, seções com rótulo,
@@ -150,7 +150,7 @@ function ItemLinkAberto({ item, ativo }: { item: ItemLink; ativo: boolean }) {
 }
 
 // Grupo que abre os módulos em árvore, com o conector em curva de cada filho e o ponto na cor do grupo.
-function ItemGrupoAberto({ grupo, aberto, alternar, ativoHref }: { grupo: Grupo; aberto: boolean; alternar: () => void; ativoHref: string | null }) {
+function ItemGrupoAberto({ grupo, aberto, alternar, ativoHref, recolhida, abrirLateral }: { grupo: Grupo; aberto: boolean; alternar: () => void; ativoHref: string | null; recolhida: boolean; abrirLateral: () => void }) {
   const id = useId();
   const visual = GRUPO_VISUAL[grupo.nome];
   const Icone = visual?.Icone ?? House;
@@ -161,7 +161,10 @@ function ItemGrupoAberto({ grupo, aberto, alternar, ativoHref }: { grupo: Grupo;
         type="button"
         aria-expanded={aberto}
         aria-controls={id}
-        onClick={alternar}
+        onClick={() => {
+          if (recolhida) abrirLateral();
+          alternar();
+        }}
         className={`${CLASSE_ITEM} w-full ${contemAtivo && !aberto ? CLASSE_ATIVO : CLASSE_INATIVO}`}
       >
         <Icone aria-hidden size={18} strokeWidth={contemAtivo ? 2.25 : 1.75} className={`${visual?.texto ?? ""} shrink-0`} />
@@ -257,11 +260,9 @@ export function BarraLateral({ dados, movel = false }: { dados: DadosBarra; move
   // Grupos abertos: começa com o da tela atual e abre o novo quando a tela muda (ajuste durante a renderização,
   // sem efeito, como a documentação do React recomenda).
   const [abertos, setAbertos] = useState<Set<string>>(() => new Set(grupoDaTela ? [grupoDaTela] : []));
-  const [ultimoGrupo, setUltimoGrupo] = useState(grupoDaTela);
-  if (grupoDaTela !== ultimoGrupo) {
-    setUltimoGrupo(grupoDaTela);
-    if (grupoDaTela && !abertos.has(grupoDaTela)) setAbertos(new Set(abertos).add(grupoDaTela));
-  }
+  useEffect(() => {
+    setAbertos((a) => sincronizarGruposAbertos(a, grupoDaTela));
+  }, [grupoDaTela]);
   const alternarGrupo = (nome: string, abrir?: boolean) =>
     setAbertos((a) => {
       const n = new Set(a);
@@ -418,7 +419,7 @@ export function BarraLateral({ dados, movel = false }: { dados: DadosBarra; move
                 i.tipo === "link" ? (
                   <ItemLinkAberto key={i.href} item={i} ativo={i.href === ativoHref} />
                 ) : (
-                  <ItemGrupoAberto key={i.nome} grupo={i} aberto={abertos.has(i.nome)} alternar={() => alternarGrupo(i.nome)} ativoHref={ativoHref} />
+                  <ItemGrupoAberto key={i.nome} grupo={i} aberto={abertos.has(i.nome)} alternar={() => alternarGrupo(i.nome)} ativoHref={ativoHref} recolhida={recolhida} abrirLateral={() => definirLateral(false)} />
                 ),
               )}
             </div>

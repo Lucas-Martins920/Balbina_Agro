@@ -1,0 +1,216 @@
+# Arquitetura do Balbina Agro
+
+> Visão da arquitetura do repositório em 6 de novembro de 2026. Para regras de negócio detalhadas, consultar os documentos de código, piscicultura, integrações e testes referenciados ao final.
+
+## 1. Resumo
+
+O Balbina é um ERP de piscicultura construído como um **monólito modular**. A aplicação web concentra interface, Server Actions, APIs e integrações em um projeto Next.js. O Supabase fornece PostgreSQL e autenticação. Não há microsserviços.
+
+As regras que protegem dados e operações críticas são aplicadas no banco por constraints, funções, triggers e Row Level Security (RLS). A aplicação mantém validações equivalentes para dar retorno compreensível à pessoa usuária; a validação do cliente não substitui a proteção do banco.
+
+## 2. Diagrama de contexto
+
+```mermaid
+flowchart TD
+    Pessoa[Usuário no navegador] --> Web[Next.js 16 · React 19 · TypeScript]
+    Campo[PWA /campo e /vendedor] --> Web
+    Nativo[App nativo iOS e Android · Expo] --> APIApp[API privada /api/app/*]
+
+    Web --> Proxy[Proxy: sessão, acesso e redirecionamentos]
+    Proxy --> Paginas[Páginas e layouts]
+    Proxy --> Acoes[Server Actions]
+    Proxy --> Rotas[API Routes]
+
+    Paginas --> Supabase[Supabase]
+    Acoes --> Supabase
+    Rotas --> Supabase
+    APIApp --> Supabase
+
+    Supabase --> Auth[Supabase Auth]
+    Supabase --> DB[(PostgreSQL · RLS · funções · triggers)]
+    DB --> Cron[pg_cron]
+    Cron --> Rotas
+
+    Rotas --> Servicos[Asaas · Focus NFe · Pluggy · Anthropic · WhatsApp · Postmark · Web Push]
+    Servicos --> Rotas
+
+    Campo --> SW[Service Worker · Cache API]
+    Campo --> FilaWeb[Fila local · localStorage]
+    Nativo --> FilaNativa[AsyncStorage · SecureStore]
+```
+
+## 3. Estrutura do repositório
+
+| Diretório/arquivo | Responsabilidade |
+|---|---|
+| `src/app/` | App Router: páginas, layouts, Server Actions e rotas HTTP. O grupo `(app)` reúne a área autenticada. |
+| `src/components/` | Componentes React reutilizáveis, componentes de vendas e interface do app de campo. |
+| `src/lib/` | Regras de negócio, validação, acesso a dados, integrações e funções auxiliares. |
+| `src/proxy.ts` e `src/lib/supabase/` | Entrada de requisições e gestão da sessão Supabase. |
+| `mobile/` | Aplicativo iOS/Android feito com Expo e Expo Router. |
+| `supabase/migrations/` | Evolução versionada do schema, funções, políticas e triggers do banco. |
+| `supabase/tests/` | Testes SQL para regras de banco, permissões e isolamento. |
+| `e2e/` | Testes de ponta a ponta com Playwright. |
+| `scripts/` | Desenvolvimento local, banco, backups, testes e geração do mapa do código. |
+
+## 4. Componentes e fluxo de requisição
+
+### Web
+
+1. A requisição passa pelo proxy, que renova a sessão e protege páginas e APIs privadas.
+2. Um Server Component carrega a tela e consulta o Supabase usando a sessão do usuário; as políticas RLS continuam ativas.
+3. Formulários podem chamar Server Actions, que validam os dados, gravam ou chamam uma função do banco e atualizam a tela.
+4. As rotas API atendem integrações, o app nativo, a API pública, webhooks, tarefas agendadas e operações específicas.
+
+```mermaid
+sequenceDiagram
+    actor U as Usuário
+    participant P as Proxy Next.js
+    participant App as Página ou Server Action
+    participant Sup as Supabase
+    participant DB as PostgreSQL
+
+    U->>P: Navega ou envia formulário
+    P->>P: Renova sessão e aplica acesso
+    P->>App: Continua a requisição autorizada
+    App->>Sup: Consulta ou grava com sessão
+    Sup->>DB: Executa sob RLS e regras do banco
+    DB-->>Sup: Resultado
+    Sup-->>App: Dados ou erro
+    App-->>U: Página ou resposta atualizada
+```
+
+### App nativo
+
+O app Expo chama endpoints autenticados em `/api/app/*`, enviando a sessão no cabeçalho. As rotas validam a sessão e a empresa e, então, chamam regras e operações compartilhadas com o site. Regras TypeScript puras podem ser importadas pelo app por `@regras/`; módulos dependentes de Next.js, React ou `server-only` não são compartilhados dessa forma.
+
+## 5. Dados e domínio
+
+O PostgreSQL é a fonte de verdade. As migrations declaram tabelas e objetos do domínio, incluindo:
+
+- **Organização e acesso:** empresas, membros, cargos, convites, termos, sessões MFA, dispositivos confiáveis e auditoria.
+- **Produção aquícola:** setores, viveiros, espécies, lotes, alocações, apontamentos, checklist, biometria, eventos sanitários, medicamentos e despescas.
+- **Estoque e comercial:** produtos, movimentos, ração, fórmulas, ordens de produção, pedidos, itens, pontos de venda, transferências de pescado e preços.
+- **Financeiro:** contas, títulos/agendamentos, baixas, rateios, recorrências, extratos, conciliação, cobranças e orçamento.
+- **Gestão:** planejamento, custos por lote, previsões e configurações de relatórios.
+- **Integrações:** chaves e webhooks da API, dados de provedores fiscais/financeiros, documentos recebidos, uso de IA, WhatsApp e notificações.
+
+### Multiempresa e autorização
+
+O isolamento tem camadas complementares:
+
+1. A sessão identifica o usuário.
+2. A associação do usuário à empresa é conferida no banco.
+3. O RLS filtra as linhas por empresa e as políticas de escrita verificam permissões.
+4. A aplicação também filtra pela empresa selecionada e esconde módulos sem permissão; isso é conveniência de interface, não a barreira de segurança.
+5. O plano pode limitar módulos e operações disponíveis.
+
+As tabelas que pertencem a uma empresa devem ter políticas coerentes e referências entre registros da mesma empresa. As migrations e testes do banco são a fonte para verificar essas regras.
+
+### Regras de domínio importantes
+
+- Valores financeiros são armazenados em centavos inteiros.
+- Datas operacionais usam o fuso configurado para a empresa.
+- O pescado é controlado em quilogramas por classe; a despesca alimenta o estoque e a venda consome esse saldo.
+- Apontamentos, biometria, sanidade e despescas alimentam indicadores de lote e custo do kg.
+- O banco deve manter a integridade mesmo quando a operação chega pela web, pelo app nativo ou por integração.
+
+## 6. Módulos da aplicação
+
+A navegação e os módulos estão catalogados em `src/lib/modulos.ts`.
+
+- **Produção:** viveiros, lotes, apontamento diário, despesca e sanidade.
+- **Estoque:** pescado, ração, insumos e pontos de venda.
+- **Comercial:** vendas, PDV, app do vendedor, pedidos por link e notas fiscais.
+- **Financeiro:** pagar, receber, contas e saldos, cartões, conciliação, fluxo de caixa e cobranças.
+- **Gestão:** custo do kg, planejamento, previsões e relatórios.
+- **Cadastros e administração:** contatos, produtos, preços, categorias, centros de custo, usuários, permissões, configurações e histórico.
+
+Cada página/ação deve verificar a permissão necessária; permissões no banco também protegem as operações críticas.
+
+## 7. Autenticação e segurança
+
+- Supabase Auth com e-mail/senha, confirmação e recuperação de conta; existe também login local criado pelo master.
+- MFA por aplicativo autenticador ou código por e-mail, além de dispositivos confiáveis com validade limitada.
+- CAPTCHA e bloqueio de tentativas inválidas no fluxo de login.
+- Rotas privadas usam a sessão; API v1 usa chave de API e escopos; cron e webhooks usam credenciais próprias.
+- O cliente administrativo do Supabase, que ignora RLS, deve ficar restrito a rotinas confiáveis, webhooks e tarefas administrativas — não a ações comuns de usuário.
+- Integrações precisam validar permissão/plano antes de fazer operações externas e validar assinaturas/tokens de chamadas recebidas.
+
+## 8. PWA e operação sem conexão
+
+O offline é **parcial e orientado às operações de campo**, não cobre o ERP inteiro.
+
+- `/campo` usa um Service Worker para cachear a tela e arquivos estáticos e mantém lançamentos pendentes em `localStorage`.
+- `/vendedor` mantém informações de venda e uma fila de pedidos local.
+- A fila sincroniza quando há conexão, quando a tela/app volta ao primeiro plano e periodicamente enquanto está ativo.
+- Identificadores de cliente permitem reconhecer reenvios e evitar duplicação no servidor/banco.
+- O chat de manejo depende de rede para chamar Anthropic. Sem rede ou IA configurada, existe resposta baseada na base local de conhecimento, sem inferência por IA.
+- O app nativo usa AsyncStorage para dados e filas e SecureStore para credenciais/sessão. Algumas ações, como PDV nativo, não têm fila offline.
+- Não há IndexedDB no fluxo web descrito; o armazenamento local da PWA usa `localStorage` e Cache API.
+
+## 9. APIs e integrações
+
+### Grupos de rotas
+
+- `/api/app/*`: login, MFA, dados e operações usadas pelo app nativo.
+- `/api/v1/*`: API pública para dados e operações autorizadas por chave e escopo.
+- Rotas de campo: apontamentos, insumos, biometrias, lotes e chat de manejo.
+- `/api/webhooks/*`: eventos de provedores, como pagamentos, notas e Open Finance.
+- `/api/cron/*`: rotinas agendadas.
+- `/api/entrada/*`: entrada de mensagens e documentos por serviços externos.
+
+### Serviços externos
+
+- **Asaas:** cobranças e assinatura.
+- **Focus NFe:** emissão e eventos de documentos fiscais.
+- **Pluggy:** Open Finance e leitura de transações bancárias.
+- **Anthropic:** chat de manejo e leitura de documentos por IA.
+- **Meta WhatsApp, Postmark e Web Push:** comunicação, entrada de documentos e notificações.
+- **Cloudflare Turnstile:** CAPTCHA.
+
+As APIs e integrações estão detalhadas em `docs/codigo/integracoes.md` e `docs/api.md`.
+
+## 10. Processos agendados e eventos
+
+`pg_cron` no Supabase e cron da Vercel disparam tarefas como recorrências, automações, entregas de webhooks e sincronização de Open Finance. Serviços externos enviam webhooks de volta para rotas específicas do app. Segredos de cron/provedores são configuração de ambiente/Vault, não dados fixos no código.
+
+A lista de rotinas, horários e pontos de entrada pode mudar; a configuração efetiva deve ser conferida em `vercel.json`, nas migrations e no código das rotas `/api/cron/*`.
+
+## 11. Implantação e ambientes
+
+- **Local:** Next.js e Supabase local; o projeto fornece scripts para iniciar, popular e zerar o ambiente.
+- **Homologação:** branch `Teste-Desevolvimento` na Vercel e banco Supabase separado.
+- **Produção:** Vercel e Supabase de produção; migrations chegam por fluxo controlado após a verificação do consolidado.
+- O repositório não usa microsserviços nem ORM: o acesso é feito com `supabase-js` e SQL/migrations.
+
+O fluxo de publicação e os cuidados para não misturar os bancos estão em `docs/fluxo-de-trabalho.md`, `docs/site-de-teste.md` e `docs/rodar-local.md`.
+
+## 12. Testes e verificações
+
+- **Unitários:** regras puras TypeScript, com `node:test`.
+- **Banco:** SQL para migrations, funções, triggers, RLS e isolamento entre empresas.
+- **E2E:** Playwright para fluxos completos no navegador.
+- **Qualidade estática:** ESLint, TypeScript e build do Next.js.
+- **App nativo:** lint, typecheck e testes próprios.
+
+Comandos e pré-requisitos estão em `README.md` e `docs/codigo/testes-e-operacao.md`. Testes de banco e E2E exigem um ambiente Supabase local/configurado.
+
+## 13. Limites arquiteturais conhecidos
+
+- O modo offline não se estende às telas administrativas e financeiras do ERP.
+- A sincronização de filas depende de o app/tela estar ativo; não é uma sincronização geral em background após o encerramento do app.
+- O Service Worker cacheia apenas as telas móveis previstas e seus recursos estáticos; não é um cache offline de todas as rotas.
+- O chat com IA requer conexão e configuração da chave no servidor; a alternativa local é uma busca/base de conhecimento, não um modelo local.
+- Web e app nativo têm componentes e armazenamento próprios; compartilham principalmente regras puras e operações do servidor.
+
+## 14. Documentos relacionados
+
+- Arquitetura e fluxos existentes: `docs/codigo/arquitetura.md`
+- Módulos e regras de negócio: `docs/codigo/modulos.md`
+- Banco, RLS e migrations: `docs/codigo/banco.md`
+- Integrações: `docs/codigo/integracoes.md`
+- Testes e operação: `docs/codigo/testes-e-operacao.md`
+- Regras de piscicultura: `docs/piscicultura.md`
+- Referência do app nativo: `docs/app-celular.md`
+- Convenções para mudanças: `docs/codigo/convencoes.md`

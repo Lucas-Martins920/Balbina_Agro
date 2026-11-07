@@ -13,6 +13,7 @@ const SEGURANCA = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  allowedDevOrigins: ["192.168.100.115"],
   // geradores da exportação da DRE: rodam do node_modules, com a versão Node de cada um
   serverExternalPackages: ["exceljs", "jspdf", "jspdf-autotable"],
   async headers() {

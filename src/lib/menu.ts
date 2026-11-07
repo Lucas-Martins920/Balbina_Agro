@@ -57,6 +57,12 @@ export function grupoAtivo(secoes: Secao[], caminho: string): string | null {
   return null;
 }
 
+export function sincronizarGruposAbertos(abertos: Set<string>, grupoAtivoAtual: string | null): Set<string> {
+  if (!grupoAtivoAtual) return abertos;
+  if (abertos.has(grupoAtivoAtual)) return abertos;
+  return new Set(abertos).add(grupoAtivoAtual);
+}
+
 const normalizar = (t: string) => t.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
 
 export type Tela = { href: string; nome: string; grupo: string; slug: string };

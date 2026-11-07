@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { GRUPOS } from "./modulos.ts";
-import { buscarTelas, grupoAtivo, montarMenu } from "./menu.ts";
+import { buscarTelas, grupoAtivo, montarMenu, sincronizarGruposAbertos } from "./menu.ts";
 
 const todos = GRUPOS.flatMap((g) => g.modulos).map((m) => m.slug);
 
@@ -48,6 +48,13 @@ test("grupo ativo acompanha as subpáginas", () => {
   assert.equal(grupoAtivo(secoes, "/contas-a-pagar/novo"), "Financeiro");
   assert.equal(grupoAtivo(secoes, "/configuracoes/usuarios"), "Configurações");
   assert.equal(grupoAtivo(secoes, "/painel"), null);
+});
+
+test("grupo ativo entra na lista de abertos sem perder os grupos manualmente abertos", () => {
+  const abertos = new Set(["Produção", "Comercial"]);
+  const atualizado = sincronizarGruposAbertos(abertos, "Estoque");
+  assert.deepEqual([...atualizado].sort(), ["Comercial", "Estoque", "Produção"]);
+  assert.equal(sincronizarGruposAbertos(atualizado, "Estoque").size, atualizado.size);
 });
 
 test("o RH saiu do sistema: nem o master vê RH, funcionários ou cartão de ponto no menu", () => {
