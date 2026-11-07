@@ -55,3 +55,15 @@ test("viveiro lançado no turno: na fila ou já enviado deste celular", () => {
   assert.equal(apontamentoDoTurno("v3", "2026-11-05", "manha", [], [enviado]), "enviado");
   assert.deepEqual(marcaDoItem(item({ corpo: { viveiro_id: 3 } })), { viveiro_id: undefined, data: undefined, turno: undefined });
 });
+
+test("item que falhou no servidor só volta depois da espera; parado pelo limite não volta sozinho", () => {
+  const agora = Date.parse("2026-11-06T12:00:00Z");
+  const fila = [
+    item({ client_id: "espera", proxima_em: new Date(agora + 10_000).toISOString(), tentativas: 2 }),
+    item({ client_id: "pronto", proxima_em: new Date(agora - 1).toISOString(), tentativas: 1 }),
+    item({ client_id: "limite", parado: true, tentativas: 8 }),
+    item({ client_id: "novo" }),
+  ];
+  assert.deepEqual(prontosParaEnvio(fila, agora).map((i) => i.client_id), ["pronto", "novo"]);
+  assert.deepEqual(prontosParaEnvio(fila, agora + 10_000).map((i) => i.client_id), ["espera", "pronto", "novo"]);
+});

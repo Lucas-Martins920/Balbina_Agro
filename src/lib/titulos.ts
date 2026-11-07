@@ -73,7 +73,7 @@ export const GRUPOS_CATEGORIA: Record<string, string> = {
 // Em que parte do custo do kg a categoria de custo operacional entra
 export const COMPONENTES_CUSTO: Record<string, string> = {
   racao: "Ração",
-  peixe: "Compra de peixes (amortizada)",
+  alevinos: "Alevinos e juvenis",
   sanidade: "Sanidade",
   mao_obra: "Mão de obra",
   energia: "Energia",

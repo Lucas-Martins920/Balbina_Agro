@@ -1,17 +1,8 @@
 import { useSyncExternalStore } from "react";
+import { assinarConexao, conexaoAtual } from "@/lib/sync/detector";
 
-// O navegador está com internet? Muda sozinho quando a conexão cai ou volta; no servidor, sempre true.
+// O aparelho tem internet de verdade? Muda sozinho quando a conexão cai ou volta, e também quando o celular está
+// num Wi-Fi sem internet (src/lib/sync/detector.ts confere com o servidor). No servidor, sempre true.
 export function useOnline() {
-  return useSyncExternalStore(
-    (cb) => {
-      window.addEventListener("online", cb);
-      window.addEventListener("offline", cb);
-      return () => {
-        window.removeEventListener("online", cb);
-        window.removeEventListener("offline", cb);
-      };
-    },
-    () => navigator.onLine,
-    () => true,
-  );
+  return useSyncExternalStore(assinarConexao, conexaoAtual, () => true);
 }

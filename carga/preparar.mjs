@@ -79,7 +79,10 @@ function clienteComCookies() {
     cookies: {
       getAll: () => [...pote].map(([name, value]) => ({ name, value })),
       setAll: (lista) => {
-        for (const { name, value } of lista) value ? pote.set(name, value) : pote.delete(name);
+        for (const { name, value } of lista) {
+          if (value) pote.set(name, value);
+          else pote.delete(name);
+        }
       },
     },
   });

@@ -11,7 +11,7 @@ Um app Next.js e um banco Supabase (Postgres), sem microsserviços. As **regras 
 | Supabase Postgres (São Paulo, `sa-east-1`) | Dados, regras, RLS por empresa, `pg_cron`, Vault | `supabase/migrations` |
 | Supabase Auth | Login (usuário/senha), MFA (TOTP ou código por e-mail), convites | `src/app/auth`, `src/app/login`, `src/lib/mfa.ts` |
 | Vercel (região `gru1`) | Hospedagem; 2 rotinas diárias de reserva em `vercel.json` | `vercel.json` |
-| Service worker | Abre `/campo` e `/vendedor` sem internet | `public/sw.js` |
+| Service worker | Abre sem internet toda tela já aberta (e as do menu, guardadas de antemão); envia as filas com o app fechado (Background Sync) | `public/sw.js` |
 | Serviços externos | Asaas (cobrança e assinatura), Focus NFe (notas), Pluggy (Open Finance), Anthropic (leitura de documento e chat do campo por IA), Meta WhatsApp, Web Push, Postmark Inbound, Cloudflare Turnstile | [integracoes.md](integracoes.md) |
 
 ## Como uma requisição anda
@@ -65,9 +65,9 @@ O `pg_cron` chama o app usando a URL e o segredo guardados no **Vault** do Supab
 
 ## Apps de celular que funcionam sem internet
 
-- **`/campo`**: o app da beira do viveiro, com cinco abas (chat, viveiros, ração, biometria, envios; ver [`docs/piscicultura.md`](../piscicultura.md)). Tudo o que o tratador lança entra primeiro numa fila no `localStorage` (`src/lib/campo/fila.ts`, `src/components/campo/fila-cliente.ts`) e sai para a rota certa quando há sinal: `/api/apontamentos` (ração do turno, mortes, água), `/api/lancar-insumos`, `/api/biometrias`, `/api/abrir-lote` e `/api/lotes/:id/fechar`. Cada envio leva um `client_id` único, e o banco ignora o repetido, então reenviar não duplica. O chat (`/api/chat/manejo`) precisa de sinal e só propõe: o lançamento sai do cartão que o tratador confirma, pela mesma fila. Regras puras e testes em `src/lib/campo/`; servidor em `src/lib/campo/servidor.ts`.
+- **`/campo`**: o app da beira do viveiro, com cinco abas (chat, viveiros, ração, biometria, envios; ver [`docs/piscicultura.md`](../piscicultura.md)). Tudo o que o tratador lança entra primeiro numa fila no IndexedDB do aparelho (`src/lib/campo/fila.ts`, `src/components/campo/fila-cliente.ts`, armazém em `src/lib/db/indexeddb.ts`) e sai para a rota certa quando há sinal (a cada 5 s, `src/lib/sync/`): `/api/apontamentos` (ração do turno, mortes, água), `/api/lancar-insumos`, `/api/biometrias`, `/api/abrir-lote` e `/api/lotes/:id/fechar`. Cada envio leva um `client_id` único, e o banco ignora o repetido, então reenviar não duplica. O chat (`/api/chat/manejo`) responde pelo Claude, pelo Ollama da fazenda ou, sem nenhum dos dois, pela base do celular (`src/lib/ai/offline-chat.ts`), e só propõe: o lançamento sai do cartão que o tratador confirma, pela mesma fila. Regras puras e testes em `src/lib/campo/`; servidor em `src/lib/campo/servidor.ts`.
 - **`/vendedor`**: pedido em campo com o catálogo e a tabela de preço do cliente (`src/components/vendas/vendedor.tsx` → `/api/pedidos`).
-- `public/sw.js` guarda essas duas telas e os arquivos estáticos. Ao mudar o que elas usam, suba a versão do `CACHE`.
+- `public/sw.js` guarda essas duas telas na instalação e, no sistema inteiro, cada tela aberta com internet. Ao mudar a forma do cache, suba a versão (`ESTATICO`/`TELAS`). Como tudo se encaixa (armazém, sincronização, service worker, IA local): [`docs/offline.md`](../offline.md).
 
 ## App nativo para iOS e Android (pasta `mobile/`)
 
@@ -90,7 +90,7 @@ O [`architecture.md`](../legado/finavi/replica/architecture.md) do FINAVI, de 20
 |---|---|
 | Drizzle ORM | Não há ORM: `supabase-js` (`.from`/`.rpc`) e SQL puro nas migrations. |
 | shadcn/ui, TanStack Table, Recharts | Primitivos próprios em `ui.tsx` e gráficos SVG em `components/graficos.tsx`. |
-| IndexedDB/Dexie no app de campo | `localStorage` com fila e `client_id` idempotente. |
+| IndexedDB/Dexie no app de campo | IndexedDB sem biblioteca (`src/lib/db/indexeddb.ts`, com cópia em memória para o React), fila com `client_id` idempotente. |
 | Inngest para jobs | `pg_cron` do Supabase + cron da Vercel. |
 | Supabase Auth por e-mail/magic link | Usuário e senha criados pelo master (sem e-mail obrigatório) + MFA. |
 | Resend | Códigos de e-mail pelo Supabase Auth; entrada de documentos pelo Postmark. |

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Aviso, Botao, Campo, CLASSE_BOTAO_TEXTO, classeBotao } from "@/components/ui";
 import { Captcha } from "@/components/captcha";
 import { enviarLogin, type EstadoLogin } from "./actions";
@@ -13,6 +13,10 @@ const CLASSE_LINK = classeBotao("secundario", "sm");
 
 export function FormLogin({ voltar, aviso }: { voltar?: string; aviso?: string }) {
   const [modo, setModo] = useState<Modo>("entrar");
+  // saiu da conta: o service worker apaga as telas guardadas da pessoa anterior (public/sw.js)
+  useEffect(() => {
+    navigator.serviceWorker?.controller?.postMessage({ tipo: "sair" });
+  }, []);
   const [estado, acao, pendente] = useActionState<EstadoLogin, FormData>(enviarLogin, {});
   // Resposta que já não vale: a do modo anterior (ao trocar de modo) ou a da tentativa anterior (ao
   // enviar de novo). Some da tela até o servidor responder outra coisa.

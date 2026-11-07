@@ -123,10 +123,17 @@ export const LIMITES = {
 
 const fmt = (v: number, casas = 1) => v.toLocaleString("pt-BR", { minimumFractionDigits: casas, maximumFractionDigits: casas });
 
-function sinaisDoLote(dias: DiaLote[]): Sinal[] {
+// O dia de hoje ainda está aberto: quem trata em vários turnos só fecha a ração e as baixas à noite, e com ele
+// toda manhã pareceria queda da ração aceita. Ração e mortalidade olham só os dias fechados (antes de hoje);
+// o oxigênio mínimo é medido de madrugada e o de hoje já vale.
+function sinaisDoLote(dias: DiaLote[], hoje?: string): Sinal[] {
   const L = LIMITES;
-  const recentes = dias.slice(-L.diasRecentes);
-  const base = dias.slice(-(L.diasRecentes + L.diasBase), -L.diasRecentes);
+  const janelas = (lista: DiaLote[]) => ({
+    recentes: lista.slice(-L.diasRecentes),
+    base: lista.slice(-(L.diasRecentes + L.diasBase), -L.diasRecentes),
+  });
+  const { recentes, base } = janelas(hoje ? dias.filter((d) => d.data < hoje) : dias);
+  const comHoje = janelas(dias);
   const m = (d: DiaLote[], f: (x: DiaLote) => Num) => media(d.map((x) => num(f(x))));
   const sinais: Sinal[] = [];
 
@@ -144,21 +151,22 @@ function sinaisDoLote(dias: DiaLote[]): Sinal[] {
         : `mortalidade de ${fmt(mortRec, 2)}% ao dia`,
     });
   }
-  const oxBase = m(base, (d) => d.oxigenio_min_mg_l), oxRec = m(recentes, (d) => d.oxigenio_min_mg_l);
+  const oxBase = m(comHoje.base, (d) => d.oxigenio_min_mg_l), oxRec = m(comHoje.recentes, (d) => d.oxigenio_min_mg_l);
   if (oxBase !== null && oxRec !== null && oxBase - oxRec >= L.quedaOxigenio && oxRec < L.oxigenioAtencao) {
     sinais.push({ tipo: "oxigenio", texto: `oxigênio mínimo caindo (${fmt(oxBase)} → ${fmt(oxRec)} mg/L)` });
   }
   return sinais;
 }
 
-export function alertasTendencia(dias: DiaLote[]): AlertaTendencia[] {
+// hoje: a data de hoje no fuso da piscicultura (o dia ainda aberto fica fora da ração e da mortalidade).
+export function alertasTendencia(dias: DiaLote[], hoje?: string): AlertaTendencia[] {
   const porLote = new Map<string, DiaLote[]>();
   for (const d of dias) porLote.set(d.lote_id, [...(porLote.get(d.lote_id) ?? []), d]);
   const alertas: AlertaTendencia[] = [];
   for (const [loteId, lista] of porLote) {
     const ordenados = [...lista].sort((a, b) => a.data.localeCompare(b.data));
     if (ordenados.length < LIMITES.diasRecentes + LIMITES.diasBase) continue;
-    const sinais = sinaisDoLote(ordenados);
+    const sinais = sinaisDoLote(ordenados, hoje);
     if (!sinais.length) continue;
     const ultimo = ordenados.at(-1)!;
     const critico = sinais.length >= 2;

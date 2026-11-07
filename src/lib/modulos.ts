@@ -21,6 +21,7 @@ export const GRUPOS: GrupoModulos[] = [
       { slug: "apontamentos", nome: "Apontamento diário", descricao: "Ração, mortalidade, qualidade da água e medicamentos aplicados por viveiro.", marco: 1 },
       { slug: "despescas", permissao: "lotes", nome: "Despescas", descricao: "Retirada do peixe do viveiro em kg, por classe de tamanho, que entra no estoque.", marco: 1 },
       { slug: "sanidade", nome: "Sanidade", descricao: "Medicações e banhos com carência, calagem, adubação e análises.", marco: 3 },
+      { slug: "sondas", permissao: "lotes", nome: "Sondas IoT", descricao: "Leituras em tempo real de oxigênio, temperatura, pH e amônia das sondas de qualidade da água.", marco: 3 },
     ],
   },
   {

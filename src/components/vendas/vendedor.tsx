@@ -1,10 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import { CLASSE_BOTAO_TEXTO, CLASSE_CONTROLE, classeBotao, Etiqueta } from "@/components/ui";
 import { Chip, Contador, Opcao } from "@/components/vendas/controles";
 import { formatarData, formatarMoeda, hojeISO, somarDias } from "@/lib/formato";
 import { useOnline } from "@/lib/online";
+import { gravarJson, lerJson } from "@/lib/db/indexeddb";
+import { useItemArmazenado } from "@/lib/db/use-armazem";
+import { marcarSemRede } from "@/lib/sync/detector";
+import { useTarefaSync } from "@/lib/sync/navegador";
+import { liberar, prontoAgora, registrarFalha, type ComRetry } from "@/lib/sync/queue";
+import { useServiceWorker } from "@/components/offline";
 import { estoqueNoCarrinho } from "@/lib/estoque-carrinho";
 import { textoKg, textoQuantidade, vendidoPorKg } from "@/lib/pescado";
 import { resumoWhatsapp } from "@/lib/pedido-campo";
@@ -25,51 +31,24 @@ type Props = {
 
 // O que vai para /api/pedidos, mais o que a tela precisa para mostrar a fila sem rede
 type Envio = { client_id: string; cliente_id: string; data: string; condicao: string; forma_pagamento: string | null; entrega: string | null; observacoes: string; faturar: boolean; itens: { produto_id: string; quantidade: number }[] };
-type Pendente = Envio & { cliente_nome: string; telefone: string | null; total_estimado: number; resumo: { nome: string; quantidade: number; preco_cents: number | null }[]; erro?: string };
+type Pendente = Envio & ComRetry & { cliente_nome: string; telefone: string | null; total_estimado: number; resumo: { nome: string; quantidade: number; preco_cents: number | null }[]; erro?: string };
 type Enviado = Pendente & { numero: number | null; total_cents: number; aviso?: string; enviado_em: string };
 
 const FORMAS_RAPIDAS = ["pix", "boleto", "dinheiro", "cartao", "ted"] as const;
-const EVENTO = "balbina-vendedor";
 
-// localStorage pode não existir (aba anônima, cota cheia): tudo protegido
+// A fila e o histórico moram no armazém do aparelho (IndexedDB, src/lib/db/indexeddb.ts)
 function ler<T>(chave: string, padrao: T): T {
-  try {
-    const v = localStorage.getItem(chave);
-    return v ? (JSON.parse(v) as T) : padrao;
-  } catch {
-    return padrao;
-  }
+  return lerJson<T>(chave, padrao);
 }
 function gravar(chave: string, valor: unknown) {
-  try {
-    localStorage.setItem(chave, JSON.stringify(valor));
-  } catch {
-    /* sem armazenamento: o envio ainda tenta direto */
-  }
-  window.dispatchEvent(new Event(EVENTO));
+  gravarJson(chave, valor);
 }
 function useGuardado<T>(chave: string): T[] {
-  const bruto = useSyncExternalStore(
-    (cb) => {
-      window.addEventListener(EVENTO, cb);
-      window.addEventListener("storage", cb);
-      return () => {
-        window.removeEventListener(EVENTO, cb);
-        window.removeEventListener("storage", cb);
-      };
-    },
-    () => {
-      try {
-        return localStorage.getItem(chave) ?? "[]";
-      } catch {
-        return "[]";
-      }
-    },
-    () => "[]",
-  );
+  const bruto = useItemArmazenado(chave, "[]");
   return useMemo(() => {
     try {
-      return JSON.parse(bruto) as T[];
+      const v = JSON.parse(bruto);
+      return Array.isArray(v) ? (v as T[]) : [];
     } catch {
       return [];
     }
@@ -96,19 +75,8 @@ export function AppVendedor({ empresa, clientes, produtos, precos, listas, ultim
   const [observacoes, setObservacoes] = useState("");
   const [faturar, setFaturar] = useState(false);
 
-  useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
-    // manda ao service worker os arquivos que esta tela carregou, para abrir completa sem sinal (igual ao /campo)
-    const guardar = () => {
-      const urls = performance.getEntriesByType("resource").map((e) => e.name)
-        .filter((u) => u.startsWith(`${location.origin}/_next/static/`));
-      navigator.serviceWorker.controller?.postMessage({ tipo: "guardar", urls });
-    };
-    navigator.serviceWorker.register("/sw.js").then(() => navigator.serviceWorker.ready).then(guardar).catch(() => undefined);
-    navigator.serviceWorker.addEventListener("controllerchange", guardar);
-    navigator.storage?.persist?.().catch(() => undefined);
-    return () => navigator.serviceWorker.removeEventListener("controllerchange", guardar);
-  }, []);
+  // service worker: guarda esta tela e os arquivos dela para abrir sem sinal (igual ao /campo)
+  useServiceWorker();
 
   const preco = useMemo(() => precoVigente(precos, hoje, listas), [precos, hoje, listas]);
   const nomeLista = useMemo(() => new Map(listas.map((l) => [l.id, l.nome])), [listas]);
@@ -136,11 +104,12 @@ export function AppVendedor({ empresa, clientes, produtos, precos, listas, ultim
   const semPreco = escolhidas.filter((l) => l.preco === null);
 
   const sincronizar = useCallback(async () => {
-    const atual = ler<Pendente[]>(chaveFila, []);
+    const agora = Date.now();
+    const atual = ler<Pendente[]>(chaveFila, []).filter((p) => prontoAgora(p, agora));
     if (!atual.length || !navigator.onLine) return;
     setEnviando(true);
     const ok = new Map<string, { numero: number | null; total_cents: number; aviso?: string }>();
-    const erros = new Map<string, string>();
+    const erros = new Map<string, { erro: string; parado: boolean }>();
     for (const p of atual) {
       try {
         const envio: Envio = {
@@ -153,15 +122,23 @@ export function AppVendedor({ empresa, clientes, produtos, precos, listas, ultim
           ok.set(p.client_id, { numero: corpo.numero ?? null, total_cents: corpo.total_cents ?? p.total_estimado, aviso: corpo.aviso });
           continue;
         }
-        erros.set(p.client_id, corpo.erro ?? `Erro ${resp.status}`);
+        // 4xx: o pedido foi recusado e só a pessoa resolve; 5xx e 429: tenta de novo sozinho, até o limite
+        const parado = resp.status >= 400 && resp.status < 500 && resp.status !== 408 && resp.status !== 429;
+        erros.set(p.client_id, { erro: corpo.erro ?? `Erro ${resp.status}`, parado });
         if (resp.status === 401) break;
       } catch {
-        break; // caiu o sinal no meio: o resto fica para a próxima
+        marcarSemRede(); // caiu o sinal no meio: o resto fica para quando a internet voltar
+        break;
       }
     }
     // relê a fila: pode ter entrado pedido novo enquanto enviava
     const resto = ler<Pendente[]>(chaveFila, []);
-    gravar(chaveFila, resto.filter((p) => !ok.has(p.client_id)).map((p) => (erros.has(p.client_id) ? { ...p, erro: erros.get(p.client_id) } : p)));
+    const marcar = (p: Pendente): Pendente => {
+      const e = erros.get(p.client_id);
+      if (!e) return p;
+      return e.parado ? { ...p, erro: e.erro, parado: true } : registrarFalha(p, e.erro, Date.now());
+    };
+    gravar(chaveFila, resto.filter((p) => !ok.has(p.client_id)).map(marcar));
     if (ok.size) {
       const agora = new Date().toISOString();
       const novos = resto.filter((p) => ok.has(p.client_id)).map((p): Enviado => ({ ...p, ...ok.get(p.client_id)!, erro: undefined, enviado_em: agora }));
@@ -173,12 +150,12 @@ export function AppVendedor({ empresa, clientes, produtos, precos, listas, ultim
     setEnviando(false);
   }, [chaveFila, chaveEnviados]);
 
-  // ao abrir e quando o sinal volta
-  useEffect(() => {
-    if (!online) return;
-    const t = setTimeout(() => void sincronizar(), 0);
-    return () => clearTimeout(t);
-  }, [online, sincronizar]);
+  // ao abrir, a cada 5 s com internet, quando a internet volta e quando a tela volta para a frente
+  useTarefaSync(`vendedor:${empresa.id}`, sincronizar, () => ler<Pendente[]>(chaveFila, []).some((p) => prontoAgora(p, Date.now())));
+  const reenviar = (id: string) => {
+    gravar(chaveFila, ler<Pendente[]>(chaveFila, []).map((p) => (p.client_id === id ? liberar(p) : p)));
+    void sincronizar();
+  };
 
   function escolher(c: ClienteVenda) {
     setCliente(c);
@@ -218,7 +195,7 @@ export function AppVendedor({ empresa, clientes, produtos, precos, listas, ultim
     void sincronizar();
   }
 
-  const descartar = (id: string) => gravar(chaveFila, fila.filter((p) => p.client_id !== id));
+  const descartar = (id: string) => gravar(chaveFila, ler<Pendente[]>(chaveFila, []).filter((p) => p.client_id !== id));
   const whatsapp = (p: Enviado) => linkWhatsapp(p.telefone, resumoWhatsapp({
     empresa: empresa.nome, cliente: p.cliente_nome, numero: p.numero, itens: p.resumo, total_cents: p.total_cents,
     condicao: CONDICOES[p.condicao]?.nome ?? p.condicao, entrega: p.entrega,
@@ -363,7 +340,9 @@ export function AppVendedor({ empresa, clientes, produtos, precos, listas, ultim
                     <span>{p.cliente_nome} · {formatarData(p.data)} · {formatarMoeda(p.total_estimado)}</span>
                     {p.erro && (
                       <span className="text-perigo">
-                        {p.erro} <button type="button" className={classeBotao("secundario", "sm")} onClick={() => descartar(p.client_id)}>descartar</button>
+                        {p.erro}{" "}
+                        {p.parado && <button type="button" className={classeBotao("secundario", "sm")} onClick={() => reenviar(p.client_id)}>reenviar</button>}{" "}
+                        <button type="button" className={classeBotao("secundario", "sm")} onClick={() => descartar(p.client_id)}>descartar</button>
                       </span>
                     )}
                   </li>

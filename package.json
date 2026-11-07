@@ -50,6 +50,7 @@
     "@types/web-push": "^3.6.4",
     "eslint": "^10",
     "eslint-config-next": "16.4.3",
+    "fake-indexeddb": "^6.2.7",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

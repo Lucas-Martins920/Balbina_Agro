@@ -191,7 +191,7 @@ export type CustoLote = {
 };
 
 const COMPOSICAO: [keyof CustoLote, string][] = [
-  ["racao_cents", "Ração"], ["alevinos_cents", "Alevinos (amortização)"], ["mao_obra_cents", "Mão de obra"],
+  ["racao_cents", "Ração"], ["alevinos_cents", "Alevinos e juvenis"], ["mao_obra_cents", "Mão de obra"],
   ["sanidade_cents", "Sanidade"], ["energia_cents", "Energia"], ["embalagem_cents", "Embalagem"],
   ["outros_diretos_cents", "Outros diretos"], ["indiretos_rateados_cents", "Indiretos rateados"],
 ];

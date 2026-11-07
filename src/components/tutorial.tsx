@@ -28,7 +28,17 @@ type Props = {
   master?: boolean;
   // O tour de boas-vindas (menu, empresa, aparência) só faz sentido dentro do app com menu.
   comGeral?: boolean;
+  // false: a tela põe o próprio botão de ajuda (o app de campo, no topo, porque o rodapé é das abas) e abre o
+  // painel com alternarAjuda().
+  botaoFlutuante?: boolean;
 };
+
+const EVENTO_AJUDA = "balbina:ajuda";
+
+// Abre ou fecha o painel de ajuda a partir de um botão da própria tela.
+export function alternarAjuda() {
+  document.dispatchEvent(new Event(EVENTO_AJUDA));
+}
 
 const chaveLocal = (usuario: string) => `balbina-tutoriais-${usuario}`;
 
@@ -74,7 +84,7 @@ function montarPassos(tutorial: TipoTutorial, permitidas: ReadonlySet<string>): 
 
 const reduzMovimento = () => typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export function Tutorial({ usuario, vistos: vistosServidor, permitidas: lista, master = false, comGeral = true }: Props) {
+export function Tutorial({ usuario, vistos: vistosServidor, permitidas: lista, master = false, comGeral = true, botaoFlutuante = true }: Props) {
   const caminho = usePathname();
   const permitidas = useMemo(() => new Set(lista), [lista]);
   const vistos = useRef<Set<string>>(new Set(vistosServidor));
@@ -201,8 +211,13 @@ export function Tutorial({ usuario, vistos: vistosServidor, permitidas: lista, m
       e.preventDefault();
       setAberto((v) => !v);
     };
+    const pedido = () => setAberto((v) => !v);
     document.addEventListener("keydown", tecla);
-    return () => document.removeEventListener("keydown", tecla);
+    document.addEventListener(EVENTO_AJUDA, pedido);
+    return () => {
+      document.removeEventListener("keydown", tecla);
+      document.removeEventListener(EVENTO_AJUDA, pedido);
+    };
   }, []);
 
   const verTutorial = (tu: TipoTutorial) => {
@@ -229,18 +244,20 @@ export function Tutorial({ usuario, vistos: vistosServidor, permitidas: lista, m
 
   return (
     <>
-      <button
-        type="button"
-        data-tour="ajuda"
-        onClick={() => setAberto((v) => !v)}
-        aria-expanded={aberto}
-        aria-haspopup="dialog"
-        aria-label="Ajuda e tutoriais"
-        title="Ajuda e tutoriais (?)"
-        className={`ajuda-flutuante cristal grid size-12 place-items-center rounded-full text-texto transition-transform duration-200 ease-mola active:scale-[0.92] ${comGeral ? "" : "ajuda-sem-abas"}`}
-      >
-        {aberto ? <X size={20} strokeWidth={2} aria-hidden /> : <CircleHelp size={22} strokeWidth={1.9} aria-hidden />}
-      </button>
+      {botaoFlutuante && (
+        <button
+          type="button"
+          data-tour="ajuda"
+          onClick={() => setAberto((v) => !v)}
+          aria-expanded={aberto}
+          aria-haspopup="dialog"
+          aria-label="Ajuda e tutoriais"
+          title="Ajuda e tutoriais (?)"
+          className="ajuda-flutuante cristal grid size-12 place-items-center rounded-full text-texto transition-transform duration-200 ease-mola active:scale-[0.92]"
+        >
+          {aberto ? <X size={20} strokeWidth={2} aria-hidden /> : <CircleHelp size={22} strokeWidth={1.9} aria-hidden />}
+        </button>
+      )}
       {aberto && (
         <PainelAjuda
           tutorial={tutorialAtual}
@@ -252,7 +269,7 @@ export function Tutorial({ usuario, vistos: vistosServidor, permitidas: lista, m
           verTutorial={verTutorial}
           refazerTodos={refazerTodos}
           trocarAutomatico={trocarAutomatico}
-          semAbas={!comGeral}
+          doCampo={!comGeral}
         />
       )}
     </>
@@ -265,7 +282,7 @@ function PainelAjuda({
   master,
   automatico,
   comGeral,
-  semAbas,
+  doCampo,
   aoFechar,
   verTutorial,
   refazerTodos,
@@ -276,7 +293,7 @@ function PainelAjuda({
   master: boolean;
   automatico: boolean;
   comGeral: boolean;
-  semAbas: boolean;
+  doCampo: boolean;
   aoFechar: () => void;
   verTutorial: (tu: TipoTutorial) => void;
   refazerTodos: () => void;
@@ -311,7 +328,7 @@ function PainelAjuda({
       ref={ref}
       role="dialog"
       aria-labelledby={idTitulo}
-      className={`ajuda-painel popover flex flex-col overflow-hidden rounded-3xl border border-borda shadow-[var(--sombra)] ${semAbas ? "ajuda-sem-abas" : ""}`}
+      className={`ajuda-painel popover flex flex-col overflow-hidden rounded-3xl border border-borda shadow-[var(--sombra)] ${doCampo ? "ajuda-campo" : ""}`}
     >
       <header className="flex items-start justify-between gap-3 border-b border-linha px-5 pt-4 pb-3">
         <div className="min-w-0">

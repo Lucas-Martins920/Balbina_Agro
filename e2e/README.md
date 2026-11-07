@@ -11,11 +11,12 @@ Testam o app inteiro pelo navegador, com Supabase Auth e banco de verdade:
 | `financeiro.spec.ts` | conta a pagar agendada → extrato OFX importado → conciliado com a sugestão |
 | `api.spec.ts` | chave da API criada na tela, escopos (200/403), sem chave e chave inválida (401), revogada (401) |
 | `login-local.spec.ts` | login por usuário criado pelo master: tratador sem 2º fator cai no `/campo`, financeiro cadastra o autenticador |
-| `tela-celular.spec.ts` | trato do turno na aba Ração do `/campo` com sinal, sem sinal (fila no aparelho) e depois de recarregar a tela; conflito de turno resolvido na aba Envios |
+| `tela-celular.spec.ts` | trato do turno na aba Ração do `/campo` com sinal, sem sinal (fila no aparelho) e depois de recarregar a tela; conflito de turno resolvido na aba Envios; biometria sem sinal guardada no IndexedDB e enviada sozinha quando a internet volta, sem recarregar |
 | `rotina.spec.ts` | Rotina do dia marca sozinha o lançamento do viveiro e deixa a biometria atrasada pendente; o link `?lancar=` abre a gaveta do lançamento; "+ Novo produto" cadastra de dentro da entrada e já escolhe |
 | `telas.spec.ts` | fumaça: cada tela do menu abre sem erro 500 nem erro de JavaScript; master cria cargo |
 | `vendas-pontos.spec.ts` | ponto de venda: cadastro, transferência de kg de peixe com frete e venda no PDV do ponto |
 | `vendas-prazo.spec.ts` | venda a prazo 14/28: faturar, desfazer faturamento, entregar, desfazer entrega, receber e recusa de desfazer com recebimento |
+| `offline.spec.ts` | sistema sem internet: tela guardada abre com aviso, telas do menu guardadas de antemão, tela nunca aberta lista as guardadas, sair apaga as telas; chat responde pela base do celular (nada gravado no servidor: roda antes de `rotina`) |
 | `vendedor.spec.ts` | app do vendedor: pedido com sinal e sem sinal (fila no aparelho) |
 
 Os arquivos rodam em ordem alfabética, um de cada vez, na mesma piscicultura: `vendas-pontos` e `vendas-prazo` usam o

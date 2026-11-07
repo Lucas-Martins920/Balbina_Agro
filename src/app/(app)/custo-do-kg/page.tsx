@@ -11,7 +11,7 @@ import { exigirAcesso } from "@/lib/permissoes";
 
 const COMPONENTES = [
   ["racao_cents", "Ração"],
-  ["alevinos_cents", "Alevinos (amortização)"],
+  ["alevinos_cents", "Alevinos e juvenis"],
   ["sanidade_cents", "Sanidade"],
   ["mao_obra_cents", "Mão de obra"],
   ["energia_cents", "Energia"],

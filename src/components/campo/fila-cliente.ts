@@ -1,47 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   chaveEnviados, chaveFila, desfecho, lerFila, marcaDoItem, prontosParaEnvio, registrarEnviado, rotaDoItem,
   type Enviado, type ItemFila,
 } from "@/lib/campo/fila";
+import { gravarItem, lerItem } from "@/lib/db/indexeddb";
+import { useItemArmazenado } from "@/lib/db/use-armazem";
+import { marcarSemRede } from "@/lib/sync/detector";
+import { useTarefaSync } from "@/lib/sync/navegador";
+import { liberar, registrarFalha } from "@/lib/sync/queue";
 
-// A fila mora no localStorage do celular e a tela assina as mudanças (inclusive de outra aba).
-const EVENTO = "balbina-campo-fila";
-
-function lerTexto(chave: string, padrao: string) {
-  try {
-    return localStorage.getItem(chave) ?? padrao;
-  } catch {
-    return padrao; // aba anônima, armazenamento bloqueado
-  }
-}
-
-function gravar(chave: string, valor: unknown) {
-  let ok = true;
-  try {
-    localStorage.setItem(chave, JSON.stringify(valor));
-  } catch {
-    ok = false; // cota cheia
-  }
-  window.dispatchEvent(new Event(EVENTO));
-  return ok;
-}
-
-function useArmazenado(chave: string) {
-  return useSyncExternalStore(
-    (cb) => {
-      window.addEventListener(EVENTO, cb);
-      window.addEventListener("storage", cb);
-      return () => {
-        window.removeEventListener(EVENTO, cb);
-        window.removeEventListener("storage", cb);
-      };
-    },
-    () => lerTexto(chave, "[]"),
-    () => "[]",
-  );
-}
+// A fila mora no armazém do aparelho (IndexedDB) e a tela assina as mudanças (inclusive de outra aba).
+const lerTexto = (chave: string, padrao: string) => lerItem(chave) ?? padrao;
+const gravar = (chave: string, valor: unknown) => gravarItem(chave, JSON.stringify(valor));
 
 // muda só os itens indicados, relendo a fila (pode ter entrado envio novo nesse meio tempo)
 function alterar(chave: string, mudar: (i: ItemFila) => ItemFila | null) {
@@ -61,11 +33,13 @@ export type EstadoFila = {
 };
 
 // Fila de envios do app de campo. Envia na ordem em que foi lançada (o lote aberto chega antes da ração dele).
-export function useFilaCampo(empresa: string, online: boolean, aoEnviar?: (n: number) => void): EstadoFila {
+// A sincronização roda sozinha a cada 5 s com internet (src/lib/sync/worker.ts) e, no Android, também com o app
+// fechado (Background Sync do service worker).
+export function useFilaCampo(empresa: string, aoEnviar?: (n: number) => void): EstadoFila {
   const kFila = chaveFila(empresa);
   const kEnviados = chaveEnviados(empresa);
-  const brutoFila = useArmazenado(kFila);
-  const brutoEnviados = useArmazenado(kEnviados);
+  const brutoFila = useItemArmazenado(kFila, "[]");
+  const brutoEnviados = useItemArmazenado(kEnviados, "[]");
   const fila = useMemo(() => lerFila(brutoFila), [brutoFila]);
   const enviados = useMemo<Enviado[]>(() => {
     try {
@@ -114,9 +88,11 @@ export function useFilaCampo(empresa: string, online: boolean, aoEnviar?: (n: nu
         const tentativas = (item.tentativas ?? 0) + 1;
         mudancas.set(item.client_id, d.tipo === "conflito"
           ? { erro: d.erro, conflito: d.existentes, parado: true, tentativas }
-          : { erro: d.erro, parado: d.parado, tentativas });
+          : d.parado ? { erro: d.erro, parado: true, tentativas }
+          : registrarFalha(item, d.erro, Date.now())); // servidor fora: tenta de novo mais tarde, até o limite
       } catch {
-        break; // caiu o sinal no meio: o resto fica para a próxima rodada
+        marcarSemRede(); // caiu o sinal no meio: o resto fica para quando a internet voltar
+        break;
       }
     }
     const ids = new Set(feitos.map((f) => f.client_id));
@@ -138,19 +114,8 @@ export function useFilaCampo(empresa: string, online: boolean, aoEnviar?: (n: nu
     return feitos.length;
   }, [kFila, kEnviados]);
 
-  // ao abrir, quando o sinal volta, quando a tela volta para a frente e a cada minuto
-  useEffect(() => {
-    if (!online) return;
-    const t = setTimeout(() => void sincronizar(), 0);
-    const visivel = () => document.visibilityState === "visible" && void sincronizar();
-    document.addEventListener("visibilitychange", visivel);
-    const intervalo = setInterval(() => void sincronizar(), 60_000);
-    return () => {
-      clearTimeout(t);
-      clearInterval(intervalo);
-      document.removeEventListener("visibilitychange", visivel);
-    };
-  }, [online, sincronizar]);
+  // ao abrir, a cada 5 s com internet, quando a internet volta e quando a tela volta para a frente
+  useTarefaSync(`campo:${empresa}`, sincronizar, () => prontosParaEnvio(lerFila(lerTexto(kFila, "[]"))).length > 0);
 
   const enfileirar = useCallback((item: ItemFila) => {
     const ok = gravar(kFila, [...lerFila(lerTexto(kFila, "[]")), item]);
@@ -159,7 +124,7 @@ export function useFilaCampo(empresa: string, online: boolean, aoEnviar?: (n: nu
   }, [kFila, sincronizar]);
 
   const reenviar = useCallback((clientId: string, mudar: (i: ItemFila) => ItemFila = (i) => i) => {
-    alterar(kFila, (i) => (i.client_id === clientId ? { ...mudar(i), erro: undefined, conflito: undefined, parado: undefined } : i));
+    alterar(kFila, (i) => (i.client_id === clientId ? { ...liberar(mudar(i)), conflito: undefined } : i));
     setTimeout(() => void sincronizar(), 0);
   }, [kFila, sincronizar]);
 
@@ -170,18 +135,7 @@ export function useFilaCampo(empresa: string, online: boolean, aoEnviar?: (n: nu
 
 // Preferência guardada no celular (kg do saco, última aba): lê sem quebrar a renderização do servidor.
 export function usePreferencia<T extends string | number>(chave: string, padrao: T): [T, (v: T) => void] {
-  const bruto = useSyncExternalStore(
-    (cb) => {
-      window.addEventListener(EVENTO, cb);
-      window.addEventListener("storage", cb);
-      return () => {
-        window.removeEventListener(EVENTO, cb);
-        window.removeEventListener("storage", cb);
-      };
-    },
-    () => lerTexto(chave, ""),
-    () => "",
-  );
+  const bruto = useItemArmazenado(chave, "");
   let valor = padrao;
   if (bruto) {
     try {

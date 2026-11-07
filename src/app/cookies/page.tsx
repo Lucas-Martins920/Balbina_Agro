@@ -25,7 +25,8 @@ export default function PaginaCookies() {
         <li><strong>Sessão de login</strong> (cookies <code>sb-…-auth-token</code>, do Supabase): mantém você conectado e protege o acesso aos dados. Duram enquanto a sessão estiver ativa e são apagados ao sair.</li>
         <li><strong>Empresa escolhida</strong> (cookie <code>empresa_id</code>): lembra qual piscicultura você está usando quando tem acesso a mais de uma. Apagado ao fechar o navegador.</li>
         <li><strong>Aparência</strong> (localStorage <code>balbina-tema</code>): lembra se você prefere o modo dia ou noturno.</li>
-        <li><strong>Apontamentos sem internet</strong> (localStorage do app de campo): guarda os apontamentos feitos no viveiro sem sinal até que sejam enviados.</li>
+        <li><strong>Lançamentos sem internet</strong> (IndexedDB <code>balbina</code>, no app de campo e no do vendedor): guarda os apontamentos, pedidos e a conversa do chat feitos sem sinal até que sejam enviados.</li>
+        <li><strong>Telas para abrir sem internet</strong> (cache do service worker): guarda as telas já abertas para consultar sem sinal; é apagado ao sair da conta.</li>
         <li><strong>Caixa do PDV</strong> (localStorage <code>balbina.pdv.conta</code>): lembra a conta de caixa usada no balcão.</li>
         <li><strong>Aviso de cookies</strong> (localStorage <code>balbina.aviso-cookies</code>): registra que você já viu o aviso.</li>
       </ul>
