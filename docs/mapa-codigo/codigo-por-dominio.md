@@ -808,7 +808,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/app/(app)/configuracoes/zerar-sistema/actions.ts](../../src/app/(app)/configuracoes/zerar-sistema/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /configuracoes/zerar-sistema.
   - `zerarSistema` *ação* L10 (usado em 1)
 - **[src/app/(app)/configuracoes/zerar-sistema/backup/route.ts](../../src/app/(app)/configuracoes/zerar-sistema/backup/route.ts)** (rota `/configuracoes/zerar-sistema/backup`) — API GET /configuracoes/zerar-sistema/backup.
-  - `GET` *função* L56
+  - `GET` *função* L58
 - **[src/app/(app)/configuracoes/zerar-sistema/form.tsx](../../src/app/(app)/configuracoes/zerar-sistema/form.tsx)** (navegador) — Confirmação em três travas: nome da empresa, a frase ZERAR TUDO e, por último, o código do autenticador, que eleva a sessão (TOTP de agora) logo antes de chamar o banco.
   - `FormZerarSistema` *componente* L13 (usado em 1)
   - internas: `normalizar` L9

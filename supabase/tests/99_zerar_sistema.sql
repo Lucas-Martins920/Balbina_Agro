@@ -32,7 +32,7 @@ insert into apagadas values
   ('movimentos_estoque'), ('ordens_producao_racao'),
   ('lotes'), ('lote_alocacoes'), ('lote_transferencias'), ('custos_lote_mensal'), ('apontamentos_diarios'),
   ('apontamento_lancamentos'), ('apontamento_racoes'), ('apontamento_checklist'), ('apontamentos_lixeira'),
-  ('eventos_sanitarios'), ('despescas'), ('biometrias'),
+  ('eventos_sanitarios'), ('despescas'), ('biometrias'), ('leituras_sonda'),
   ('documentos'), ('documentos_recebidos'), ('lembretes_enviados'), ('sugestoes_dispensadas'),
   ('api_webhook_entregas'), ('auditorias_importacao');
 create temp table mantidas (tabela text primary key);
@@ -47,7 +47,7 @@ insert into mantidas values
   ('contatos'), ('produtos'), ('produto_embalagens'), ('classes_peixe'), ('depositos'), ('setores'), ('viveiros'),
   ('especies'), ('categorias'), ('centros_custo'), ('contas_financeiras'), ('formulas_racao'), ('medicamentos'),
   ('listas_preco'), ('tabelas_preco'), ('pontos_venda'), ('regras_conciliacao'), ('regras_fiscais'),
-  ('pedidos_fixos'), ('checklist_itens'), ('importacao_vinculos'),
+  ('pedidos_fixos'), ('checklist_itens'), ('importacao_vinculos'), ('sondas'),
   -- planejamento e orçamento
   ('lotes_planejados'), ('planejamento_parametros'), ('planejamento_custos'), ('orcamentos');
 
@@ -118,6 +118,10 @@ select completar_lancamento(current_setting('t.l1')::uuid,
   '[{"produto_id":"9af00000-0000-0000-0000-0000000000c1","kg":1200}]',
   (select jsonb_agg(jsonb_build_object('item_id', id, 'ok', true, 'valor', 25)) from checklist_itens where empresa_id = current_setting('t.emp')::uuid));
 select registrar_biometria(current_setting('t.emp')::uuid, '9af00000-0000-0000-0000-0000000000b2', current_date - 1, 50, null, 350);
+-- sonda (cadastro, fica) com leituras (movimento, sai no zerar)
+insert into sondas (empresa_id, viveiro_id, nome) values (current_setting('t.emp')::uuid, '9af00000-0000-0000-0000-0000000000b2', 'Sonda 1');
+insert into leituras_sonda (sonda_id, empresa_id, oxigenio_mg_l, temperatura_c, ph)
+  select id, empresa_id, 5.2, 28.1, 7.0 from sondas where empresa_id = current_setting('t.emp')::uuid;
 select registrar_despesca(current_setting('t.emp')::uuid, '9af00000-0000-0000-0000-0000000000b2', current_date, 'parcial', 3600, 1200,
   jsonb_build_object((select id from classes_peixe where empresa_id = current_setting('t.emp')::uuid and nome = 'Extra'), 3600));
 

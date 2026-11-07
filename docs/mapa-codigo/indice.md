@@ -1053,7 +1053,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `gerarTokenConexao` | ação | `src/app/(app)/conciliacao/open-finance-actions.ts:28` | Financeiro | 1 arquivo |
 | `GET` | função | `src/app/(app)/configuracoes/importar/modelo/route.ts:8` | Importação | — |
 | `GET` | função | `src/app/(app)/configuracoes/zerar-financeiro/backup/route.ts:24` | Financeiro | — |
-| `GET` | função | `src/app/(app)/configuracoes/zerar-sistema/backup/route.ts:56` | Financeiro | — |
+| `GET` | função | `src/app/(app)/configuracoes/zerar-sistema/backup/route.ts:58` | Financeiro | — |
 | `GET` | função | `src/app/(app)/notas/recebidas/[id]/xml/route.ts:6` | Fiscal | — |
 | `GET` | função | `src/app/(app)/relatorios/apresentacao/route.ts:12` | Planejamento, previsões, custo do kg e relatórios | — |
 | `GET` | função | `src/app/(app)/relatorios/contador/baixar/route.ts:9` | Planejamento, previsões, custo do kg e relatórios | — |
