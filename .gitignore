@@ -50,6 +50,9 @@ next-env.d.ts
 /playwright-report/
 /test-results/
 
+# bancos SQLite locais (nunca versionar dados de teste ou reais)
+*.db
+
 # Supabase local (npm run local)
 supabase/.branches/
 supabase/.temp/

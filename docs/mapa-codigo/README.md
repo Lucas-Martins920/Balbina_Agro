@@ -111,8 +111,7 @@ Resumo: 533 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2199 funç
 | `docs/legado/balbina-v1` | 8 |  |
 | `docs/legado/finavi` | 4 |  |
 | `docs/legado/finavi/replica` | 3 |  |
-| `e2e` | 23 | Testes de ponta a ponta com Playwright (npm run test:e2e). |
-| `e2e/.estado` | 4 |  |
+| `e2e` | 19 | Testes de ponta a ponta com Playwright (npm run test:e2e). |
 | `public` | 6 | Arquivos estáticos (ícones, service worker do modo offline). |
 | `scripts` | 11 | Scripts de apoio: rodar local, backup, testes do banco, aplicar migrations, este mapa. |
 | `src` | 535 | Todo o código do app Next.js (telas, componentes, regras em TypeScript). |
@@ -286,9 +285,7 @@ Resumo: 533 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2199 funç
 | `src/lib/db` | 3 |  |
 | `src/lib/supabase` | 8 | Clientes do Supabase: server.ts (servidor com sessão), client.ts (navegador), admin.ts (chave de serviço), proxy.ts (sessão no proxy). |
 | `src/lib/sync` | 5 |  |
-| `supabase` | 210 | Banco de dados Supabase (Postgres). |
-| `supabase/.branches` | 1 |  |
-| `supabase/.temp` | 1 |  |
+| `supabase` | 208 | Banco de dados Supabase (Postgres). |
 | `supabase/migrations` | 120 | Migrations SQL em ordem de data. Tabelas, views, funções, triggers e policies (RLS). Nunca editar uma antiga: criar outra. |
 | `supabase/seed` | 1 |  |
 | `supabase/templates` | 1 |  |

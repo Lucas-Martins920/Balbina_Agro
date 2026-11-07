@@ -16,12 +16,8 @@ const eslintConfig = defineConfig([
     ".claude/**",
     // App de celular (Expo): tem lint e tsconfig próprios em mobile/.
     "mobile/**",
-    // Código antigo do Balbina, guardado só como referência (na raiz ficaram os builds dele:
-    // balbina-campo/android e os dist, código gerado que não é nosso para corrigir).
+    // Código antigo do Balbina, guardado só como referência.
     "docs/legado/**",
-    "balbina-backend/**",
-    "balbina-campo/**",
-    "balbina-gestao/**",
   ]),
 ]);
 
