@@ -83,6 +83,11 @@ jobs:
           if [ "$BANCO" = producao ]; then url="$URL_PRODUCAO"; nome=SUPABASE_DB_URL; else url="$URL_TESTES"; nome=SUPABASE_DB_URL_TESTES; fi
           echo "Banco: $BANCO"
           if [ -z "$url" ]; then
+            if [ "$BANCO" = producao ]; then
+              # na produção, falta do secret é erro: o job não pode passar verde sem aplicar nada
+              echo "::error::Secret $nome não cadastrado; nada foi aplicado no banco de producao."
+              exit 1
+            fi
             echo "::warning::Secret $nome não cadastrado; nada foi aplicado no banco de $BANCO."
             echo "pular=1" >> "$GITHUB_ENV"
             exit 0
