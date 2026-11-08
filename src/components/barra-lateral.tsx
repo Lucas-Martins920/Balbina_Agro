@@ -260,9 +260,11 @@ export function BarraLateral({ dados, movel = false }: { dados: DadosBarra; move
   // Grupos abertos: começa com o da tela atual e abre o novo quando a tela muda (ajuste durante a renderização,
   // sem efeito, como a documentação do React recomenda).
   const [abertos, setAbertos] = useState<Set<string>>(() => new Set(grupoDaTela ? [grupoDaTela] : []));
-  useEffect(() => {
+  const [grupoAnterior, setGrupoAnterior] = useState(grupoDaTela);
+  if (grupoAnterior !== grupoDaTela) {
+    setGrupoAnterior(grupoDaTela);
     setAbertos((a) => sincronizarGruposAbertos(a, grupoDaTela));
-  }, [grupoDaTela]);
+  }
   const alternarGrupo = (nome: string, abrir?: boolean) =>
     setAbertos((a) => {
       const n = new Set(a);
