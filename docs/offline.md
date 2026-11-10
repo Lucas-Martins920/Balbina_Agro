@@ -43,6 +43,10 @@ Quando a internet volta, o aviso some, a tela busca os números novos sozinha e 
 
 ## Telas guardadas: service worker (`public/sw.js`)
 
+No `npm run dev` o service worker fica desligado (e o que um dev antigo deixou registrado é removido): o "aquecer"
+obrigava o Turbopack a compilar todas as telas do menu. Para testar o offline, use `npm run build && npm run start`
+(é o que o E2E faz) ou ponha `NEXT_PUBLIC_SW_DEV=1` no `.env.local`. Detalhes em `docs/ambiente-leve.md`.
+
 - Arquivos estáticos (`/_next/static`, ícones): cache primeiro.
 - Toda navegação de página (menos `/api`, `/auth`, `/login` e as telas de cadastro/assinatura): rede primeiro, e se a
   rede cair ou demorar (6 s no campo/vendedor, 8 s no escritório), a última versão guardada.

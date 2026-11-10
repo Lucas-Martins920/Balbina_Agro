@@ -712,9 +712,9 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `EscolhaPermissoes` *componente* L17 (usado em 1) · `ColunaMatriz` *tipo* L118 (usado em 1) · `nivelDoModulo` *função* L123 · `MatrizPermissoes` *componente* L150
   - internas: `acessoDe` L12 · `CapsulaPermissao` L100 · `Legenda` L138
 - **[src/lib/aceite-termos.ts](../../src/lib/aceite-termos.ts)** — IP e navegador de quem aceitou, como prova do aceite. A Vercel põe o IP real em x-forwarded-for.
-  - `origemDoPedido` *função* L9 · `registrarAceite` *função* L17 (usado em 2) · `exigirAceiteTermos` *função* L25 (usado em 5)
-- **[src/lib/auth.ts](../../src/lib/auth.ts)**
-  - `Usuario` *tipo* L5 · `getUsuario` *função* L7 (usado em 10)
+  - `origemDoPedido` *função* L10 · `registrarAceite` *função* L18 (usado em 2) · `exigirAceiteTermos` *função* L26 (usado em 5)
+- **[src/lib/auth.ts](../../src/lib/auth.ts)** — Claims da sessão, uma vez por requisição: o layout, o aceite dos termos e a página pedem as mesmas claims. Com chave HS256 (o Supabase local), cada getClaims() vira uma ida ao Auth; o cache() do React junta todas numa s…
+  - `Usuario` *tipo* L6 · `getClaimsDaSessao` *função* L10 (usado em 1) · `getUsuario` *função* L16 (usado em 10)
 - **[src/lib/cripto.ts](../../src/lib/cripto.ts)** — Token de webhook: guardamos só o hash; o Asaas manda o token e comparamos os hashes.
   - `cifrar` *função* L10 (usado em 4) · `decifrar` *função* L17 (usado em 4) · `hashToken` *função* L26 (usado em 5) · `tokenConfereHash` *função* L30 (usado em 2) · `novoToken` *função* L37 (usado em 2)
   - internas: `chaveMestra` L5
@@ -995,8 +995,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `AvisosPush` *componente* L14 (usado em 1)
   - internas: `chaveBytes` L8
 - **[src/components/barra-lateral.tsx](../../src/components/barra-lateral.tsx)** (navegador)
-  - `DadosBarra` *tipo* L64 (usado em 1) · `BarraLateral` *componente* L248 (usado em 1)
-  - internas: `corTexto` L53 · `semAssinatura` L55 · `ehMac` L56 · `assinarMouse` L57 · `temMouse` L62 · `Cracha` L74 · `Avatar` L85 · `CabecalhoEmpresa` L104 · `ItemLinkAberto` L142 · `ItemGrupoAberto` L153 · `Rotulo` L200 · `MenuPerfil` L205 · `useFecharFora` L231
+  - `DadosBarra` *tipo* L64 (usado em 1) · `BarraLateral` *componente* L251 (usado em 1)
+  - internas: `corTexto` L53 · `semAssinatura` L55 · `ehMac` L56 · `assinarMouse` L57 · `temMouse` L62 · `Cracha` L74 · `Avatar` L85 · `CabecalhoEmpresa` L104 · `ItemLinkAberto` L142 · `ItemGrupoAberto` L153 · `Rotulo` L203 · `MenuPerfil` L208 · `useFecharFora` L234
 - **[src/components/cadastro.tsx](../../src/components/cadastro.tsx)** (navegador) — Fecha o painel lateral aberto pela lista, com um aviso curto opcional (para conteúdo de painel que não é FormPainel).
   - `PainelContexto` *constante* L18 (usado em 1) · `useFecharPainel` *hook* L21 (usado em 1) · `LinhaCadastro` *tipo* L25 (usado em 1) · `EmLote` *tipo* L43 · `AcaoRapida` *tipo* L49 · `ListaCadastro` *componente* L53 (usado em 14) · `BotaoLote` *componente* L290 (usado em 1) · `AvisoFlutuante` *componente* L328 (usado em 1) · `useAvisoCurto` *hook* L339 (usado em 1) · `PainelLateral` *componente* L381 (usado em 2) · `FormPainel` *componente* L439 (usado em 15) · `SecaoForm` *componente* L500 (usado em 15) · `Marcar` *componente* L509 (usado em 10) · `AbasFiltro` *componente* L522 (usado em 10)
   - internas: `ordenarLinhas` L350 · `CabecalhoSecao` L365
@@ -1013,8 +1013,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/components/nova-senha.tsx](../../src/components/nova-senha.tsx)** (navegador) — Senha nova com confirmação, para quem já tem sessão (convite ou "esqueci minha senha").
   - `FormNovaSenha` *componente* L8 (usado em 2)
 - **[src/components/offline.tsx](../../src/components/offline.tsx)** (navegador)
-  - `useServiceWorker` *hook* L21 (usado em 2) · `ModoOffline` *componente* L54 (usado em 1)
-  - internas: `guardarArquivos` L16 · `useAquecerTelas` L38
+  - `useServiceWorker` *hook* L31 (usado em 2) · `ModoOffline` *componente* L65 (usado em 1)
+  - internas: `guardarArquivos` L16 · `desligarServiceWorker` L27 · `useAquecerTelas` L49
 - **[src/components/opcoes-viveiro.tsx](../../src/components/opcoes-viveiro.tsx)** — Opções de um select de viveiro agrupadas por finalidade (alevinagem, recria, engorda). `bloqueio` devolve o motivo de um viveiro não poder ser escolhido (ex.: ocupado por outro lote).
   - `ViveiroOpcao` *tipo* L4 (usado em 2) · `OpcoesViveiro` *componente* L8 (usado em 2)
 - **[src/components/ordenar.tsx](../../src/components/ordenar.tsx)** (navegador)
@@ -1089,8 +1089,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `ViveiroFaltando` *tipo* L5 (usado em 1) · `textoLembrete` *função* L7 (usado em 2) · `Resumo` *tipo* L16 (usado em 1) · `textoResumo` *função* L25 (usado em 2) · `textoPacoteContador` *função* L44 (usado em 2)
   - internas: `moeda` L21 · `plural` L22 · `nomeMes` L41
 - **[src/lib/menu.ts](../../src/lib/menu.ts)** — Estrutura da barra lateral (src/components/barra-lateral.tsx), sem React, para testar sem navegador. Os grupos de módulos (src/lib/modulos.ts) ficam em três seções, como no desenho de referência: Principal (Painel e Rot…
-  - `Link` *tipo* L7 (usado em 1) · `Grupo` *tipo* L8 (usado em 1) · `Secao` *tipo* L9 (usado em 1) · `MODULOS_CELULAR` *constante* L12 · `USUARIOS` *constante* L19 · `montarMenu` *função* L21 (usado em 3) · `estaAtivo` *função* L46 (usado em 1) · `hrefAtivo` *função* L51 (usado em 1) · `grupoAtivo` *função* L55 (usado em 2) · `Tela` *tipo* L62 · `buscarTelas` *função* L65 (usado em 2)
-  - internas: `normalizar` L60
+  - `Link` *tipo* L7 (usado em 1) · `Grupo` *tipo* L8 (usado em 1) · `Secao` *tipo* L9 (usado em 1) · `MODULOS_CELULAR` *constante* L12 · `USUARIOS` *constante* L19 · `montarMenu` *função* L21 (usado em 3) · `estaAtivo` *função* L46 (usado em 1) · `hrefAtivo` *função* L51 (usado em 1) · `grupoAtivo` *função* L55 (usado em 2) · `sincronizarGruposAbertos` *função* L60 (usado em 2) · `Tela` *tipo* L68 · `buscarTelas` *função* L71 (usado em 2)
+  - internas: `normalizar` L66
 - **[src/lib/modulos.ts](../../src/lib/modulos.ts)** — Mapa de navegação. `marco` diz em que etapa do plano original do FINAVI (docs/legado/finavi/replica/architecture.md) o módulo ficou pronto.
   - `Modulo` *tipo* L2 · `GrupoModulos` *tipo* L13 · `GRUPOS` *constante* L15 (usado em 5) · `podeVerModulo` *função* L90 (usado em 1) · `encontrarModulo` *função* L94 (usado em 3)
 - **[src/lib/ordem.ts](../../src/lib/ordem.ts)** — Ordem das categorias e dos centros de custo escolhida pela piscicultura (arrastando na lista, como no NIBO). No banco a ordem vale entre irmãos; aqui a árvore vira lista plana: pai, filhos dele, próximo pai.

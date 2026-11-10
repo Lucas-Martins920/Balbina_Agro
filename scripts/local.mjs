@@ -4,16 +4,23 @@
 //   npm run local          instala as dependências se o package-lock.json mudou, sobe o banco local, aplica as migrations novas, ajusta o .env.local e abre o npm run dev
 //   npm run local:parar    desliga o banco local (os dados ficam guardados para a próxima vez)
 //   npm run local:zerar    apaga os dados do banco local e reaplica todas as migrations
+//   npm run dev:iniciar    o mesmo do npm run local no modo leve, para notebook de 8 GB (docs/ambiente-leve.md)
 // Na primeira vez (e depois de cada local:zerar) cria a conta de teste pronta para entrar (CONTA_TESTE abaixo).
 // Funciona no Windows (PowerShell/CMD), no macOS e no Linux; precisa do Node e do Docker Desktop ligado.
 import { spawnSync, spawn } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
 import { randomBytes, createHash } from "node:crypto";
+import { aplicarLimites } from "./limites-docker.mjs";
 
 // mesma versão do CLI que o CI usa (.github/workflows/verificacao.yml)
 const SUPABASE = ["--yes", "supabase@2.122.0"];
 // serviços que o app não usa: sobem mais rápido e gastam menos memória (o Studio fica, para ver os dados)
 const SEM = "realtime,storage-api,imgproxy,edge-runtime,logflare,vector,supavisor";
+// Modo leve (BALBINA_DEV_LEVE=1, posto pelo npm run dev:iniciar): também sem o Studio, o postgres-meta e o Mailpit
+// (~400 MB a menos); --studio traz o Studio de volta. No next.config.ts o Turbopack devolve memória após compilar.
+const LEVE = process.env.BALBINA_DEV_LEVE === "1";
+const COM_STUDIO = process.argv.includes("--studio");
+const EXCLUIR = LEVE && !COM_STUDIO ? `${SEM},studio,postgres-meta,mailpit` : SEM;
 const ENV = ".env.local";
 // todo projeto Supabase na nuvem é a produção
 const BANCO_NA_NUVEM = /https:\/\/[a-z0-9]+\.supabase\.co/;
@@ -144,7 +151,10 @@ async function prepararContaTeste(url, chavePublica, chaveSecreta) {
 instalarDependencias();
 
 console.log("1/4 Subindo o banco local (na primeira vez baixa as imagens do Docker, leva alguns minutos)...");
-if (supabase(["start", "-x", SEM]).status !== 0) parar("O Supabase local não subiu. Veja a mensagem acima (docs/rodar-local.md, seção Problemas).");
+if (supabase(["start", "-x", EXCLUIR]).status !== 0) parar("O Supabase local não subiu. Veja a mensagem acima (docs/rodar-local.md, seção Problemas).");
+
+console.log("  Limites de RAM e CPU nos contêineres (scripts/limites-docker.mjs):");
+aplicarLimites();
 
 console.log("2/4 Aplicando as migrations novas...");
 if (supabase(["migration", "up", "--local"]).status !== 0) parar("Uma migration falhou. Se o banco local estiver bagunçado, rode npm run local:zerar.");
@@ -178,7 +188,12 @@ try {
 
 console.log("4/4 Abrindo o app. Quando aparecer \"Ready\", abra http://localhost:3000 no navegador.");
 console.log(`    Entrar com: ${CONTA_TESTE.email} / senha ${CONTA_TESTE.senha}`);
-console.log(`    E-mails (código do 2º fator, se você ligar): ${vars.MAILPIT_URL ?? vars.INBUCKET_URL ?? "http://127.0.0.1:54324"}`);
-console.log(`    Dados do banco: ${vars.STUDIO_URL ?? "http://127.0.0.1:54323"} (Supabase Studio). Para sair: Ctrl+C.\n`);
-const dev = spawn("npx", ["next", "dev"], { stdio: "inherit", shell: windows });
+if (vars.MAILPIT_URL ?? vars.INBUCKET_URL) console.log(`    E-mails (código do 2º fator, se você ligar): ${vars.MAILPIT_URL ?? vars.INBUCKET_URL}`);
+if (vars.STUDIO_URL) console.log(`    Dados do banco: ${vars.STUDIO_URL} (Supabase Studio).`);
+else console.log("    Modo leve: sem Studio e sem Mailpit (npm run dev:iniciar -- --studio traz o Studio).");
+console.log(`    Para sair: Ctrl+C${LEVE ? " (e npm run dev:parar para desligar tudo)" : ""}.\n`);
+// No modo leve o heap do Node do next dev tem teto: se passar, o next dev para com erro de memória (rode de novo)
+// em vez de empurrar o Linux para o swap e travar a máquina inteira.
+const envDev = LEVE ? { ...process.env, NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ""} --max-old-space-size=2560`.trim() } : process.env;
+const dev = spawn("npx", ["next", "dev"], { stdio: "inherit", shell: windows, env: envDev });
 dev.on("exit", (codigo) => process.exit(codigo ?? 0));

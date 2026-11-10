@@ -122,6 +122,7 @@
 - [src/lib/db/indexeddb.test.ts](../../src/lib/db/indexeddb.test.ts) — Testes de src/lib/db/indexeddb.ts.
 - [src/lib/documento.test.ts](../../src/lib/documento.test.ts) — Testes de src/lib/documento.ts.
 - [src/lib/dre-exportar.test.ts](../../src/lib/dre-exportar.test.ts) — Testes de src/lib/dre-exportar.ts.
+- [src/lib/eslint-config.test.ts](../../src/lib/eslint-config.test.ts) — Testes.
 - [src/lib/estoque-carrinho.test.ts](../../src/lib/estoque-carrinho.test.ts) — Testes de src/lib/estoque-carrinho.ts.
 - [src/lib/fala-apontamento.test.ts](../../src/lib/fala-apontamento.test.ts) — Testes de src/lib/fala-apontamento.ts.
 - [src/lib/fluxo.test.ts](../../src/lib/fluxo.test.ts) — Testes de src/lib/fluxo.ts.
@@ -207,6 +208,9 @@
 | `npm run local` | `node scripts/local.mjs` |
 | `npm run local:parar` | `node scripts/local.mjs parar` |
 | `npm run local:zerar` | `node scripts/local.mjs zerar` |
+| `npm run dev:iniciar` | `bash scripts/dev-iniciar.sh` |
+| `npm run dev:parar` | `bash scripts/dev-parar.sh` |
+| `npm run dev:status` | `node scripts/limites-docker.mjs --ver` |
 | `npm run build` | `next build` |
 | `npm run start` | `next start` |
 | `npm run lint` | `eslint` |
@@ -222,7 +226,10 @@
 - [scripts/aplicar-migracoes.sh](../../scripts/aplicar-migracoes.sh) — Aplica no banco as migrations de supabase/migrations que ainda não rodaram.
 - [scripts/backup-banco.sh](../../scripts/backup-banco.sh) — Gera um backup cifrado do banco do Balbina.
 - [scripts/conferir-consultas.mjs](../../scripts/conferir-consultas.mjs) — Confere se o que o site (src/) e o app (mobile/src/) pedem ao banco existe depois das migrations:
+- [scripts/dev-iniciar.sh](../../scripts/dev-iniciar.sh) — Liga o ambiente de desenvolvimento no modo leve, para notebook de 8 GB no Linux (docs/ambiente-leve.md).
+- [scripts/dev-parar.sh](../../scripts/dev-parar.sh) — Desliga TUDO do ambiente de desenvolvimento e devolve a memória ao Linux (docs/ambiente-leve.md):
 - [scripts/focus-homologacao.ts](../../scripts/focus-homologacao.ts) — Teste ponta a ponta da NF-e/NFC-e no ambiente de HOMOLOGAÇÃO da Focus NFe (notas sem valor fiscal).
+- [scripts/limites-docker.mjs](../../scripts/limites-docker.mjs) — Limites rígidos de RAM e CPU nos contêineres do Supabase local (docs/ambiente-leve.md).
 - [scripts/local.mjs](../../scripts/local.mjs) — Roda o Balbina na sua máquina com um banco Supabase local (Docker), sem tocar na produção.
 - [scripts/mapa-codigo.mjs](../../scripts/mapa-codigo.mjs) — Gera o mapa do código do Balbina: onde fica cada tela, função, componente, rota de API,
 - [scripts/restaurar-backup.sh](../../scripts/restaurar-backup.sh) — Restaura um backup gerado por backup-banco.sh.
@@ -233,6 +240,7 @@
 
 ## Documentação
 
+- [docs/ambiente-leve.md](../../docs/ambiente-leve.md) — Ambiente leve (notebook de 8 GB no Linux)
 - [docs/api.md](../../docs/api.md) — API pública do Balbina (v1)
 - [docs/app-celular.md](../../docs/app-celular.md) — App Balbina para iOS e Android
 - [docs/asaas-producao.md](../../docs/asaas-producao.md) — Asaas em produção

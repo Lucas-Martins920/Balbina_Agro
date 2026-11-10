@@ -109,6 +109,7 @@ Para ver ou editar as tabelas direto: **http://127.0.0.1:54323** (Supabase Studi
 |---|---|
 | `npm run local` | sobe o banco local (e-mails em http://127.0.0.1:54324), aplica migrations novas, ajusta o `.env.local` e roda o app |
 | `npm run local:parar` | desliga o banco local (os dados ficam) |
+| `npm run dev:iniciar` / `npm run dev:parar` | modo leve para notebook de 8 GB no Linux, e desligar tudo (Docker e VS Code juntos): `docs/ambiente-leve.md` |
 | `npm run local:zerar` | apaga os dados do banco local e reaplica todas as migrations (o próximo `npm run local` recria a conta de teste) |
 | `npm run dev` | só o app, se o banco local já estiver ligado |
 | `npm test`, `npm run lint`, `npm run typecheck` | as conferências que o CI também roda |

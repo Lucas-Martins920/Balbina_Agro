@@ -26,8 +26,17 @@ const nextConfig: NextConfig = {
       { source: "/indicadores", destination: "/relatorios/indicadores", permanent: false },
     ];
   },
-  // extratos OFX de um ano passam de 1 MB
-  experimental: { serverActions: { bodySizeLimit: "6mb" } },
+  experimental: {
+    // extratos OFX de um ano passam de 1 MB
+    serverActions: { bodySizeLimit: "6mb" },
+    // Notebook com pouca RAM (npm run dev:iniciar põe BALBINA_DEV_LEVE=1; docs/ambiente-leve.md): o Turbopack devolve
+    // a memória depois de cada compilação e roda os loaders (Tailwind/PostCSS) em threads, sem um node por loader.
+    // Só vale no next dev; o build e a produção não mudam.
+    ...(process.env.BALBINA_DEV_LEVE === "1" && {
+      turbopackMemoryEviction: "full" as const,
+      turbopackPluginRuntimeStrategy: "workerThreads" as const,
+    }),
+  },
   turbopack: {
     rules: {
       "*.css": {

@@ -2,7 +2,7 @@
 
 > Gerado automaticamente por `scripts/mapa-codigo.mjs`. **Não edite à mão**: depois de mudar o código, rode `npm run mapa` e a pasta `docs/mapa-codigo/` é refeita. Em conflito de merge nesses arquivos, rode `npm run mapa` de novo e aceite o resultado.
 
-Resumo: 533 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2199 funções/componentes/tipos, 352 funções do banco, 108 tabelas, 31 views, 79 triggers, 177 policies, 121 migrations.
+Resumo: 534 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2202 funções/componentes/tipos, 352 funções do banco, 108 tabelas, 31 views, 79 triggers, 177 policies, 121 migrations.
 
 **Versão com busca (recomendada):** abra [mapa.html](mapa.html) no navegador (duplo clique no arquivo `docs/mapa-codigo/mapa.html`). Nas páginas Markdown, use Ctrl+F.
 
@@ -32,7 +32,7 @@ Resumo: 533 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2199 funç
 |---|---:|---|
 | `.github` | 4 | Configuração do GitHub (workflows do Actions, Dependabot). |
 | `.github/workflows` | 4 | GitHub Actions: Verificação (lint, tipos, testes, build, test:db, E2E e NF-e), migrations, backup e webhooks. |
-| `docs` | 182 | Documentação do projeto (fluxo de trabalho, guias, estudos, auditorias). |
+| `docs` | 184 | Documentação do projeto (fluxo de trabalho, guias, estudos, auditorias). |
 | `docs/codigo` | 7 | Documentação do código: arquitetura, convenções, banco, módulos, integrações, testes e operação. |
 | `docs/estudos` | 1 |  |
 | `docs/legado` | 156 | Referência que não vale mais: o código antigo do Balbina e os documentos do FINAVI (plano original e troca de servidor). |
@@ -113,8 +113,8 @@ Resumo: 533 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2199 funç
 | `docs/legado/finavi/replica` | 3 |  |
 | `e2e` | 19 | Testes de ponta a ponta com Playwright (npm run test:e2e). |
 | `public` | 6 | Arquivos estáticos (ícones, service worker do modo offline). |
-| `scripts` | 11 | Scripts de apoio: rodar local, backup, testes do banco, aplicar migrations, este mapa. |
-| `src` | 535 | Todo o código do app Next.js (telas, componentes, regras em TypeScript). |
+| `scripts` | 14 | Scripts de apoio: rodar local, backup, testes do banco, aplicar migrations, este mapa. |
+| `src` | 536 | Todo o código do app Next.js (telas, componentes, regras em TypeScript). |
 | `src/app` | 256 | Rotas do Next.js: cada pasta é um endereço; page.tsx é a tela, route.ts é API, actions.ts são as ações de formulário (server actions). |
 | `src/app/(app)` | 165 | Telas do sistema logado (com menu lateral). O nome entre parênteses não aparece na URL. |
 | `src/app/(app)/_cadastro-rapido` | 1 | Endereço /_cadastro-rapido. |
@@ -277,7 +277,7 @@ Resumo: 533 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2199 funç
 | `src/components` | 63 | Componentes React reutilizados pelas telas. ui.tsx tem os primitivos visuais (botões, cartões, tabelas). |
 | `src/components/campo` | 17 |  |
 | `src/components/vendas` | 9 | Componentes de vendas: PDV, nova venda, NFC-e, app do vendedor. |
-| `src/lib` | 215 | Regras e utilitários em TypeScript (cálculos puros, consultas, integrações). Arquivo .test.ts ao lado = teste. |
+| `src/lib` | 216 | Regras e utilitários em TypeScript (cálculos puros, consultas, integrações). Arquivo .test.ts ao lado = teste. |
 | `src/lib/ai` | 2 |  |
 | `src/lib/api` | 6 | Setor da API pública: catálogo de endpoints, consultas, regras e envio de webhooks. |
 | `src/lib/app-celular` | 3 |  |
@@ -285,7 +285,9 @@ Resumo: 533 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2199 funç
 | `src/lib/db` | 3 |  |
 | `src/lib/supabase` | 8 | Clientes do Supabase: server.ts (servidor com sessão), client.ts (navegador), admin.ts (chave de serviço), proxy.ts (sessão no proxy). |
 | `src/lib/sync` | 5 |  |
-| `supabase` | 209 | Banco de dados Supabase (Postgres). |
+| `supabase` | 211 | Banco de dados Supabase (Postgres). |
+| `supabase/.branches` | 1 |  |
+| `supabase/.temp` | 1 |  |
 | `supabase/migrations` | 121 | Migrations SQL em ordem de data. Tabelas, views, funções, triggers e policies (RLS). Nunca editar uma antiga: criar outra. |
 | `supabase/seed` | 1 |  |
 | `supabase/templates` | 1 |  |

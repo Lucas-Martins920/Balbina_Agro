@@ -15,6 +15,20 @@ port = 54322
 shadow_port = 54320
 major_version = 17
 
+# Postgres enxuto para notebook de 8 GB (docs/ambiente-leve.md). Vale para o banco local, o test:db e o E2E.
+# Limite de RAM/CPU dos contêineres não existe neste arquivo: o npm run local aplica com docker update
+# (scripts/limites-docker.mjs), porque o supabase stop apaga os contêineres e os limites iriam junto.
+[db.settings]
+shared_buffers = "128MB"
+effective_cache_size = "256MB"
+work_mem = "4MB"
+maintenance_work_mem = "64MB"
+max_connections = 50
+max_worker_processes = 4
+max_parallel_workers = 2
+max_parallel_workers_per_gather = 1
+max_parallel_maintenance_workers = 1
+
 [db.seed]
 enabled = false
 

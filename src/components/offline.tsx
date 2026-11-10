@@ -18,9 +18,20 @@ function guardarArquivos() {
   navigator.serviceWorker.controller?.postMessage({ tipo: "guardar", urls });
 }
 
+// No npm run dev o service worker fica desligado: o "aquecer" pede até 80 telas e cada uma obriga o Turbopack a
+// compilar a rota (minutos de CPU a 100% e GBs de RAM no notebook), e o cache de /_next/static atrapalha o HMR.
+// Para testar o offline no dev, ponha NEXT_PUBLIC_SW_DEV=1 no .env.local (ou use npm run build && npm run start).
+const SW_LIGADO = process.env.NODE_ENV !== "development" || process.env.NEXT_PUBLIC_SW_DEV === "1";
+
+// Tira do navegador o worker que um dev antigo deixou registrado (senão ele continua aquecendo telas).
+function desligarServiceWorker() {
+  navigator.serviceWorker.getRegistrations().then((rs) => rs.forEach((r) => void r.unregister())).catch(() => undefined);
+}
+
 export function useServiceWorker() {
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
+    if (!SW_LIGADO) return desligarServiceWorker();
     navigator.serviceWorker.register("/sw.js").then(() => navigator.serviceWorker.ready).then(guardarArquivos).catch(() => undefined);
     navigator.serviceWorker.addEventListener("controllerchange", guardarArquivos);
     // pede ao navegador para não apagar o que está guardado (filas, telas) quando faltar espaço
@@ -38,7 +49,7 @@ const ESPERA_AQUECER_MS = 8_000;
 function useAquecerTelas(telas: string[], online: boolean) {
   const lista = telas.join("|");
   useEffect(() => {
-    if (!online || !("serviceWorker" in navigator) || !lista) return;
+    if (!SW_LIGADO || !online || !("serviceWorker" in navigator) || !lista) return;
     const t = setTimeout(() => {
       const ultima = Number(lerItem(CHAVE_AQUECIDO) ?? 0);
       if (Date.now() - ultima < AQUECER_A_CADA_MS) return;
