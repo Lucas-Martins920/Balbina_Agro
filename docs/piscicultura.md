@@ -80,8 +80,20 @@ abate). Se a conversão real da piscicultura destoar muito disso, ajuste a curva
 
 O estoque de ração é por entrada: cada compra recebe um número (R-1, R-2...), com fabricante, proteína bruta,
 grânulo, peso do saco, lote de fabricação, validade, preço e fornecedor. O consumo segue o **FEFO**: sai primeiro a
-ração que vence primeiro. A tela Estoque mostra as entradas com saldo na ordem de uso e marca as vencidas e as que
-vencem em até 30 dias. Medicamentos ficam na Sanidade e o pescado no estoque de pescado.
+ração que vence primeiro (empate: a que chegou antes). Uma saída pode usar várias entradas, cada uma com o seu custo.
+Ração vencida não sai no trato: só por ajuste com motivo. A tela Estoque de ração (`/racao`) mostra as entradas com
+saldo na ordem de uso, os sacos fechados e o saco aberto, a cobertura e as vencidas ou que vencem em até 30 dias.
+Medicamentos ficam na Sanidade e o pescado no estoque de pescado.
+
+**Biometria em grupos**: na beira do viveiro cada puçá ou balde é pesado à parte (peixes e kg). O peso médio é o peso
+total dividido pelo total de peixes, não a média dos grupos. A amostra sugerida é 2% do lote, entre 30 e 100 peixes
+(50 para 2.500). Anote jejum, temperatura e oxigênio: peixe alimentado ou água quente mudam o peso.
+
+**Previsão e reserva**: pela biometria, pela tabela de arraçoamento da espécie e pelo trato lançado, o sistema prevê
+o consumo de 15, 30 e 45 dias, quando a ração atual acaba e quando o peixe muda de faixa (troca de ração). Sugere uma
+reserva de até 10 sacos (ajustável) dividida entre a ração atual e a próxima, contando o prazo de entrega do
+fornecedor e a validade. Espécie sem tabela fica "sem dados técnicos": a previsão não usa os números do tambaqui.
+Tudo é recomendação; o produtor decide a compra.
 
 ## Qualidade da água
 

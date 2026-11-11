@@ -203,15 +203,15 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/app/(app)/conciliacao/campos-novo.tsx](../../src/app/(app)/conciliacao/campos-novo.tsx)** (navegador) — Campos de "Novo pagamento/recebimento" na conciliação: descrição, fornecedor/cliente (com cadastro rápido já preenchido com o nome do extrato) e, no pagamento, a entrada do produto comprado no estoque. O fornecedor guar…
   - `ContatoConciliacao` *tipo* L9 (usado em 1) · `ProdutoEstoque` *tipo* L10 · `CamposNovoLancamento` *componente* L15 (usado em 1)
 - **[src/app/(app)/lotes/[id]/page.tsx](../../src/app/(app)/lotes/%5Bid%5D/page.tsx)** (rota `/lotes/[id]`) — Tela /lotes/[id].
-  - `PaginaLote` *componente* L28
+  - `PaginaLote` *componente* L33
 - **[src/app/(app)/lotes/[id]/simulador.tsx](../../src/app/(app)/lotes/%5Bid%5D/simulador.tsx)** (navegador) — Simulador do resultado do ciclo: a pessoa muda o preço do kg e vê na hora a receita, o lucro e o preço mínimo para empatar. A conta é a mesma de resultadoCiclo (src/lib/previsao.ts), que tem teste.
   - `SimuladorCiclo` *componente* L11 (usado em 1)
 - **[src/app/(app)/lotes/[id]/viveiros.tsx](../../src/app/(app)/lotes/%5Bid%5D/viveiros.tsx)** (navegador)
   - `Alocacao` *tipo* L11 (usado em 1) · `Transferencia` *tipo* L12 (usado em 1) · `ViveirosDoLote` *componente* L97 (usado em 1)
   - internas: `inicio` L16 · `FormTransferir` L20 · `DetalheTransferencia` L71
 - **[src/app/(app)/lotes/actions.ts](../../src/app/(app)/lotes/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /lotes.
-  - `povoarLote` *ação* L23 (usado em 1) · `editarLote` *ação* L65 (usado em 1) · `excluirLote` *ação* L104 (usado em 1) · `encerrarLote` *ação* L115 (usado em 1) · `reabrirLote` *ação* L126 (usado em 1) · `registrarBiometria` *ação* L135 (usado em 1) · `excluirBiometria` *ação* L170 (usado em 1) · `criarEspecie` *ação* L179 (usado em 1) · `salvarCurva` *ação* L193 (usado em 1) · `transferirLote` *ação* L228 (usado em 1) · `desfazerTransferencia` *ação* L262 (usado em 1)
-  - internas: `lerGramas` L11 · `revalidarLotes` L17
+  - `povoarLote` *ação* L24 (usado em 1) · `editarLote` *ação* L66 (usado em 1) · `excluirLote` *ação* L105 (usado em 1) · `encerrarLote` *ação* L116 (usado em 1) · `reabrirLote` *ação* L127 (usado em 1) · `registrarBiometria` *ação* L144 (usado em 1) · `corrigirGruposBiometria` *ação* L201 (usado em 1) · `excluirBiometria` *ação* L215 (usado em 1) · `criarEspecie` *ação* L224 (usado em 1) · `salvarCurva` *ação* L238 (usado em 1) · `transferirLote` *ação* L273 (usado em 1) · `desfazerTransferencia` *ação* L307 (usado em 1)
+  - internas: `lerGramas` L12 · `revalidarLotes` L18 · `lerGruposForm` L137
 - **[src/app/(app)/lotes/especies/page.tsx](../../src/app/(app)/lotes/especies/page.tsx)** (rota `/lotes/especies`) — Tela /lotes/especies.
   - `PaginaEspecies` *componente* L10
 - **[src/app/(app)/lotes/lista.tsx](../../src/app/(app)/lotes/lista.tsx)** (navegador)
@@ -282,8 +282,9 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `RodapeFolha` *componente* L14 · `Folha` *componente* L24 (usado em 1)
 - **[src/components/campo/folhas-campo.tsx](../../src/components/campo/folhas-campo.tsx)** (navegador) — Uma gaveta só para o app inteiro: a ficha do viveiro e cada formulário trocam de conteúdo dentro dela (a ficha leva ao formulário sem fechar e abrir de novo). A versão na key começa o formulário do zero.
   - `FolhasCampo` *componente* L20 (usado em 1)
-- **[src/components/campo/form-biometria.tsx](../../src/components/campo/form-biometria.tsx)** (navegador) — Biometria por amostragem: quantos peixes foram pesados e o peso total que a balança mostrou (ou o peso médio). A tela já mostra o peso médio e quanto ele difere do estimado, para pegar erro de digitação na hora.
-  - `FormBiometria` *componente* L14 (usado em 1)
+- **[src/components/campo/form-biometria.tsx](../../src/components/campo/form-biometria.tsx)** (navegador) — Biometria por amostragem. Em grupos (padrão): cada puçá ou balde pesado vira uma linha com peixes e kg; o peso médio é o peso total ÷ os peixes (média ponderada). O rascunho fica guardado no celular (sem sinal também) a…
+  - `FormBiometria` *componente* L31 (usado em 1)
+  - internas: `CHAVE_RASCUNHO` L18 · `grupoVazio` L19 · `lerRascunho` L21
 - **[src/components/campo/form-insumo.tsx](../../src/components/campo/form-insumo.tsx)** (navegador) — Corretivo, fertilizante, medicamento e outros insumos aplicados no viveiro (com ou sem peixe). Sai do estoque do produto; medicamento segue o cadastro (dose, via e carência).
   - `FormInsumo` *componente* L20 (usado em 1)
 - **[src/components/campo/form-lote.tsx](../../src/components/campo/form-lote.tsx)** (navegador) — "Tanque 02" em 05/11/2026 -> "TANQUE02-261105": único o bastante e fácil de achar depois (dá para trocar)
@@ -295,14 +296,14 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `GraficoCrescimento` *componente* L16 (usado em 1)
   - internas: `peso` L11 · `pesoCurto` L12
 - **[src/components/campo/pecas.tsx](../../src/components/campo/pecas.tsx)** (navegador) — Peças do app de campo: alvos grandes (48px), números legíveis no sol, um toque por decisão.
-  - `CLASSE_ENTRADA` *constante* L8 · `lerNumero` *função* L12 (usado em 5) · `fmt` *função* L20 (usado em 11) · `dataCurta` *função* L23 (usado em 5) · `Rotulo` *componente* L25 · `CampoNumero` *componente* L36 (usado em 5) · `Passo` *componente* L48 (usado em 3) · `Escolha` *componente* L74 (usado em 3) · `Numero` *componente* L95 (usado em 5) · `BotaoGrande` *componente* L107 (usado em 10) · `BotaoPilula` *componente* L117 (usado em 3) · `useDoisToques` *hook* L128 (usado em 3) · `Selecao` *componente* L146 (usado em 4) · `Entrada` *componente* L158 (usado em 4) · `Observacoes` *componente* L166 (usado em 4) · `AvisoCampo` *componente* L182 (usado em 8) · `Subtitulo` *componente* L198 (usado em 4) · `hora` *função* L207 · `quando` *função* L210 (usado em 2) · `Segmentado` *componente* L221 (usado em 5)
+  - `CLASSE_ENTRADA` *constante* L8 · `lerNumero` *função* L12 (usado em 5) · `fmt` *função* L20 (usado em 11) · `dataCurta` *função* L23 (usado em 5) · `Rotulo` *componente* L25 · `CampoNumero` *componente* L36 (usado em 5) · `Passo` *componente* L48 (usado em 3) · `Escolha` *componente* L74 (usado em 3) · `Numero` *componente* L95 (usado em 5) · `BotaoGrande` *componente* L107 (usado em 10) · `BotaoPilula` *componente* L117 (usado em 4) · `useDoisToques` *hook* L128 (usado em 3) · `Selecao` *componente* L146 (usado em 4) · `Entrada` *componente* L158 (usado em 4) · `Observacoes` *componente* L166 (usado em 4) · `AvisoCampo` *componente* L182 (usado em 8) · `Subtitulo` *componente* L198 (usado em 4) · `hora` *função* L207 · `quando` *função* L210 (usado em 2) · `Segmentado` *componente* L221 (usado em 5)
 - **[src/components/campo/racao-campo.tsx](../../src/components/campo/racao-campo.tsx)** (navegador) — Aba Ração: o trato do turno viveiro por viveiro (quanto dar pela tabela, o que já foi lançado) e os insumos aplicados nos viveiros (calagem, adubação, medicamento).
   - `RacaoCampo` *componente* L13 (usado em 1)
 - **[src/components/campo/viveiros-campo.tsx](../../src/components/campo/viveiros-campo.tsx)** (navegador) — Aba Viveiros: todos os viveiros da piscicultura, com o lote de cada um. Um toque abre a ficha do viveiro.
   - `ViveirosCampo` *componente* L73 (usado em 1)
   - internas: `CartaoTanque` L15
 - **[src/components/selecao-com-novo.tsx](../../src/components/selecao-com-novo.tsx)** (navegador) — Lista de escolha com "+ Novo": cadastra ali mesmo, sem sair do lançamento, e já deixa o novo escolhido. Os campos do cadastro rápido não têm `name` (não vão junto com o formulário de fora) e o Enter neles cria em vez de…
-  - `SelecaoComNovo` *componente* L13 (usado em 3)
+  - `SelecaoComNovo` *componente* L13 (usado em 4)
 - **[src/lib/apontamento-campo-servidor.ts](../../src/lib/apontamento-campo-servidor.ts)** — O que o apontamento de campo precisa para funcionar sem sinal, e a gravação do que chega da fila. Usado pela tela /campo + /api/apontamentos (sessão por cookie) e pelo app de celular (/api/app/campo e /api/app/apontamen…
   - `EmpresaCampo` *tipo* L11 (usado em 3) · `dadosCampo` *função* L13 (usado em 2) · `gravarApontamentoCampo` *função* L43 (usado em 2)
 - **[src/lib/apontamento-campo.ts](../../src/lib/apontamento-campo.ts)** — Lançamento enviado pelo app de campo (pode chegar horas depois, quando o celular pega sinal).
@@ -314,37 +315,37 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/apontamento-racao.ts](../../src/lib/apontamento-racao.ts)** — Ração por tipo e checklist do viveiro no formulário do apontamento diário.
   - `LINHAS_RACAO` *constante* L4 (usado em 2) · `RacaoLancada` *tipo* L9 (usado em 1) · `lerRacoes` *função* L12 (usado em 2) · `ItemChecklist` *tipo* L28 · `RespostaChecklist` *tipo* L29 (usado em 2) · `lerChecklist` *função* L32 (usado em 2)
 - **[src/lib/campo/chat.ts](../../src/lib/campo/chat.ts)**
-  - `responderManejoLocal` *função* L39 (usado em 1) · `responderManejo` *função* L44 (usado em 1)
-  - internas: `prepararManejo` L24
+  - `responderManejoLocal` *função* L43 (usado em 1) · `responderManejo` *função* L48 (usado em 1)
+  - internas: `prepararManejo` L25
 - **[src/lib/campo/conhecimento-tambaqui.ts](../../src/lib/campo/conhecimento-tambaqui.ts)** — Base de conhecimento do manejo do tambaqui, usada pelo chat do app de campo: inteira no prompt da IA (com cache) e, sem sinal, buscada por palavra-chave no próprio celular. Só entra aqui o que está nas fontes abaixo; o…
   - `FonteManejo` *tipo* L9 · `FONTES` *constante* L11 (usado em 1) · `TopicoManejo` *tipo* L17 · `TABELA_ARRACOAMENTO` *constante* L28 (usado em 1) · `TOPICOS_MANEJO` *constante* L45 · `normalizarPergunta` *função* L149 (usado em 1) · `buscarConhecimento` *função* L154 (usado em 2) · `textoBaseConhecimento` *função* L165 (usado em 3)
   - internas: `v` L39
 - **[src/lib/campo/contexto-chat.ts](../../src/lib/campo/contexto-chat.ts)** — Chat de manejo do app de campo: o que a pessoa manda e os dados da piscicultura que a IA recebe junto. Regra pura (sem chave nem rede), para os testes; a chamada à IA fica em chat.ts.
-  - `MensagemChat` *tipo* L6 (usado em 2) · `MAX_MENSAGENS` *constante* L8 (usado em 2) · `MAX_TEXTO` *constante* L9 (usado em 1) · `validarConversa` *função* L12 (usado em 3) · `textoDadosPiscicultura` *função* L33 (usado em 3)
-  - internas: `n` L29 · `dataBr` L30
+  - `MensagemChat` *tipo* L8 (usado em 2) · `MAX_MENSAGENS` *constante* L10 (usado em 2) · `MAX_TEXTO` *constante* L11 (usado em 1) · `validarConversa` *função* L14 (usado em 3) · `textoDadosPiscicultura` *função* L35 (usado em 3) · `textoPlanoRacao` *função* L80
+  - internas: `n` L31 · `dataBr` L32 · `comOrigem` L74
 - **[src/lib/campo/fila.ts](../../src/lib/campo/fila.ts)** — Fila de envios do app de campo. Tudo que o tratador lança vai primeiro para o celular (IndexedDB, pelo armazém de src/lib/db/indexeddb.ts) e sai para o servidor quando há sinal (src/lib/sync/worker.ts, a cada 5 s). Cada…
   - `TipoEnvio` *tipo* L7 (usado em 1) · `Existente` *tipo* L10 (usado em 1) · `ItemFila` *tipo* L12 (usado em 10) · `Enviado` *tipo* L24 (usado em 1) · `marcaDoItem` *função* L30 (usado em 2) · `chaveFila` *função* L36 (usado em 1) · `chaveEnviados` *função* L37 (usado em 1) · `MAX_ENVIADOS` *constante* L38 (usado em 1) · `rotaDoItem` *função* L47 (usado em 2) · `Desfecho` *tipo* L52 · `desfecho` *função* L60 (usado em 2) · `prontosParaEnvio` *função* L73 (usado em 2) · `resumoFila` *função* L77 (usado em 3) · `registrarEnviado` *função* L83 (usado em 2) · `lerFila` *função* L89 (usado em 2) · `apontamentoDoTurno` *função* L102 (usado em 3)
 - **[src/lib/campo/indicadores.ts](../../src/lib/campo/indicadores.ts)** — Contas pequenas do app de campo, iguais no celular e nos testes.
   - `PESO_BIOMETRIA_QUINZENAL_G` *constante* L6 · `proximaBiometria` *função* L8 (usado em 4) · `racaoPorTurno` *função* L16 (usado em 4) · `pesoMedioAmostra` *função* L22 (usado em 2) · `diferencaPct` *função* L28 (usado em 2) · `sacosParaKg` *função* L34 (usado em 3)
 - **[src/lib/campo/manejo-ia.ts](../../src/lib/campo/manejo-ia.ts)** — Chat de manejo: as instruções e o formato da resposta valem para qualquer IA que responda (Claude no servidor, Ollama no computador da fazenda ou no próprio aparelho). Sem "server-only": o app de campo também usa, para…
-  - `INSTRUCOES_MANEJO` *constante* L11 (usado em 2) · `RespostaManejo` *constante* L53 (usado em 2) · `SaidaManejo` *tipo* L58 · `RespostaChat` *tipo* L59 (usado em 2) · `contextoDosCartoes` *função* L62 (usado em 2) · `respostaDaSaida` *função* L69 (usado em 2)
+  - `INSTRUCOES_MANEJO` *constante* L11 (usado em 2) · `RespostaManejo` *constante* L61 (usado em 2) · `SaidaManejo` *tipo* L66 · `RespostaChat` *tipo* L67 (usado em 2) · `contextoDosCartoes` *função* L70 (usado em 2) · `respostaDaSaida` *função* L77 (usado em 2)
 - **[src/lib/campo/propostas.ts](../../src/lib/campo/propostas.ts)** — Cartões de confirmação do chat do app de campo. A IA (ou, sem sinal, a leitura local da frase) propõe o lançamento; a tela mostra o cartão, a pessoa confere, corrige e confirma, e só então ele entra na fila. Tudo aqui é…
   - `Turno` *tipo* L11 (usado em 4) · `CartaoApontamento` *tipo* L13 (usado em 1) · `CartaoBiometria` *tipo* L18 · `CartaoInsumo` *tipo* L21 (usado em 1) · `Cartao` *tipo* L25 (usado em 2) · `PropostaIa` *tipo* L28 (usado em 1) · `ContextoCartoes` *tipo* L52 (usado em 5) · `cartoesDaIa` *função* L74 (usado em 2) · `cartaoDaFala` *função* L105 (usado em 2) · `pendenciaDoCartao` *função* L115 (usado em 3) · `rotuloCartao` *função* L143 (usado em 5) · `itemDoCartao` *função* L166 (usado em 2)
   - internas: `positivo` L59 · `inteiro` L60 · `aguaDa` L63 · `num` L141
 - **[src/lib/campo/rota.ts](../../src/lib/campo/rota.ts)** — Rotas que recebem a fila do app de campo (/campo), com a sessão do navegador (cookie). Sessão vencida vira redirecionamento para o login, que o celular reconhece e guarda a fila até a pessoa entrar de novo.
   - `receberDaFila` *função* L12 (usado em 4)
 - **[src/lib/campo/servidor.ts](../../src/lib/campo/servidor.ts)** — Todos os viveiros ativos (com e sem peixe), o lote de cada um com peso, ração sugerida pela tabela de arraçoamento, curva de crescimento e conversão alimentar, e o que dá para aplicar no viveiro.
-  - `painelCampo` *função* L33 (usado em 2) · `gravarBiometriaCampo` *função* L128 (usado em 1) · `abrirLoteCampo` *função* L141 (usado em 1) · `fecharLoteCampo` *função* L167 (usado em 1) · `lancarInsumoCampo` *função* L194 (usado em 1)
-  - internas: `n` L14 · `recusa` L15 · `racao` L23
+  - `painelCampo` *função* L34 (usado em 2) · `gravarBiometriaCampo` *função* L133 (usado em 1) · `abrirLoteCampo` *função* L156 (usado em 1) · `fecharLoteCampo` *função* L182 (usado em 1) · `lancarInsumoCampo` *função* L209 (usado em 1)
+  - internas: `n` L15 · `recusa` L16 · `racao` L24
 - **[src/lib/campo/tipos.ts](../../src/lib/campo/tipos.ts)** — Dados que a tela /campo recebe do servidor e guarda no celular para usar sem sinal.
   - `RacaoSugerida` *tipo* L3 (usado em 1) · `PontoCrescimento` *tipo* L15 · `BiometriaRecente` *tipo* L16 (usado em 1) · `LoteTanque` *tipo* L18 (usado em 2) · `Tanque` *tipo* L45 (usado em 8) · `Opcao` *tipo* L56 (usado em 3) · `InsumoOpcao` *tipo* L57 (usado em 1) · `MedicamentoOpcao` *tipo* L58 (usado em 4) · `PainelCampo` *tipo* L60 (usado em 5)
 - **[src/lib/campo/validar.ts](../../src/lib/campo/validar.ts)** — O que a fila do app de campo manda ao servidor (pode chegar horas depois, quando o celular pega sinal). Conferido aqui antes de chegar ao banco, que confere de novo (permissão, lote no viveiro, saldo, carência).
-  - `BiometriaCampo` *tipo* L46 · `validarBiometriaCampo` *função* L51 (usado em 3) · `AbrirLoteCampo` *tipo* L73 · `validarAbrirLote` *função* L78 (usado em 3) · `FecharLoteCampo` *tipo* L103 · `validarFecharLote` *função* L108 (usado em 3) · `TIPOS_INSUMO` *constante* L129 (usado em 3) · `TipoInsumo` *tipo* L137 (usado em 3) · `InsumoCampo` *tipo* L139 · `validarInsumoCampo` *função* L146 (usado em 3)
-  - internas: `texto` L10 · `vazio` L11 · `numero` L12 · `uuid` L13 · `dataValida` L15 · `positivo` L20 · `inteiroPositivo` L26 · `base` L31
+  - `BiometriaCampo` *tipo* L48 · `validarBiometriaCampo` *função* L55 (usado em 3) · `AbrirLoteCampo` *tipo* L94 · `validarAbrirLote` *função* L99 (usado em 3) · `FecharLoteCampo` *tipo* L124 · `validarFecharLote` *função* L129 (usado em 3) · `TIPOS_INSUMO` *constante* L150 (usado em 3) · `TipoInsumo` *tipo* L158 (usado em 3) · `InsumoCampo` *tipo* L160 · `validarInsumoCampo` *função* L167 (usado em 3)
+  - internas: `texto` L12 · `vazio` L13 · `numero` L14 · `uuid` L15 · `dataValida` L17 · `positivo` L22 · `inteiroPositivo` L28 · `base` L33
 - **[src/lib/causas-morte.ts](../../src/lib/causas-morte.ts)** — Causa das baixas (mortes + descartes) do lançamento do viveiro. A mesma lista está em app.causas_morte_validas (supabase/migrations/20261105000002_piscicultura_apontamento.sql); mudou aqui, muda lá.
   - `CAUSAS_MORTE` *constante* L3 (usado em 10) · `Causas` *tipo* L13 (usado em 1) · `validarCausas` *função* L19 (usado em 2) · `lerCausasForm` *função* L34 (usado em 2) · `resumoCausas` *função* L45 (usado em 2)
 - **[src/lib/crescimento.ts](../../src/lib/crescimento.ts)** — Crescimento do peixe pela curva da espécie. As contas são as mesmas do banco (app.peso_curva, app.idade_equivalente e app.peso_estimado), para a tela comparar biometria com o esperado e projetar as próximas semanas sem…
-  - `PontoCurva` *tipo* L11 (usado em 1) · `pesoCurva` *função* L21 (usado em 1) · `idadeEquivalente` *função* L33 (usado em 3) · `pesoEsperado` *função* L47 (usado em 4) · `diasEntre` *função* L57 (usado em 1) · `semanaCultivo` *função* L60 (usado em 3) · `Biometria` *tipo* L64 (usado em 2) · `PontoCrescimento` *tipo* L66 · `crescimentoLote` *função* L74 (usado em 3) · `FATOR_MIN` *constante* L97 · `FATOR_MAX` *constante* L98 · `fatorCrescimento` *função* L100 (usado em 3)
+  - `PontoCurva` *tipo* L11 (usado em 2) · `pesoCurva` *função* L21 (usado em 1) · `idadeEquivalente` *função* L33 (usado em 3) · `pesoEsperado` *função* L47 (usado em 5) · `diasEntre` *função* L57 (usado em 2) · `semanaCultivo` *função* L60 (usado em 3) · `Biometria` *tipo* L64 (usado em 2) · `PontoCrescimento` *tipo* L66 · `crescimentoLote` *função* L74 (usado em 3) · `FATOR_MIN` *constante* L97 · `FATOR_MAX` *constante* L98 · `fatorCrescimento` *função* L100 (usado em 3)
   - internas: `num` L9 · `pontos` L13 · `dia` L56
 - **[src/lib/fala-apontamento.ts](../../src/lib/fala-apontamento.ts)** — A3 do estudo de automação: apontamento por voz. O reconhecimento de fala do celular (pt-BR) devolve um texto como "viveiro 3, quarenta quilos de ração, duas mortes por falta de oxigênio, oxigênio quatro vírgula dois" e…
   - `ViveiroFala` *tipo* L9 (usado em 1) · `ResultadoFala` *tipo* L10 (usado em 1) · `normalizar` *função* L29 (usado em 1) · `numerosPorExtenso` *função* L34 (usado em 1) · `interpretarFala` *função* L97 (usado em 4) · `resumoFala` *função* L171 (usado em 3)
@@ -368,9 +369,9 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 ## Vendas, PDV, estoque, produtos e ração
 
 - **[src/app/(app)/estoque/actions.ts](../../src/app/(app)/estoque/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /estoque.
-  - `movimentarEstoque` *ação* L11 (usado em 1) · `contarPescado` *ação* L42 (usado em 1) · `lancarEntradaRacao` *ação* L68 (usado em 1) · `excluirEntradaRacao` *ação* L92 (usado em 1)
+  - `movimentarEstoque` *ação* L10 (usado em 1) · `contarPescado` *ação* L41 (usado em 1)
 - **[src/app/(app)/estoque/page.tsx](../../src/app/(app)/estoque/page.tsx)** (rota `/estoque`) — Pescado em kg por classe, ração, corretivos, embalagens e medicamentos.
-  - `PaginaEstoque` *componente* L20
+  - `PaginaEstoque` *componente* L19
 - **[src/app/(app)/pontos-de-venda/[id]/page.tsx](../../src/app/(app)/pontos-de-venda/%5Bid%5D/page.tsx)** (rota `/pontos-de-venda/[id]`) — Tela /pontos-de-venda/[id].
   - `PaginaPontoVenda` *componente* L14
 - **[src/app/(app)/pontos-de-venda/actions.ts](../../src/app/(app)/pontos-de-venda/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /pontos-de-venda.
@@ -392,8 +393,12 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - internas: `FichaEmbalagem` L51 · `FichaRacao` L82 · `FormProduto` L102 · `PainelProduto` L192
 - **[src/app/(app)/produtos/page.tsx](../../src/app/(app)/produtos/page.tsx)** (rota `/produtos`) — O que a piscicultura vende: peixe por kg e em caixa, alevinos e outros itens com preço de venda.
   - `PaginaProdutos` *componente* L3
+- **[src/app/(app)/racao/actions.ts](../../src/app/(app)/racao/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /racao.
+  - `lancarEntradaRacao` *ação* L21 (usado em 1) · `excluirEntradaRacao` *ação* L44 (usado em 1) · `ajustarEntradaRacao` *ação* L55 (usado em 1) · `estornarSaidaRacao` *ação* L72 (usado em 1) · `salvarParametrosRacao` *ação* L84 (usado em 1)
+  - internas: `texto` L12 · `atualizarTelas` L14
 - **[src/app/(app)/racao/page.tsx](../../src/app/(app)/racao/page.tsx)** (rota `/racao`) — Ração comprada pronta: entradas numeradas com lote e validade, consumo pelo FEFO, sacos, cobertura e movimentos.
-  - `Racao` *componente* L4
+  - `PaginaRacao` *componente* L26
+  - internas: `kg` L24
 - **[src/app/(app)/relatorios/vendas/page.tsx](../../src/app/(app)/relatorios/vendas/page.tsx)** (rota `/relatorios/vendas`) — Tela /relatorios/vendas.
   - `RelatoriosVendas` *componente* L19
   - internas: `mesValido` L12 · `diasValidos` L13 · `Ranking` L117
@@ -485,8 +490,14 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `PontoVenda` *tipo* L6 (usado em 1) · `carregarPontos` *função* L25 (usado em 7) · `pontoDoPdv` *função* L33 (usado em 1)
 - **[src/lib/pontos.ts](../../src/lib/pontos.ts)** — Pontos de venda: regras puras usadas nas telas (o banco confere de novo).
   - `TIPOS_PONTO` *constante* L3 (usado em 4) · `STATUS_TRANSFERENCIA` *constante* L11 (usado em 1) · `fretePorUnidade` *função* L18 (usado em 3) · `pctPerda` *função* L24 (usado em 2) · `lerDocumento` *função* L30 (usado em 2) · `lerUf` *função* L37 (usado em 2) · `cookiePonto` *função* L44 (usado em 3)
+- **[src/lib/previsao-racao-dados.ts](../../src/lib/previsao-racao-dados.ts)**
+  - `DIAS_TRATO` *constante* L14 · `PrevisaoDoLote` *tipo* L16 (usado em 1) · `PlanoRacao` *tipo* L17 (usado em 2) · `carregarPlanoRacao` *função* L28 (usado em 3)
+  - internas: `n` L26
+- **[src/lib/previsao-racao.ts](../../src/lib/previsao-racao.ts)** — Previsão de ração por lote (15, 30 e 45 dias), ração atual e próxima, transição de fase, cobertura do estoque e reserva de sacos. Contas puras (sem banco), para a ficha do lote, a tela do estoque de ração e a IA usarem…
+  - `Origem` *tipo* L16 (usado em 1) · `Valor` *tipo* L17 (usado em 2) · `Confianca` *tipo* L18 (usado em 1) · `FaixaArracoamento` *tipo* L20 (usado em 2) · `RacaoFicha` *tipo* L24 (usado em 2) · `EntradaSaldo` *tipo* L28 (usado em 1) · `DadosLote` *tipo* L30 (usado em 1) · `HORIZONTES` *constante* L45 · `DIAS_SIMULACAO` *constante* L46 (usado em 1) · `faixaDoPeso` *função* L56 (usado em 1) · `taxaDoPeso` *função* L63 (usado em 1) · `racaoDaFaixa` *função* L74 (usado em 1) · `descricaoFaixa` *função* L81 · `Horizonte` *tipo* L84 · `PrevisaoLote` *tipo* L86 (usado em 1) · `preverLote` *função* L116 (usado em 2) · `ConsumoRacao` *tipo* L291 · `ReservaRacao` *tipo* L292 (usado em 1) · `janelaReserva` *função* L307 (usado em 1) · `estoqueUtil` *função* L312 (usado em 1) · `planejarReserva` *função* L331 (usado em 3) · `consumoPorRacao` *função* L368 (usado em 3) · `amostraBiometria` *função* L384 (usado em 3) · `PARAMETROS_PADRAO` *constante* L389 (usado em 4) · `UsoEntrada` *tipo* L393 · `filaDeConsumo` *função* L394 (usado em 2)
+  - internas: `r1` L51 · `r2` L52 · `somaDias` L53 · `norm` L54 · `mesmaRacaoDaFaixa` L70
 - **[src/lib/racao-estoque.ts](../../src/lib/racao-estoque.ts)** — Estoque de ração: textos e alertas das entradas numeradas (o saldo por entrada, pelo FEFO, vem do banco: view racao_saldos).
-  - `DIAS_ALERTA_VALIDADE` *constante* L4 · `numeroEntrada` *função* L6 (usado em 3) · `Situacao` *tipo* L8 · `situacaoValidade` *função* L11 (usado em 2) · `textoSacos` *função* L20 (usado em 2) · `descricaoRacao` *função* L27 (usado em 2)
+  - `DIAS_ALERTA_VALIDADE` *constante* L4 (usado em 1) · `numeroEntrada` *função* L6 (usado em 3) · `Situacao` *tipo* L8 · `situacaoValidade` *função* L11 (usado em 2) · `textoSacos` *função* L20 (usado em 1) · `descricaoRacao` *função* L27 (usado em 3) · `sacosDoSaldo` *função* L34 (usado em 3)
 - **[src/lib/vendas-dados.ts](../../src/lib/vendas-dados.ts)** — Tudo que as telas de venda (nova venda e PDV) precisam numa ida ao banco. Com ponto, o disponível é o estoque daquele ponto de venda; sem, o da piscicultura. `app`: chamada do app de celular (cliente com o token do cabe…
   - `ClienteVenda` *tipo* L8 (usado em 3) · `ProdutoVenda` *tipo* L9 (usado em 3) · `ContaVenda` *tipo* L10 (usado em 2) · `UltimoPedido` *tipo* L11 (usado em 2) · `carregarCatalogo` *função* L22 (usado em 5)
   - internas: `chaveCondicao` L14
@@ -500,6 +511,9 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `recalcularCustos` *ação* L10 (usado em 1)
 - **[src/app/(app)/custo-do-kg/page.tsx](../../src/app/(app)/custo-do-kg/page.tsx)** (rota `/custo-do-kg`) — Custo do kg de peixe produzido por lote e mês, conversão alimentar e margem por cliente.
   - `PaginaCustoKg` *componente* L29
+- **[src/app/(app)/lotes/[id]/planejamento-racao.tsx](../../src/app/(app)/lotes/%5Bid%5D/planejamento-racao.tsx)** — Planejamento da ração do lote: o que foi medido, o que o sistema calculou e o que ele prevê, com a origem de cada número. Nada é inventado: sem dado, aparece "sem dado" e o motivo.
+  - `PlanejamentoRacao` *componente* L40 (usado em 1)
+  - internas: `kg` L23 · `Item` L25
 - **[src/app/(app)/planejamento/actions.ts](../../src/app/(app)/planejamento/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /planejamento.
   - `salvarParametros` *ação* L15 (usado em 1) · `salvarLotePlanejado` *ação* L66 (usado em 1) · `excluirLotePlanejado` *ação* L102 (usado em 1) · `salvarCusto` *ação* L115 (usado em 1) · `excluirCusto` *ação* L146 (usado em 1) · `incluirCustosModelo` *ação* L156 (usado em 1) · `aplicarSugestaoMeta` *ação* L176 (usado em 1)
   - internas: `revalidar` L9
@@ -726,7 +740,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `Acesso` *tipo* L6 (usado em 6) · `SEM_ACESSO` *constante* L8 (usado em 2) · `Acao` *tipo* L10 · `ModuloPermissao` *tipo* L11 (usado em 1) · `CATALOGO` *constante* L26 (usado em 3) · `GRUPOS_CATALOGO` *constante* L39 (usado em 2) · `CHAVES_VALIDAS` *constante* L41 (usado em 4) · `PERFIS` *constante* L45 (usado em 3) · `chavesDoCargo` *função* L63 (usado em 2) · `planoInclui` *função* L72 (usado em 3) · `temPermissao` *função* L78 (usado em 6) · `podeDispensar2fa` *função* L92 (usado em 2)
   - internas: `modulo` L68
 - **[src/lib/permissoes.ts](../../src/lib/permissoes.ts)** — Acesso do usuário logado na empresa atual. O banco aplica a mesma regra nas policies.
-  - `Permissoes` *tipo* L9 · `getPermissoes` *função* L12 (usado em 72) · `exigirAcesso` *função* L22 (usado em 57) · `exigirMaster` *função* L27 (usado em 6) · `foraDoPlano` *função* L34 (usado em 7)
+  - `Permissoes` *tipo* L9 · `getPermissoes` *função* L12 (usado em 73) · `exigirAcesso` *função* L22 (usado em 58) · `exigirMaster` *função* L27 (usado em 6) · `foraDoPlano` *função* L34 (usado em 7)
 - **[src/lib/supabase/falha-auth.ts](../../src/lib/supabase/falha-auth.ts)** — Erro do Auth ao conferir a sessão: só rede, timeout ou 5xx são temporários (vale tentar de novo). 4xx (refresh token vencido ou já usado, JWT inválido) quer dizer sessão morta: o caminho é o login.
   - `falhaTemporaria` *função* L5 (usado em 2)
 - **[src/lib/supabase/proxy.ts](../../src/lib/supabase/proxy.ts)** — Renova a sessão a cada navegação e manda quem não está logado para /login.
@@ -846,7 +860,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/app/api/v1/centros-de-custo/route.ts](../../src/app/api/v1/centros-de-custo/route.ts)** (rota `/api/v1/centros-de-custo`) — API GET /api/v1/centros-de-custo.
   - `GET` *constante* L3
 - **[src/components/lancamento.tsx](../../src/components/lancamento.tsx)** (navegador)
-  - `BotaoLancamento` *componente* L15 (usado em 20)
+  - `BotaoLancamento` *componente* L15 (usado em 21)
 - **[src/components/rateio.tsx](../../src/components/rateio.tsx)** (navegador) — Linhas de rateio (categoria + centro de custo + valor + descrição). Com uma linha só, o valor é o total. O total vem de `total` (centavos, ex.: valor do extrato) ou do campo `campoTotal` do mesmo formulário; com ele a t…
   - `LinhaInicial` *tipo* L9 (usado em 1) · `Rateio` *componente* L25 (usado em 3)
   - internas: `emReais` L12 · `montar` L14
@@ -942,7 +956,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/assistente.ts](../../src/lib/assistente.ts)** — Assistente de início: o que cada passo pede e para onde leva. O banco (assistente_inicio) diz o que já está feito, o que foi pulado e quais passos o plano da empresa inclui.
   - `PassoBanco` *tipo* L4 · `SituacaoAssistente` *tipo* L5 (usado em 3) · `InfoPasso` *tipo* L7 · `PASSOS` *constante* L9 · `passosConhecidos` *função* L49 (usado em 2) · `mostrarNoPainel` *função* L54 (usado em 2) · `proximoPasso` *função* L59 (usado em 3) · `textoFaltam` *função* L63 (usado em 3) · `progresso` *função* L69 (usado em 3)
 - **[src/lib/empresa.ts](../../src/lib/empresa.ts)** — O RLS só devolve as empresas de que o usuário participa.
-  - `COOKIE_EMPRESA` *constante* L8 (usado em 2) · `Empresa` *tipo* L10 (usado em 2) · `nomeEmpresa` *função* L12 (usado em 13) · `listarEmpresas` *função* L17 (usado em 1) · `aceitarConvites` *função* L28 · `getEmpresaAtual` *função* L35 (usado em 121)
+  - `COOKIE_EMPRESA` *constante* L8 (usado em 2) · `Empresa` *tipo* L10 (usado em 2) · `nomeEmpresa` *função* L12 (usado em 13) · `listarEmpresas` *função* L17 (usado em 1) · `aceitarConvites` *função* L28 · `getEmpresaAtual` *função* L35 (usado em 123)
 - **[src/lib/online.ts](../../src/lib/online.ts)** — O aparelho tem internet de verdade? Muda sozinho quando a conexão cai ou volta, e também quando o celular está num Wi-Fi sem internet (src/lib/sync/detector.ts confere com o servidor). No servidor, sempre true.
   - `useOnline` *hook* L6 (usado em 4)
 - **[src/lib/painel.ts](../../src/lib/painel.ts)** — Contas do painel de acompanhamento: puras, para testar sem banco.
@@ -1000,6 +1014,9 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `ExcluirLinha` *componente* L8 (usado em 5)
 - **[src/components/form-acao.tsx](../../src/components/form-acao.tsx)** (navegador) — Formulário ligado a uma server action: mostra erro/sucesso e limpa ao salvar.
   - `FormAcao` *componente* L17 (usado em 27)
+- **[src/components/grupos-biometria.tsx](../../src/components/grupos-biometria.tsx)** (navegador) — Grupos da biometria no site: cada linha é um puçá ou balde (peixes e kg). Mostra o peso médio ponderado na hora e manda os grupos num campo escondido "grupos" (JSON). O rascunho fica no navegador até salvar.
+  - `GruposBiometria` *componente* L20 (usado em 1)
+  - internas: `paraLinhas` L11 · `ler` L16
 - **[src/components/marca.tsx](../../src/components/marca.tsx)** — Marca do Balbina: um tambaqui sobre a lâmina d'água, na cor da marca. Desenhada em SVG para seguir o tema (no escuro a marca clareia e o peixe escurece, mantendo o contraste). Os ícones do app (public/icone*.png e mobil…
   - `MarcaBalbina` *componente* L4 (usado em 5)
 - **[src/components/menu-lateral.tsx](../../src/components/menu-lateral.tsx)** (navegador) — No celular: uma barra fina de vidro no alto com o nome da tela e, embaixo, a barra de abas de vidro do iOS (Painel, três módulos e Menu, que abre a lista inteira).
@@ -1022,7 +1039,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `Tema` *tipo* L10 · `SCRIPT_TEMA` *constante* L17 (usado em 1) · `SeletorTema` *componente* L65 (usado em 3) · `InterruptorTema` *componente* L93 (usado em 1) · `BotaoTema` *componente* L119 (usado em 1)
   - internas: `ler` L22 · `assinar` L32 · `aplicar` L44
 - **[src/components/ui.tsx](../../src/components/ui.tsx)** — `quebrar` deixa um texto longo passar para a linha de baixo (a cápsula cresce na altura) em vez de vazar no celular.
-  - `classeBotao` *função* L21 (usado em 52) · `Botao` *componente* L31 (usado em 40) · `LinkBotao` *componente* L41 (usado em 24) · `CLASSE_BOTAO_TEXTO` *constante* L51 (usado em 35) · `CLASSE_CONTROLE` *constante* L54 (usado em 18) · `Campo` *componente* L66 (usado em 67) · `Selecao` *componente* L75 (usado em 53) · `AreaTexto` *componente* L86 (usado em 16) · `Cartao` *componente* L95 (usado em 46) · `Aviso` *componente* L140 (usado em 55) · `TomEtiqueta` *tipo* L148 (usado em 8) · `Etiqueta` *componente* L150 (usado em 47) · `Tabela` *componente* L165 (usado em 26) · `Vazio` *componente* L206 (usado em 9) · `Titulo` *componente* L215 (usado em 68) · `Secao` *componente* L228 (usado em 2) · `Segmentos` *componente* L244 (usado em 12) · `Cor` *tipo* L266 (usado em 3) · `COR_FICHA` *constante* L267 · `Ficha` *componente* L278 (usado em 3) · `CartaoKpi` *componente* L291 (usado em 2) · `Indicador` *componente* L317 (usado em 8) · `Faixa` *componente* L348 (usado em 8)
+  - `classeBotao` *função* L21 (usado em 53) · `Botao` *componente* L31 (usado em 40) · `LinkBotao` *componente* L41 (usado em 24) · `CLASSE_BOTAO_TEXTO` *constante* L51 (usado em 37) · `CLASSE_CONTROLE` *constante* L54 (usado em 18) · `Campo` *componente* L66 (usado em 69) · `Selecao` *componente* L75 (usado em 53) · `AreaTexto` *componente* L86 (usado em 16) · `Cartao` *componente* L95 (usado em 48) · `Aviso` *componente* L140 (usado em 55) · `TomEtiqueta` *tipo* L148 (usado em 9) · `Etiqueta` *componente* L150 (usado em 49) · `Tabela` *componente* L165 (usado em 27) · `Vazio` *componente* L206 (usado em 9) · `Titulo` *componente* L215 (usado em 69) · `Secao` *componente* L228 (usado em 2) · `Segmentos` *componente* L244 (usado em 12) · `Cor` *tipo* L266 (usado em 3) · `COR_FICHA` *constante* L267 · `Ficha` *componente* L278 (usado em 3) · `CartaoKpi` *componente* L291 (usado em 2) · `Indicador` *componente* L317 (usado em 8) · `Faixa` *componente* L348 (usado em 8)
   - internas: `Rotulo` L57
 - **[src/components/whatsapp-pessoal.tsx](../../src/components/whatsapp-pessoal.tsx)** — H2: o celular da própria pessoa no WhatsApp do Balbina (avisos e envio de documentos).
   - `WhatsAppPessoal` *componente* L11 (usado em 2)
@@ -1030,7 +1047,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `Comprar` *tipo* L5 · `DIAS_COMPRA` *constante* L7 (usado em 1) · `planoAbastecimento` *função* L11 (usado em 2) · `textoListaCompra` *função* L26 (usado em 2)
   - internas: `arredondaCima` L9
 - **[src/lib/acao.ts](../../src/lib/acao.ts)** — Formato de retorno das server actions usadas pelos formulários.
-  - `EstadoAcao` *tipo* L2 (usado em 59) · `falha` *função* L4 (usado em 42) · `sucesso` *função* L8 (usado em 42) · `mensagemBanco` *função* L13 (usado em 44)
+  - `EstadoAcao` *tipo* L2 (usado em 60) · `falha` *função* L4 (usado em 43) · `sucesso` *função* L8 (usado em 43) · `mensagemBanco` *função* L13 (usado em 45)
 - **[src/lib/agua.ts](../../src/lib/agua.ts)** — Qualidade da água do viveiro, medida no turno do apontamento. O banco guarda cada medida no lançamento (apontamento_lancamentos) e o resumo do dia no apontamento; os alertas (view alertas) usam as mesmas faixas. Referên…
   - `ChaveAgua` *tipo* L7 (usado em 1) · `Agua` *tipo* L8 (usado em 6) · `CAMPOS_AGUA` *constante* L10 (usado em 3) · `lerMedida` *função* L21 (usado em 2) · `validarAgua` *função* L28 (usado em 3) · `lerAguaForm` *função* L46 (usado em 1) · `amoniaToxica` *função* L53 (usado em 1) · `NivelAgua` *tipo* L59 · `AvisoAgua` *tipo* L60 · `avisosAgua` *função* L65 (usado em 6) · `resumoAgua` *função* L85 (usado em 3)
   - internas: `br` L62
@@ -1041,6 +1058,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `clienteAvulso` *função* L13 (usado em 2) · `SessaoApp` *tipo* L19 (usado em 1) · `sessaoDoApp` *função* L26 (usado em 10) · `EmpresaApp` *tipo* L40 · `empresaDoApp` *função* L44 (usado em 9) · `permissoesDoApp` *função* L54 (usado em 7)
 - **[src/lib/app-celular/token.ts](../../src/lib/app-celular/token.ts)** — "Authorization: Bearer <token>" → token. Qualquer outro formato = null (a rota responde 401).
   - `tokenDoCabecalho` *função* L2 (usado em 2)
+- **[src/lib/biometria-grupos.ts](../../src/lib/biometria-grupos.ts)** — Biometria em grupos: a amostra é pesada em grupos (puçá, balde), cada um com peixes e peso em kg. O peso médio é o peso total ÷ o total de peixes (média ponderada), nunca a média dos pesos médios dos grupos. O banco ref…
+  - `GrupoBiometria` *tipo* L5 (usado em 4) · `MAX_GRUPOS` *constante* L7 · `totaisGrupos` *função* L9 (usado em 4) · `validarGrupos` *função* L17 (usado em 3)
 - **[src/lib/boleto.ts](../../src/lib/boleto.ts)** — Linha digitável de boleto (C3 do estudo de automação): confere os dígitos e tira valor e vencimento. A leitura por IA pode errar um número; a conta só vem preenchida com a linha se os dígitos baterem. Bancário: 47 dígit…
   - `Boleto` *tipo* L6 · `modulo10` *função* L13 (usado em 1) · `modulo11Banco` *função* L35 (usado em 1) · `modulo11Arrecadacao` *função* L41 (usado em 1) · `vencimentoDoFator` *função* L51 (usado em 1) · `lerLinhaDigitavel` *função* L59 (usado em 3) · `formatarLinha` *função* L84 (usado em 3)
   - internas: `soma11` L24
@@ -1065,7 +1084,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/env.ts](../../src/lib/env.ts)**
   - `supabaseEnv` *função* L1 (usado em 8)
 - **[src/lib/formato.ts](../../src/lib/formato.ts)** — Conversões entre o que a pessoa digita (pt-BR) e o que o banco guarda.
-  - `formatarMoeda` *função* L6 (usado em 58) · `formatarNumero` *função* L10 (usado em 24) · `formatarQuantidade` *função* L16 (usado em 5) · `formatarInteiro` *função* L21 (usado em 25) · `formatarData` *função* L26 (usado em 61) · `centavosParaCampo` *função* L33 (usado em 12) · `somarDias` *função* L38 (usado em 23) · `MESES_CURTOS` *constante* L43 (usado em 2) · `MESES_LONGOS` *constante* L44 (usado em 3) · `rotuloMes` *função* L47 (usado em 8) · `deslocarMes` *função* L52 (usado em 5) · `semAcento` *função* L58 (usado em 9) · `plural` *função* L63 (usado em 3) · `lerCentavos` *função* L68 (usado em 20) · `lerDecimal` *função* L77 (usado em 18) · `lerInteiro` *função* L85 (usado em 10) · `FUSO_PADRAO` *constante* L91 · `FUSOS_BRASIL` *constante* L94 (usado em 2) · `hojeISO` *função* L109 (usado em 78) · `diasAtrasISO` *função* L114 (usado em 10)
+  - `formatarMoeda` *função* L6 (usado em 59) · `formatarNumero` *função* L10 (usado em 27) · `formatarQuantidade` *função* L16 (usado em 7) · `formatarInteiro` *função* L21 (usado em 25) · `formatarData` *função* L26 (usado em 63) · `centavosParaCampo` *função* L33 (usado em 12) · `somarDias` *função* L38 (usado em 25) · `MESES_CURTOS` *constante* L43 (usado em 2) · `MESES_LONGOS` *constante* L44 (usado em 3) · `rotuloMes` *função* L47 (usado em 8) · `deslocarMes` *função* L52 (usado em 5) · `semAcento` *função* L58 (usado em 9) · `plural` *função* L63 (usado em 3) · `lerCentavos` *função* L68 (usado em 21) · `lerDecimal` *função* L77 (usado em 20) · `lerInteiro` *função* L85 (usado em 10) · `FUSO_PADRAO` *constante* L91 · `FUSOS_BRASIL` *constante* L94 (usado em 2) · `hojeISO` *função* L109 (usado em 78) · `diasAtrasISO` *função* L114 (usado em 10)
 - **[src/lib/ia.ts](../../src/lib/ia.ts)** — Leitura por IA (C3 documentos e A8 mortalidade por foto do estudo de automação). Usa a API da Anthropic com a chave ANTHROPIC_API_KEY do servidor. Tudo que sai daqui é PROPOSTA: a tela mostra preenchido e a pessoa confe…
   - `MODELO` *constante* L11 (usado em 1) · `TIPOS_ARQUIVO` *constante* L12 (usado em 1) · `TipoArquivo` *tipo* L13 (usado em 1) · `TAMANHO_MAXIMO` *constante* L14 (usado em 3) · `iaConfigurada` *função* L16 (usado em 6) · `ErroIa` *classe* L20 (usado em 4) · `cliente` *função* L22 (usado em 1) · `DocumentoLido` *tipo* L68 (usado em 1) · `lerDocumento` *função* L70 (usado em 1) · `MortalidadeLida` *tipo* L85 (usado em 1) · `contarMortes` *função* L87 (usado em 1)
   - internas: `blocoArquivo` L27 · `ler` L34
@@ -1110,9 +1129,9 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/supabase/client.ts](../../src/lib/supabase/client.ts)** (navegador) — Cliente do navegador (sessão nos mesmos cookies do servidor). Criado só dentro de efeitos e eventos: no build as páginas são pré-renderizadas sem as variáveis do Supabase.
   - `clienteNavegador` *função* L8 (usado em 7)
 - **[src/lib/supabase/server.ts](../../src/lib/supabase/server.ts)** — Cliente com o JWT do usuário: toda consulta passa pelo RLS do banco.
-  - `createClient` *função* L7 (usado em 145)
+  - `createClient` *função* L7 (usado em 148)
 - **[src/lib/supabase/todas.ts](../../src/lib/supabase/todas.ts)** — O Supabase (PostgREST) devolve no máximo 1.000 linhas por consulta (max_rows em supabase/config.toml, igual na nuvem) e ignora um .limit() maior sem avisar. Toda soma ou relatório que pode passar disso lê por aqui, em p…
-  - `PAGINA_SUPABASE` *constante* L5 (usado em 1) · `lerTodas` *função* L11 (usado em 13)
+  - `PAGINA_SUPABASE` *constante* L5 (usado em 1) · `lerTodas` *função* L11 (usado em 14)
 - **[src/lib/sync/detector.ts](../../src/lib/sync/detector.ts)** — Tem internet de verdade? O navigator.onLine só diz se o aparelho está ligado a uma rede: no viveiro o celular pega o Wi-Fi da sede sem a sede ter internet e o navegador diz "online". Aqui a resposta vem de um pedido peq…
   - `conferirConexao` *função* L31 · `conexaoAtual` *função* L61 (usado em 3) · `assinarConexao` *função* L65 (usado em 1) · `aoVoltarConexao` *função* L72 (usado em 2) · `marcarSemRede` *função* L79 (usado em 2) · `marcarComRede` *função* L84
   - internas: `mudar` L16 · `iniciar` L52

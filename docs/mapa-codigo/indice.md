@@ -22,8 +22,8 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `abaTitulos` | função | `src/lib/planilha.ts:192` | Comum | 3 arquivos |
 | `abrirArmazem` | função | `src/lib/db/indexeddb.ts:137` | Comum | 1 arquivo |
 | `abrirLancamento` | função | `e2e/apoio.ts:112` | Comum | 5 arquivos |
-| `abrirLoteCampo` | função | `src/lib/campo/servidor.ts:141` | Produção | 1 arquivo |
-| `AbrirLoteCampo` | tipo | `src/lib/campo/validar.ts:73` | Produção | — |
+| `abrirLoteCampo` | função | `src/lib/campo/servidor.ts:156` | Produção | 1 arquivo |
+| `AbrirLoteCampo` | tipo | `src/lib/campo/validar.ts:94` | Produção | — |
 | `abrirSubconta` | ação | `src/app/(app)/cobrancas/conta-actions.ts:66` | Cobrança | 1 arquivo |
 | `Acao` | tipo | `src/lib/historico.ts:4` | Login, segurança, usuários e permissões | 1 arquivo |
 | `Acao` | tipo | `src/lib/permissoes-regras.ts:10` | Login, segurança, usuários e permissões | — |
@@ -51,15 +51,16 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `agruparPorEmbalagem` | função | `src/lib/pescado.ts:93` | Comum | 2 arquivos |
 | `Agua` | tipo | `src/lib/agua.ts:8` | Comum | 6 arquivos |
 | `AJUDA` | constante | `src/lib/whatsapp-texto.ts:84` | Comum | 1 arquivo |
-| `ajustar_entrada_racao` | função SQL | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:517` | Vendas, PDV, estoque, produtos e ração | — |
+| `ajustar_entrada_racao` | função SQL | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:517` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `ajustar_estoque_peixe` | função SQL | `supabase/migrations/20261105000003_piscicultura_despesca_estoque.sql:632` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
+| `ajustarEntradaRacao` | ação | `src/app/(app)/racao/actions.ts:55` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `AlertaPrevisao` | tipo | `src/lib/previsao-dados.ts:32` | Planejamento, previsões, custo do kg e relatórios | — |
 | `alertas` | view | `supabase/migrations/20261105000004_piscicultura_custos_indicadores.sql:370` | Planejamento, previsões, custo do kg e relatórios | 3 arquivos |
 | `alertas_seguranca` | função SQL | `supabase/migrations/20261030140000_alarmes_seguranca.sql:72` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `alertasTendencia` | função | `src/lib/previsao.ts:162` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
 | `AlertaTendencia` | tipo | `src/lib/previsao.ts:106` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `Alocacao` | tipo | `src/app/(app)/lotes/[id]/viveiros.tsx:11` | Produção | 1 arquivo |
-| `alocacoes_atuais` | view | `supabase/migrations/20261105000004_piscicultura_custos_indicadores.sql:206` | Produção | 14 arquivos |
+| `alocacoes_atuais` | view | `supabase/migrations/20261105000004_piscicultura_custos_indicadores.sql:206` | Produção | 15 arquivos |
 | `alterar_webhook_api` | função SQL | `supabase/migrations/20261028233000_api_publica.sql:171` | API pública, webhooks e rotinas agendadas | 1 arquivo |
 | `alterarWebhook` | ação | `src/app/(app)/configuracoes/api/actions.ts:62` | API pública, webhooks e rotinas agendadas | 1 arquivo |
 | `alternarAjuda` | função | `src/components/tutorial.tsx:39` | Início, painel, ajuda e configurações | 1 arquivo |
@@ -75,6 +76,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `AmbienteFocus` | tipo | `src/lib/focus.ts:6` | Fiscal | — |
 | `ambienteFocus` | função | `src/lib/focus.ts:7` | Fiscal | 2 arquivos |
 | `amoniaToxica` | função | `src/lib/agua.ts:53` | Comum | 1 arquivo |
+| `amostraBiometria` | função | `src/lib/previsao-racao.ts:384` | Vendas, PDV, estoque, produtos e ração | 3 arquivos |
 | `Analise` | tipo | `src/lib/analise-periodo.ts:263` | Planejamento, previsões, custo do kg e relatórios | 4 arquivos |
 | `analiseHorizontal` | função | `src/lib/relatorios.ts:67` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
 | `AnalisePeriodo` | componente | `src/app/(app)/relatorios/periodo/page.tsx:17` | Planejamento, previsões, custo do kg e relatórios | — |
@@ -116,7 +118,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `apontamento_racoes` | tabela | `supabase/migrations/20261029064500_checklist_e_racao_no_apontamento.sql:99` | Produção | 1 arquivo |
 | `ApontamentoCampo` | tipo | `src/lib/apontamento-campo.ts:6` | Produção | — |
 | `apontamentoDoTurno` | função | `src/lib/campo/fila.ts:102` | Produção | 3 arquivos |
-| `apontamentos_diarios` | tabela | `supabase/migrations/20261026000001_schema.sql:680` | Produção | 1 arquivo |
+| `apontamentos_diarios` | tabela | `supabase/migrations/20261026000001_schema.sql:680` | Produção | 2 arquivos |
 | `apontamentos_lixeira` | tabela | `supabase/migrations/20261101120000_apagar_apontamentos.sql:42` | Produção | 1 arquivo |
 | `app.amonia_toxica` | função SQL | `supabase/migrations/20261105000004_piscicultura_custos_indicadores.sql:30` | Comum | — |
 | `app.api_chave_atual` | função SQL | `supabase/migrations/20261028233000_api_publica.sql:315` | API pública, webhooks e rotinas agendadas | — |
@@ -165,6 +167,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `app.confere_inutilizacao` | função SQL | `supabase/migrations/20261029140000_nfe_completa.sql:131` | Fiscal | — |
 | `app.confere_lote_planejado` | função SQL | `supabase/migrations/20261105000001_piscicultura_estrutura.sql:306` | Fiscal | — |
 | `app.confere_parametros_planejamento` | função SQL | `supabase/migrations/20261027193500_planejamento.sql:148` | Planejamento, previsões, custo do kg e relatórios | — |
+| `app.conferir_grupos_biometria` | função SQL | `supabase/migrations/20261111000004_biometria_grupos.sql:51` | Fiscal | — |
 | `app.conferir_ponto_venda` | função SQL | `supabase/migrations/20261105000003_piscicultura_despesca_estoque.sql:260` | Fiscal | — |
 | `app.conferir_saldo_peixe` | função SQL | `supabase/migrations/20261105000003_piscicultura_despesca_estoque.sql:284` | Fiscal | — |
 | `app.config_fiscal` | função SQL | `supabase/migrations/20261029140000_nfe_completa.sql:37` | Comum | — |
@@ -199,6 +202,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `app.fuso_empresa` | função SQL | `supabase/migrations/20261028203000_desempenho.sql:7` | Início, painel, ajuda e configurações | — |
 | `app.gerar_recorrencias_base` | função SQL | `supabase/migrations/20261028060000_fuso_da_empresa.sql:25` | Financeiro | — |
 | `app.gerar_recorrencias_todas` | função SQL | `supabase/migrations/20261030220000_recorrencias_no_cron.sql:5` | Financeiro | — |
+| `app.gravar_grupos_biometria` | função SQL | `supabase/migrations/20261111000004_biometria_grupos.sql:73` | Comum | — |
 | `app.gravar_rateio` | função SQL | `supabase/migrations/20261102031000_rateio_conciliacao.sql:135` | Financeiro | — |
 | `app.historico_movimento` | função SQL | `supabase/migrations/20261101110000_automacoes_financeiro.sql:35` | Login, segurança, usuários e permissões | — |
 | `app.hoje` | função SQL | `supabase/migrations/20261028203000_desempenho.sql:13` | Comum | — |
@@ -393,10 +397,11 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `BASES` | constante | `src/app/(app)/planejamento/parametros/custos.tsx:12` | Planejamento, previsões, custo do kg e relatórios | — |
 | `biomassaTexto` | função | `src/components/campo/detalhe-tanque.tsx:21` | Produção | 1 arquivo |
 | `Biometria` | tipo | `src/lib/crescimento.ts:64` | Produção | 2 arquivos |
+| `biometria_grupos` | tabela | `supabase/migrations/20261111000004_biometria_grupos.sql:26` | Comum | 1 arquivo |
 | `BiometriaCampo` | componente | `src/components/campo/biometria-campo.tsx:14` | Produção | 1 arquivo |
-| `BiometriaCampo` | tipo | `src/lib/campo/validar.ts:46` | Produção | — |
+| `BiometriaCampo` | tipo | `src/lib/campo/validar.ts:48` | Produção | — |
 | `BiometriaRecente` | tipo | `src/lib/campo/tipos.ts:16` | Produção | 1 arquivo |
-| `biometrias` | tabela | `supabase/migrations/20261105000002_piscicultura_apontamento.sql:522` | Comum | 5 arquivos |
+| `biometrias` | tabela | `supabase/migrations/20261105000002_piscicultura_apontamento.sql:522` | Comum | 6 arquivos |
 | `bloqueia_prazo_inadimplente` | trigger | `supabase/migrations/20261101170000_automacoes_vendas.sql:155` | Vendas, PDV, estoque, produtos e ração | — |
 | `bloqueioLogin` | função | `src/lib/login-servidor.ts:26` | Login, segurança, usuários e permissões | 2 arquivos |
 | `Boleto` | tipo | `src/lib/boleto.ts:6` | Comum | — |
@@ -404,10 +409,10 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `Botao` | componente | `src/components/ui.tsx:31` | Comum | 40 arquivos |
 | `BotaoCopiar` | componente | `src/components/vendas/botao-copiar.tsx:7` | Vendas, PDV, estoque, produtos e ração | 4 arquivos |
 | `BotaoGrande` | componente | `src/components/campo/pecas.tsx:107` | Produção | 10 arquivos |
-| `BotaoLancamento` | componente | `src/components/lancamento.tsx:15` | Financeiro | 20 arquivos |
+| `BotaoLancamento` | componente | `src/components/lancamento.tsx:15` | Financeiro | 21 arquivos |
 | `BotaoLote` | componente | `src/components/cadastro.tsx:290` | Comum | 1 arquivo |
 | `BotaoNfe` | componente | `src/components/vendas/botao-nfe.tsx:13` | Fiscal | 2 arquivos |
-| `BotaoPilula` | componente | `src/components/campo/pecas.tsx:117` | Produção | 3 arquivos |
+| `BotaoPilula` | componente | `src/components/campo/pecas.tsx:117` | Produção | 4 arquivos |
 | `BotaoTema` | componente | `src/components/tema.tsx:119` | Comum | 1 arquivo |
 | `buscarConhecimento` | função | `src/lib/campo/conhecimento-tambaqui.ts:154` | Produção | 2 arquivos |
 | `buscarContas` | função | `src/lib/open-finance.ts:75` | Financeiro | 1 arquivo |
@@ -430,7 +435,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `calcular_custos_mes` | função SQL | `supabase/migrations/20261105000004_piscicultura_custos_indicadores.sql:70` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `caminhoArquivoValido` | função | `src/lib/focus-mapa.ts:264` | Fiscal | 3 arquivos |
 | `Campo` | tipo | `src/components/campo/contexto.tsx:29` | Produção | 1 arquivo |
-| `Campo` | componente | `src/components/ui.tsx:66` | Comum | 67 arquivos |
+| `Campo` | componente | `src/components/ui.tsx:66` | Comum | 69 arquivos |
 | `CampoNumero` | componente | `src/components/campo/pecas.tsx:36` | Produção | 5 arquivos |
 | `CAMPOS_AGUA` | constante | `src/lib/agua.ts:10` | Comum | 3 arquivos |
 | `CAMPOS_REGRA` | constante | `src/lib/regras.ts:9` | Financeiro | 2 arquivos |
@@ -461,10 +466,11 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `carregarCatalogo` | função | `src/lib/vendas-dados.ts:22` | Vendas, PDV, estoque, produtos e ração | 5 arquivos |
 | `carregarDre` | função | `src/lib/consultas-relatorio.ts:18` | Planejamento, previsões, custo do kg e relatórios | 3 arquivos |
 | `carregarPlanejamento` | função | `src/lib/planejamento-dados.ts:42` | Planejamento, previsões, custo do kg e relatórios | 3 arquivos |
+| `carregarPlanoRacao` | função | `src/lib/previsao-racao-dados.ts:28` | Vendas, PDV, estoque, produtos e ração | 3 arquivos |
 | `carregarPontos` | função | `src/lib/pontos-dados.ts:25` | Vendas, PDV, estoque, produtos e ração | 7 arquivos |
 | `carregarPrevisoes` | função | `src/lib/previsao-dados.ts:36` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
 | `carregarSugestoes` | função | `src/lib/sugestao-apontamento-dados.ts:11` | Produção | 2 arquivos |
-| `Cartao` | componente | `src/components/ui.tsx:95` | Comum | 46 arquivos |
+| `Cartao` | componente | `src/components/ui.tsx:95` | Comum | 48 arquivos |
 | `Cartao` | tipo | `src/lib/campo/propostas.ts:25` | Produção | 2 arquivos |
 | `CartaoApontamento` | tipo | `src/lib/campo/propostas.ts:13` | Produção | 1 arquivo |
 | `CartaoBiometria` | tipo | `src/lib/campo/propostas.ts:18` | Produção | — |
@@ -512,13 +518,13 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `Ciclo` | tipo | `src/lib/assinatura-mapa.ts:4` | Cobrança | — |
 | `cifrar` | função | `src/lib/cripto.ts:10` | Login, segurança, usuários e permissões | 4 arquivos |
 | `Classe` | tipo | `src/app/(app)/piscicultura/lista.tsx:17` | Produção | 1 arquivo |
-| `CLASSE_BOTAO_TEXTO` | constante | `src/components/ui.tsx:51` | Comum | 35 arquivos |
+| `CLASSE_BOTAO_TEXTO` | constante | `src/components/ui.tsx:51` | Comum | 37 arquivos |
 | `CLASSE_CONTROLE` | constante | `src/components/ui.tsx:54` | Comum | 18 arquivos |
 | `CLASSE_ENTRADA` | constante | `src/components/campo/pecas.tsx:8` | Produção | — |
 | `CLASSE_ESPIANDO` | constante | `src/lib/lateral.ts:34` | Comum | — |
 | `CLASSE_RECOLHIDA` | constante | `src/lib/lateral.ts:6` | Comum | — |
 | `classe_sem_classificacao` | trigger | `supabase/migrations/20261027123000_apontamento_por_turno.sql:42` | Início, painel, ajuda e configurações | — |
-| `classeBotao` | função | `src/components/ui.tsx:21` | Comum | 52 arquivos |
+| `classeBotao` | função | `src/components/ui.tsx:21` | Comum | 53 arquivos |
 | `classeReconhecimento` | função | `src/lib/reconhecimento-voz.ts:10` | Comum | 2 arquivos |
 | `classes_peixe` | tabela | `supabase/migrations/20261026000001_schema.sql:668` | Produção | 6 arquivos |
 | `Classificacao` | tipo | `src/lib/zootecnico.ts:176` | Produção | — |
@@ -608,6 +614,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `conferirConexao` | função | `src/lib/sync/detector.ts:31` | Comum | — |
 | `conferirCredencial` | função | `src/lib/asaas-mapa.ts:31` | Cobrança | 2 arquivos |
 | `conferirLeitura` | função | `src/lib/documento-recebido.ts:16` | Comum | — |
+| `Confianca` | tipo | `src/lib/previsao-racao.ts:18` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `confiarDispositivo` | ação | `src/app/auth/mfa/actions.ts:83` | Login, segurança, usuários e permissões | 1 arquivo |
 | `confiarNesteDispositivo` | função | `src/lib/mfa.ts:47` | Login, segurança, usuários e permissões | 1 arquivo |
 | `config` | constante | `src/proxy.ts:62` | Login, segurança, usuários e permissões | — |
@@ -626,6 +633,8 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `consultarCep` | função | `src/lib/consulta-publica.ts:63` | Comum | 1 arquivo |
 | `consultarCnpj` | função | `src/lib/consulta-publica.ts:56` | Comum | 1 arquivo |
 | `consultarNfe` | ação | `src/app/(app)/notas/actions.ts:146` | Fiscal | 1 arquivo |
+| `consumoPorRacao` | função | `src/lib/previsao-racao.ts:368` | Vendas, PDV, estoque, produtos e ração | 3 arquivos |
+| `ConsumoRacao` | tipo | `src/lib/previsao-racao.ts:291` | Vendas, PDV, estoque, produtos e ração | — |
 | `Conta` | tipo | `src/app/(app)/contas/lista.tsx:18` | Financeiro | 1 arquivo |
 | `ContaAsaas` | tipo | `src/app/(app)/cobrancas/conta.tsx:6` | Cobrança | 1 arquivo |
 | `Contador` | componente | `src/components/vendas/controles.tsx:21` | Vendas, PDV, estoque, produtos e ração | 3 arquivos |
@@ -636,7 +645,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `contarDispositivosConfiaveis` | função | `src/lib/mfa.ts:108` | Login, segurança, usuários e permissões | 1 arquivo |
 | `contarMortes` | função | `src/lib/ia.ts:87` | Comum | 1 arquivo |
 | `contarMortesPorFoto` | ação | `src/app/(app)/apontamentos/foto-mortes-action.ts:11` | Produção | 1 arquivo |
-| `contarPescado` | ação | `src/app/(app)/estoque/actions.ts:42` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
+| `contarPescado` | ação | `src/app/(app)/estoque/actions.ts:41` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `contarPonto` | ação | `src/app/(app)/pontos-de-venda/actions.ts:83` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `contas_asaas` | tabela | `supabase/migrations/20261027130000_contas_asaas.sql:6` | Cobrança | 4 arquivos |
 | `contas_asaas_segredos` | tabela | `supabase/migrations/20261027130000_contas_asaas.sql:20` | Cobrança | 3 arquivos |
@@ -651,7 +660,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `Contexto` | tipo | `src/lib/importacao-modelo.ts:282` | Importação | 2 arquivos |
 | `ContextoApi` | tipo | `src/lib/api/servidor.ts:13` | API pública, webhooks e rotinas agendadas | — |
 | `ContextoCartoes` | tipo | `src/lib/campo/propostas.ts:52` | Produção | 5 arquivos |
-| `contextoDosCartoes` | função | `src/lib/campo/manejo-ia.ts:62` | Produção | 2 arquivos |
+| `contextoDosCartoes` | função | `src/lib/campo/manejo-ia.ts:70` | Produção | 2 arquivos |
 | `conversarOllama` | função | `src/lib/ai/offline-chat.ts:53` | Comum | — |
 | `convidar_usuario` | função SQL | `supabase/migrations/20261029213000_cargos.sql:210` | Login, segurança, usuários e permissões | 1 arquivo |
 | `convidarUsuario` | ação | `src/app/(app)/configuracoes/usuarios/actions.ts:31` | Login, segurança, usuários e permissões | 1 arquivo |
@@ -665,10 +674,12 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `Cor` | tipo | `src/components/ui.tsx:266` | Comum | 3 arquivos |
 | `COR_FICHA` | constante | `src/components/ui.tsx:267` | Comum | — |
 | `CORES` | constante | `src/lib/apresentacao.ts:10` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
+| `corrigir_grupos_biometria` | função SQL | `supabase/migrations/20261111000004_biometria_grupos.sql:132` | Comum | 1 arquivo |
+| `corrigirGruposBiometria` | ação | `src/app/(app)/lotes/actions.ts:201` | Produção | 1 arquivo |
 | `corrigirNfe` | ação | `src/app/(app)/notas/actions.ts:186` | Fiscal | 1 arquivo |
 | `cpfValido` | função | `src/lib/documento.ts:9` | Comum | 4 arquivos |
 | `createAdminClient` | função | `src/lib/supabase/admin.ts:7` | Comum | 21 arquivos |
-| `createClient` | função | `src/lib/supabase/server.ts:7` | Comum | 145 arquivos |
+| `createClient` | função | `src/lib/supabase/server.ts:7` | Comum | 148 arquivos |
 | `Credencial` | tipo | `src/lib/asaas.ts:7` | Cobrança | 5 arquivos |
 | `credencialBalbina` | função | `src/lib/assinatura.ts:23` | Cobrança | 1 arquivo |
 | `credencialDoPerfil` | função | `src/lib/asaas.ts:12` | Cobrança | 6 arquivos |
@@ -688,7 +699,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `criarContato` | ação | `src/app/(app)/_titulos/actions.ts:86` | Financeiro | 1 arquivo |
 | `criarDispositivoConfiavel` | função | `src/lib/mfa.ts:66` | Login, segurança, usuários e permissões | 1 arquivo |
 | `criarEmpresa` | ação | `src/app/onboarding/actions.ts:10` | Início, painel, ajuda e configurações | 1 arquivo |
-| `criarEspecie` | ação | `src/app/(app)/lotes/actions.ts:179` | Produção | 1 arquivo |
+| `criarEspecie` | ação | `src/app/(app)/lotes/actions.ts:224` | Produção | 1 arquivo |
 | `criarItemChecklist` | ação | `src/app/(app)/apontamentos/actions.ts:191` | Produção | 1 arquivo |
 | `criarLoginLocal` | ação | `src/app/(app)/configuracoes/usuarios/actions.ts:81` | Login, segurança, usuários e permissões | 1 arquivo |
 | `criarPonto` | ação | `src/app/(app)/pontos-de-venda/actions.ts:38` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
@@ -701,7 +712,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `cursorSeguinte` | função | `src/lib/open-finance-mapa.ts:97` | Financeiro | 2 arquivos |
 | `curvaAbc` | função | `src/lib/vendas.ts:67` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
 | `CurvaPadrao` | tipo | `src/lib/previsao.ts:20` | Planejamento, previsões, custo do kg e relatórios | 3 arquivos |
-| `curvas_crescimento` | tabela | `supabase/migrations/20261026000001_schema.sql:618` | Produção | 5 arquivos |
+| `curvas_crescimento` | tabela | `supabase/migrations/20261026000001_schema.sql:618` | Produção | 6 arquivos |
 | `curvasDasEspecies` | função | `src/lib/planejamento-dados.ts:99` | Planejamento, previsões, custo do kg e relatórios | — |
 | `CurvaSemana` | tipo | `src/lib/planejamento.ts:484` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
 | `custeio_habitual` | função SQL | `supabase/migrations/20261101160000_nfes_recebidas.sql:93` | Comum | 2 arquivos |
@@ -725,6 +736,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `dadosDoCnpj` | função | `src/lib/consulta-publica.ts:25` | Comum | 1 arquivo |
 | `DadosDocumento` | tipo | `src/lib/documento-recebido.ts:8` | Comum | 1 arquivo |
 | `DadosEstoque` | tipo | `src/app/(app)/produtos/lista.tsx:49` | Vendas, PDV, estoque, produtos e ração | — |
+| `DadosLote` | tipo | `src/lib/previsao-racao.ts:30` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `DadosNibo` | tipo | `src/lib/importacao-nibo.ts:49` | Importação | 2 arquivos |
 | `DadosSubconta` | tipo | `src/lib/asaas-mapa.ts:173` | Cobrança | — |
 | `DadosVenda` | tipo | `src/app/(app)/vendas/actions.ts:72` | Vendas, PDV, estoque, produtos e ração | — |
@@ -744,12 +756,13 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `definirPreco` | ação | `src/app/(app)/vendas/actions.ts:278` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `DELETE` | função | `src/app/api/push/route.ts:33` | Comum | — |
 | `Dependencias` | tipo | `src/lib/sync/worker.ts:18` | Comum | — |
-| `depositos` | tabela | `supabase/migrations/20261026000001_schema.sql:743` | Vendas, PDV, estoque, produtos e ração | 5 arquivos |
+| `depositos` | tabela | `supabase/migrations/20261026000001_schema.sql:743` | Vendas, PDV, estoque, produtos e ração | 6 arquivos |
 | `desconciliar` | ação | `src/app/(app)/conciliacao/actions.ts:196` | Financeiro | 1 arquivo |
 | `desconciliar` | função SQL | `supabase/migrations/20261104020000_conciliacao_multipla.sql:179` | Financeiro | — |
 | `desconectarBanco` | ação | `src/app/(app)/conciliacao/open-finance-actions.ts:127` | Financeiro | 2 arquivos |
 | `descreverCondicao` | função | `src/lib/regras.ts:33` | Financeiro | 2 arquivos |
-| `descricaoRacao` | função | `src/lib/racao-estoque.ts:27` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
+| `descricaoFaixa` | função | `src/lib/previsao-racao.ts:81` | Vendas, PDV, estoque, produtos e ração | — |
+| `descricaoRacao` | função | `src/lib/racao-estoque.ts:27` | Vendas, PDV, estoque, produtos e ração | 3 arquivos |
 | `desdeNiboValido` | função | `src/lib/importacao-nibo.ts:479` | Importação | 2 arquivos |
 | `desfaz_despesca_estoque` | trigger | `supabase/migrations/20261105000003_piscicultura_despesca_estoque.sql:442` | Comum | — |
 | `desfazer_compra_do_grupo` | função SQL | `supabase/migrations/20261029183000_venda_entre_empresas.sql:140` | Comum | 1 arquivo |
@@ -761,7 +774,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `desfazerEntradaGrupo` | ação | `src/app/(app)/vendas/actions.ts:325` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `desfazerEntrega` | ação | `src/app/(app)/vendas/actions.ts:242` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `desfazerFaturamento` | ação | `src/app/(app)/vendas/actions.ts:246` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
-| `desfazerTransferencia` | ação | `src/app/(app)/lotes/actions.ts:262` | Produção | 1 arquivo |
+| `desfazerTransferencia` | ação | `src/app/(app)/lotes/actions.ts:307` | Produção | 1 arquivo |
 | `Desfecho` | tipo | `src/lib/campo/fila.ts:52` | Produção | — |
 | `desfecho` | função | `src/lib/campo/fila.ts:60` | Produção | 2 arquivos |
 | `desligarConta` | ação | `src/app/(app)/cobrancas/conta-actions.ts:149` | Cobrança | 1 arquivo |
@@ -784,7 +797,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `DialogoAcao` | componente | `src/components/dialogo-acao.tsx:12` | Comum | 2 arquivos |
 | `DiaLote` | tipo | `src/lib/analise-periodo.ts:156` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `DiaLote` | tipo | `src/lib/previsao.ts:98` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
-| `DIAS_ALERTA_VALIDADE` | constante | `src/lib/racao-estoque.ts:4` | Vendas, PDV, estoque, produtos e ração | — |
+| `DIAS_ALERTA_VALIDADE` | constante | `src/lib/racao-estoque.ts:4` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `DIAS_ANTES` | constante | `src/lib/regua-cobranca.ts:12` | Cobrança | 1 arquivo |
 | `DIAS_ATRASO` | constante | `src/lib/regua-cobranca.ts:13` | Cobrança | — |
 | `DIAS_COMPRA` | constante | `src/lib/abastecimento.ts:7` | Comum | 1 arquivo |
@@ -792,10 +805,12 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `DIAS_CONSUMO` | constante | `src/lib/previsao-dados.ts:18` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `DIAS_FILA` | constante | `src/lib/pedido-campo.ts:23` | Produção | — |
 | `DIAS_MINIMOS` | constante | `src/lib/zootecnico.ts:52` | Produção | 2 arquivos |
+| `DIAS_SIMULACAO` | constante | `src/lib/previsao-racao.ts:46` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `DIAS_SUGESTAO` | constante | `src/lib/sugestao-apontamento-dados.ts:7` | Produção | — |
 | `DIAS_TENDENCIA` | constante | `src/lib/previsao-dados.ts:17` | Planejamento, previsões, custo do kg e relatórios | — |
+| `DIAS_TRATO` | constante | `src/lib/previsao-racao-dados.ts:14` | Vendas, PDV, estoque, produtos e ração | — |
 | `diasAtrasISO` | função | `src/lib/formato.ts:114` | Comum | 10 arquivos |
-| `diasEntre` | função | `src/lib/crescimento.ts:57` | Produção | 1 arquivo |
+| `diasEntre` | função | `src/lib/crescimento.ts:57` | Produção | 2 arquivos |
 | `diferencaPct` | função | `src/lib/campo/indicadores.ts:28` | Produção | 2 arquivos |
 | `dispensarSugestao` | ação | `src/app/(app)/conciliacao/actions.ts:272` | Financeiro | 2 arquivos |
 | `dispositivos_confiaveis` | tabela | `supabase/migrations/20261028170000_dispositivos_confiaveis.sql:8` | Login, segurança, usuários e permissões | 1 arquivo |
@@ -821,7 +836,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `editar_titulo` | função SQL | `supabase/migrations/20261028190000_acoes_titulos.sql:15` | Financeiro | 1 arquivo |
 | `editarLancamento` | ação | `src/app/(app)/apontamentos/actions.ts:131` | Produção | 1 arquivo |
 | `EditarLancamento` | componente | `src/app/(app)/apontamentos/editar-lancamento.tsx:27` | Produção | 1 arquivo |
-| `editarLote` | ação | `src/app/(app)/lotes/actions.ts:65` | Produção | 1 arquivo |
+| `editarLote` | ação | `src/app/(app)/lotes/actions.ts:66` | Produção | 1 arquivo |
 | `editarTitulo` | ação | `src/app/(app)/_titulos/actions.ts:164` | Financeiro | 1 arquivo |
 | `eLoginLocal` | função | `src/lib/login-local.ts:21` | Login, segurança, usuários e permissões | 5 arquivos |
 | `emailDeEntrada` | função | `src/lib/login-local.ts:16` | Login, segurança, usuários e permissões | 3 arquivos |
@@ -848,13 +863,14 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `empresas` | tabela | `supabase/migrations/20261026000001_schema.sql:15` | Início, painel, ajuda e configurações | 14 arquivos |
 | `encerrar_lote` | função SQL | `supabase/migrations/20261105000001_piscicultura_estrutura.sql:615` | Produção | 2 arquivos |
 | `encerrar_recorrencia` | função SQL | `supabase/migrations/20261028060000_fuso_da_empresa.sql:62` | Financeiro | 1 arquivo |
-| `encerrarLote` | ação | `src/app/(app)/lotes/actions.ts:115` | Produção | 1 arquivo |
+| `encerrarLote` | ação | `src/app/(app)/lotes/actions.ts:116` | Produção | 1 arquivo |
 | `encerrarRecorrencia` | ação | `src/app/(app)/_titulos/actions.ts:150` | Financeiro | 1 arquivo |
 | `encontrarModulo` | função | `src/lib/modulos.ts:94` | Comum | 3 arquivos |
 | `Endpoint` | tipo | `src/lib/api/catalogo.ts:2` | API pública, webhooks e rotinas agendadas | — |
 | `ENDPOINTS` | constante | `src/lib/api/catalogo.ts:4` | API pública, webhooks e rotinas agendadas | 2 arquivos |
 | `Entrada` | componente | `src/components/campo/pecas.tsx:158` | Produção | 4 arquivos |
 | `EntradaNoGrupo` | componente | `src/components/vendas/entrada-grupo.tsx:11` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
+| `EntradaSaldo` | tipo | `src/lib/previsao-racao.ts:28` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `entrar` | função | `e2e/apoio.ts:104` | Comum | 2 arquivos |
 | `entrarComSenha` | função | `e2e/apoio.ts:96` | Comum | 1 arquivo |
 | `entregar_pedido` | função SQL | `supabase/migrations/20261026000006_estoque_vendas_sanidade.sql:329` | Vendas, PDV, estoque, produtos e ração | — |
@@ -888,7 +904,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `esquecerDispositivos` | função | `src/lib/mfa.ts:117` | Login, segurança, usuários e permissões | 1 arquivo |
 | `esquecerDispositivosConfiaveis` | ação | `src/app/(app)/seguranca/actions.ts:19` | Login, segurança, usuários e permissões | 1 arquivo |
 | `estaAtivo` | função | `src/lib/menu.ts:46` | Comum | 1 arquivo |
-| `EstadoAcao` | tipo | `src/lib/acao.ts:2` | Comum | 59 arquivos |
+| `EstadoAcao` | tipo | `src/lib/acao.ts:2` | Comum | 60 arquivos |
 | `EstadoAceite` | tipo | `src/app/aceitar-termos/actions.ts:7` | Login, segurança, usuários e permissões | 1 arquivo |
 | `EstadoCodigoEmail` | tipo | `src/app/auth/mfa/actions.ts:11` | Login, segurança, usuários e permissões | 1 arquivo |
 | `EstadoFila` | tipo | `src/components/campo/fila-cliente.ts:23` | Produção | 1 arquivo |
@@ -904,16 +920,18 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `EstoqueImportado` | tipo | `src/lib/importacao.ts:34` | Importação | — |
 | `EstoqueLinha` | tipo | `src/lib/estoque-carrinho.ts:9` | Vendas, PDV, estoque, produtos e ração | — |
 | `estoqueNoCarrinho` | função | `src/lib/estoque-carrinho.ts:18` | Vendas, PDV, estoque, produtos e ração | 4 arquivos |
-| `estornar_baixa_racao` | função SQL | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:455` | Vendas, PDV, estoque, produtos e ração | — |
+| `estoqueUtil` | função | `src/lib/previsao-racao.ts:312` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
+| `estornar_baixa_racao` | função SQL | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:455` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `estornar_baixas` | função SQL | `supabase/migrations/20261028190000_acoes_titulos.sql:176` | Financeiro | 1 arquivo |
 | `estornarBaixa` | ação | `src/app/(app)/_titulos/actions.ts:205` | Financeiro | 1 arquivo |
+| `estornarSaidaRacao` | ação | `src/app/(app)/racao/actions.ts:72` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `estudar` | função | `src/lib/planejamento.ts:539` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
 | `Estudo` | tipo | `src/lib/planejamento.ts:499` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `estudosDoPlano` | função | `src/lib/planejamento-dados.ts:119` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
 | `Etapa` | tipo | `src/lib/importacao-modelo.ts:14` | Importação | — |
 | `Etapa` | tipo | `src/lib/planejamento.ts:13` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `etapasDoCiclo` | função | `src/lib/planejamento.ts:136` | Planejamento, previsões, custo do kg e relatórios | — |
-| `Etiqueta` | componente | `src/components/ui.tsx:150` | Comum | 47 arquivos |
+| `Etiqueta` | componente | `src/components/ui.tsx:150` | Comum | 49 arquivos |
 | `Evento` | tipo | `src/lib/api/regras.ts:28` | API pública, webhooks e rotinas agendadas | — |
 | `Evento` | tipo | `src/lib/planejamento.ts:91` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `EVENTO_LATERAL` | constante | `src/lib/lateral.ts:7` | Comum | — |
@@ -928,18 +946,18 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `excluir_entrada_racao` | função SQL | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:594` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `excluir_lancamento` | função SQL | `supabase/migrations/20261105000002_piscicultura_apontamento.sql:239` | Financeiro | 1 arquivo |
 | `excluir_titulos` | função SQL | `supabase/migrations/20261028190000_acoes_titulos.sql:120` | Financeiro | 1 arquivo |
-| `excluirBiometria` | ação | `src/app/(app)/lotes/actions.ts:170` | Produção | 1 arquivo |
+| `excluirBiometria` | ação | `src/app/(app)/lotes/actions.ts:215` | Produção | 1 arquivo |
 | `excluirCategoria` | ação | `src/app/(app)/categorias/actions.ts:57` | Financeiro | 1 arquivo |
 | `excluirCentroCusto` | ação | `src/app/(app)/centros-de-custo/actions.ts:36` | Financeiro | 1 arquivo |
 | `excluirConta` | ação | `src/app/(app)/contas/actions.ts:63` | Financeiro | 1 arquivo |
 | `excluirContato` | ação | `src/app/(app)/contatos/actions.ts:58` | Financeiro | 1 arquivo |
 | `excluirCusto` | ação | `src/app/(app)/planejamento/actions.ts:146` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
-| `excluirEntradaRacao` | ação | `src/app/(app)/estoque/actions.ts:92` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
+| `excluirEntradaRacao` | ação | `src/app/(app)/racao/actions.ts:44` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `excluirItemChecklist` | ação | `src/app/(app)/apontamentos/actions.ts:219` | Produção | 1 arquivo |
 | `excluirLancamento` | ação | `src/app/(app)/apontamentos/actions.ts:118` | Produção | 1 arquivo |
 | `ExcluirLancamento` | componente | `src/app/(app)/apontamentos/excluir-lancamento.tsx:11` | Produção | 1 arquivo |
 | `ExcluirLinha` | componente | `src/components/excluir-linha.tsx:8` | Comum | 5 arquivos |
-| `excluirLote` | ação | `src/app/(app)/lotes/actions.ts:104` | Produção | 1 arquivo |
+| `excluirLote` | ação | `src/app/(app)/lotes/actions.ts:105` | Produção | 1 arquivo |
 | `excluirLotePlanejado` | ação | `src/app/(app)/planejamento/actions.ts:102` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `excluirMedicamento` | ação | `src/app/(app)/medicamentos/actions.ts:59` | Produção | 1 arquivo |
 | `excluirPedidoFixo` | ação | `src/app/(app)/vendas/fixos/actions.ts:49` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
@@ -951,7 +969,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `excluirViveiro` | ação | `src/app/(app)/piscicultura/actions.ts:104` | Produção | 1 arquivo |
 | `exigir_troca_senha` | função SQL | `supabase/migrations/20261029223000_login_local.sql:152` | Comum | 1 arquivo |
 | `exigirAceiteTermos` | função | `src/lib/aceite-termos.ts:26` | Login, segurança, usuários e permissões | 5 arquivos |
-| `exigirAcesso` | função | `src/lib/permissoes.ts:22` | Login, segurança, usuários e permissões | 57 arquivos |
+| `exigirAcesso` | função | `src/lib/permissoes.ts:22` | Login, segurança, usuários e permissões | 58 arquivos |
 | `exigirMaster` | função | `src/lib/permissoes.ts:27` | Login, segurança, usuários e permissões | 6 arquivos |
 | `exigirSegundoFator` | função | `src/lib/mfa.ts:11` | Login, segurança, usuários e permissões | 3 arquivos |
 | `Existente` | tipo | `src/lib/campo/fila.ts:10` | Produção | 1 arquivo |
@@ -959,14 +977,16 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `extratoComSinal` | função | `src/lib/importacao-nibo.ts:107` | Importação | — |
 | `Faixa` | componente | `src/components/ui.tsx:348` | Comum | 8 arquivos |
 | `Faixa` | tipo | `src/lib/regua-cobranca.ts:5` | Cobrança | 1 arquivo |
+| `FaixaArracoamento` | tipo | `src/lib/previsao-racao.ts:20` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
 | `faixaClasse` | função | `src/lib/pescado.ts:100` | Comum | 5 arquivos |
 | `FaixaCobranca` | tipo | `src/lib/whatsapp-texto.ts:87` | Comum | 1 arquivo |
 | `faixaDaRegua` | função | `src/lib/regua-cobranca.ts:15` | Cobrança | 2 arquivos |
+| `faixaDoPeso` | função | `src/lib/previsao-racao.ts:56` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `FAIXAS` | constante | `src/lib/regua-cobranca.ts:6` | Cobrança | 1 arquivo |
 | `FAIXAS_AGING` | constante | `src/lib/relatorios.ts:71` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `faixaTitulo` | função | `src/lib/planilha.ts:24` | Comum | 1 arquivo |
 | `FalarApontamento` | componente | `src/components/assistentes-apontamento.tsx:29` | Produção | 1 arquivo |
-| `falha` | função | `src/lib/acao.ts:4` | Comum | 42 arquivos |
+| `falha` | função | `src/lib/acao.ts:4` | Comum | 43 arquivos |
 | `falhaTemporaria` | função | `src/lib/supabase/falha-auth.ts:5` | Login, segurança, usuários e permissões | 2 arquivos |
 | `faltasLcdpr` | função | `src/lib/lcdpr.ts:77` | Comum | 3 arquivos |
 | `FaseCusto` | tipo | `src/lib/planejamento.ts:469` | Planejamento, previsões, custo do kg e relatórios | — |
@@ -980,11 +1000,12 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `faturas_cartao` | view | `supabase/migrations/20261028060000_fuso_da_empresa.sql:1161` | Financeiro | 1 arquivo |
 | `fazerPedido` | ação | `src/app/pedido/[token]/actions.ts:12` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `fechar_mes` | função SQL | `supabase/migrations/20261026000005_conciliacao_relatorios.sql:224` | Comum | — |
-| `fecharLoteCampo` | função | `src/lib/campo/servidor.ts:167` | Produção | 1 arquivo |
-| `FecharLoteCampo` | tipo | `src/lib/campo/validar.ts:103` | Produção | — |
+| `fecharLoteCampo` | função | `src/lib/campo/servidor.ts:182` | Produção | 1 arquivo |
+| `FecharLoteCampo` | tipo | `src/lib/campo/validar.ts:124` | Produção | — |
 | `fecharMes` | ação | `src/app/(app)/relatorios/dre/actions.ts:19` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `fecharPagamento` | função | `src/lib/vendas.ts:134` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
 | `Ficha` | componente | `src/components/ui.tsx:278` | Comum | 3 arquivos |
+| `filaDeConsumo` | função | `src/lib/previsao-racao.ts:394` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
 | `filaGuardada` | função | `e2e/apoio.ts:37` | Comum | 2 arquivos |
 | `Finalidade` | tipo | `src/lib/planejamento.ts:12` | Planejamento, previsões, custo do kg e relatórios | — |
 | `FINALIDADES_VIVEIRO` | constante | `src/lib/rotulos.ts:29` | Comum | 3 arquivos |
@@ -1017,18 +1038,18 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `FORMAS_PAGAMENTO` | constante | `src/lib/titulos.ts:55` | Financeiro | 7 arquivos |
 | `FORMAS_PDV` | constante | `src/lib/vendas.ts:129` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
 | `formatarCelular` | função | `src/lib/whatsapp-texto.ts:19` | Comum | 2 arquivos |
-| `formatarData` | função | `src/lib/formato.ts:26` | Comum | 61 arquivos |
+| `formatarData` | função | `src/lib/formato.ts:26` | Comum | 63 arquivos |
 | `formatarDataHora` | função | `src/lib/historico.ts:124` | Login, segurança, usuários e permissões | 2 arquivos |
 | `formatarDocumento` | função | `src/lib/documento.ts:21` | Comum | 2 arquivos |
 | `formatarInteiro` | função | `src/lib/formato.ts:21` | Comum | 25 arquivos |
 | `formatarLinha` | função | `src/lib/boleto.ts:84` | Comum | 3 arquivos |
-| `formatarMoeda` | função | `src/lib/formato.ts:6` | Comum | 58 arquivos |
-| `formatarNumero` | função | `src/lib/formato.ts:10` | Comum | 24 arquivos |
-| `formatarQuantidade` | função | `src/lib/formato.ts:16` | Comum | 5 arquivos |
+| `formatarMoeda` | função | `src/lib/formato.ts:6` | Comum | 59 arquivos |
+| `formatarNumero` | função | `src/lib/formato.ts:10` | Comum | 27 arquivos |
+| `formatarQuantidade` | função | `src/lib/formato.ts:16` | Comum | 7 arquivos |
 | `formatarValorCampo` | função | `src/lib/historico.ts:96` | Login, segurança, usuários e permissões | 2 arquivos |
 | `Formato` | tipo | `src/lib/relatorios-catalogo.ts:7` | Planejamento, previsões, custo do kg e relatórios | — |
 | `FORMATO_LOGIN` | constante | `src/lib/login-local.ts:5` | Login, segurança, usuários e permissões | 2 arquivos |
-| `FormBiometria` | componente | `src/components/campo/form-biometria.tsx:14` | Produção | 1 arquivo |
+| `FormBiometria` | componente | `src/components/campo/form-biometria.tsx:31` | Produção | 1 arquivo |
 | `FormEmpresa` | componente | `src/app/onboarding/form.tsx:7` | Início, painel, ajuda e configurações | 1 arquivo |
 | `FormFecharLote` | componente | `src/components/campo/form-lote.tsx:93` | Produção | 1 arquivo |
 | `FormInsumo` | componente | `src/components/campo/form-insumo.tsx:20` | Produção | 1 arquivo |
@@ -1095,14 +1116,14 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `getAssinatura` | função | `src/lib/assinatura.ts:9` | Cobrança | 5 arquivos |
 | `getAssistente` | função | `src/lib/assistente-dados.ts:8` | Início, painel, ajuda e configurações | 2 arquivos |
 | `getClaimsDaSessao` | função | `src/lib/auth.ts:10` | Login, segurança, usuários e permissões | 1 arquivo |
-| `getEmpresaAtual` | função | `src/lib/empresa.ts:35` | Início, painel, ajuda e configurações | 121 arquivos |
-| `getPermissoes` | função | `src/lib/permissoes.ts:12` | Login, segurança, usuários e permissões | 72 arquivos |
+| `getEmpresaAtual` | função | `src/lib/empresa.ts:35` | Início, painel, ajuda e configurações | 123 arquivos |
+| `getPermissoes` | função | `src/lib/permissoes.ts:12` | Login, segurança, usuários e permissões | 73 arquivos |
 | `getUsuario` | função | `src/lib/auth.ts:16` | Login, segurança, usuários e permissões | 10 arquivos |
 | `GraficoColunas` | componente | `src/components/graficos.tsx:85` | Planejamento, previsões, custo do kg e relatórios | 3 arquivos |
 | `GraficoCrescimento` | componente | `src/components/campo/grafico-crescimento.tsx:16` | Produção | 1 arquivo |
 | `GraficoLinha` | componente | `src/components/graficos.tsx:148` | Planejamento, previsões, custo do kg e relatórios | 4 arquivos |
 | `gravarApontamentoCampo` | função | `src/lib/apontamento-campo-servidor.ts:43` | Produção | 2 arquivos |
-| `gravarBiometriaCampo` | função | `src/lib/campo/servidor.ts:128` | Produção | 1 arquivo |
+| `gravarBiometriaCampo` | função | `src/lib/campo/servidor.ts:133` | Produção | 1 arquivo |
 | `gravarDados` | função | `e2e/apoio.ts:80` | Comum | 1 arquivo |
 | `gravarItem` | função | `src/lib/db/indexeddb.ts:187` | Comum | 5 arquivos |
 | `gravarJson` | função | `src/lib/db/indexeddb.ts:223` | Comum | 2 arquivos |
@@ -1111,6 +1132,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `Grupo` | tipo | `src/lib/importacao.ts:7` | Importação | 1 arquivo |
 | `Grupo` | tipo | `src/lib/menu.ts:8` | Comum | 1 arquivo |
 | `grupoAtivo` | função | `src/lib/menu.ts:55` | Comum | 2 arquivos |
+| `GrupoBiometria` | tipo | `src/lib/biometria-grupos.ts:5` | Comum | 4 arquivos |
 | `GrupoModulos` | tipo | `src/lib/modulos.ts:13` | Comum | — |
 | `grupoPeloNome` | função | `src/lib/importacao.ts:121` | Importação | 2 arquivos |
 | `GrupoProduto` | tipo | `src/app/(app)/produtos/lista.tsx:40` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
@@ -1118,11 +1140,14 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `GRUPOS_CATALOGO` | constante | `src/lib/permissoes-regras.ts:39` | Login, segurança, usuários e permissões | 2 arquivos |
 | `GRUPOS_CATEGORIA` | constante | `src/lib/titulos.ts:65` | Financeiro | 8 arquivos |
 | `GRUPOS_DRE` | constante | `src/lib/relatorios.ts:107` | Planejamento, previsões, custo do kg e relatórios | — |
+| `GruposBiometria` | componente | `src/components/grupos-biometria.tsx:20` | Comum | 1 arquivo |
 | `hashToken` | função | `src/lib/cripto.ts:26` | Login, segurança, usuários e permissões | 5 arquivos |
 | `historico` | trigger | `supabase/migrations/20261028201500_historico_alteracoes.sql:137` | Comum | — |
 | `hojeISO` | função | `src/lib/formato.ts:109` | Comum | 78 arquivos |
 | `hojeManaus` | função | `e2e/apoio.ts:126` | Comum | 2 arquivos |
 | `hora` | função | `src/components/campo/pecas.tsx:207` | Produção | — |
+| `Horizonte` | tipo | `src/lib/previsao-racao.ts:84` | Vendas, PDV, estoque, produtos e ração | — |
+| `HORIZONTES` | constante | `src/lib/previsao-racao.ts:45` | Vendas, PDV, estoque, produtos e ração | — |
 | `hrefAtivo` | função | `src/lib/menu.ts:51` | Comum | 1 arquivo |
 | `ia_uso` | tabela | `supabase/migrations/20261101180000_documentos_recebidos.sql:14` | Comum | 1 arquivo |
 | `iaConfigurada` | função | `src/lib/ia.ts:16` | Comum | 6 arquivos |
@@ -1159,7 +1184,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `inscricoes_com_permissao` | função SQL | `supabase/migrations/20261101130000_automacoes_resumo.sql:35` | Login, segurança, usuários e permissões | 1 arquivo |
 | `instanteValido` | função | `src/lib/api/regras.ts:99` | API pública, webhooks e rotinas agendadas | 4 arquivos |
 | `INSTRUCOES_MANEJO` | constante | `src/lib/campo/manejo-ia.ts:11` | Produção | 2 arquivos |
-| `InsumoCampo` | tipo | `src/lib/campo/validar.ts:139` | Produção | — |
+| `InsumoCampo` | tipo | `src/lib/campo/validar.ts:160` | Produção | — |
 | `InsumoOpcao` | tipo | `src/lib/campo/tipos.ts:57` | Produção | 1 arquivo |
 | `integracoes_empresa` | tabela | `supabase/migrations/20261028230000_nibo_saldos_conciliacao.sql:12` | API pública, webhooks e rotinas agendadas | 1 arquivo |
 | `interpretarFala` | função | `src/lib/fala-apontamento.ts:97` | Produção | 4 arquivos |
@@ -1192,6 +1217,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `ItemVendido` | tipo | `src/lib/vendas.ts:21` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `itensVigentes` | função | `src/lib/planejamento.ts:525` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `janelaDeLeitura` | função | `src/lib/analise-periodo.ts:70` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
+| `janelaReserva` | função | `src/lib/previsao-racao.ts:307` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `justificativaValida` | função | `src/lib/focus-mapa.ts:257` | Fiscal | 2 arquivos |
 | `KG_CAIXA` | constante | `src/lib/pescado.ts:5` | Comum | 2 arquivos |
 | `KpiSlide` | tipo | `src/lib/apresentacao.ts:17` | Planejamento, previsões, custo do kg e relatórios | — |
@@ -1204,8 +1230,8 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `lancar_pelo_historico` | função SQL | `supabase/migrations/20261101110000_automacoes_financeiro.sql:74` | Login, segurança, usuários e permissões | 1 arquivo |
 | `lancarDocumento` | ação | `src/app/(app)/contas-a-pagar/documentos/actions.ts:34` | Financeiro | 1 arquivo |
 | `lancarEntradaGrupo` | ação | `src/app/(app)/vendas/actions.ts:314` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
-| `lancarEntradaRacao` | ação | `src/app/(app)/estoque/actions.ts:68` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
-| `lancarInsumoCampo` | função | `src/lib/campo/servidor.ts:194` | Produção | 1 arquivo |
+| `lancarEntradaRacao` | ação | `src/app/(app)/racao/actions.ts:21` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
+| `lancarInsumoCampo` | função | `src/lib/campo/servidor.ts:209` | Produção | 1 arquivo |
 | `lancarNfeRecebida` | ação | `src/app/(app)/notas/recebidas/actions.ts:23` | Fiscal | 1 arquivo |
 | `lancarPeloHistorico` | ação | `src/app/(app)/conciliacao/actions.ts:246` | Financeiro | 1 arquivo |
 | `LARGURA_COMPLETA` | constante | `src/lib/versao.ts:6` | Início, painel, ajuda e configurações | 1 arquivo |
@@ -1220,14 +1246,14 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `lerAguaForm` | função | `src/lib/agua.ts:46` | Comum | 1 arquivo |
 | `lerAno` | função | `src/lib/consultas-relatorio.ts:11` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
 | `lerCausasForm` | função | `src/lib/causas-morte.ts:34` | Produção | 2 arquivos |
-| `lerCentavos` | função | `src/lib/formato.ts:68` | Comum | 20 arquivos |
+| `lerCentavos` | função | `src/lib/formato.ts:68` | Comum | 21 arquivos |
 | `lerChecklist` | função | `src/lib/apontamento-racao.ts:32` | Produção | 2 arquivos |
 | `lerCompetencia` | função | `src/lib/importacao-modelo.ts:390` | Importação | 1 arquivo |
 | `lerCorpo` | função | `src/lib/api/servidor.ts:105` | API pública, webhooks e rotinas agendadas | 6 arquivos |
 | `lerCsv` | função | `src/lib/importacao-planilha.ts:7` | Importação | 2 arquivos |
 | `lerDados` | função | `e2e/apoio.ts:76` | Comum | 6 arquivos |
 | `lerData` | função | `src/lib/importacao-modelo.ts:373` | Importação | 1 arquivo |
-| `lerDecimal` | função | `src/lib/formato.ts:77` | Comum | 18 arquivos |
+| `lerDecimal` | função | `src/lib/formato.ts:77` | Comum | 20 arquivos |
 | `lerDocumento` | função | `src/lib/ia.ts:70` | Comum | 1 arquivo |
 | `lerDocumento` | função | `src/lib/pontos.ts:30` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
 | `lerDocumentoEnviado` | ação | `src/app/(app)/contas-a-pagar/documentos/actions.ts:20` | Financeiro | 1 arquivo |
@@ -1253,7 +1279,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `lerRegime` | função | `src/lib/consultas-relatorio.ts:7` | Planejamento, previsões, custo do kg e relatórios | 3 arquivos |
 | `lerRetorno` | função | `src/lib/focus-mapa.ts:156` | Fiscal | 3 arquivos |
 | `lerTipo` | função | `src/lib/titulos.ts:41` | Financeiro | 1 arquivo |
-| `lerTodas` | função | `src/lib/supabase/todas.ts:11` | Comum | 13 arquivos |
+| `lerTodas` | função | `src/lib/supabase/todas.ts:11` | Comum | 14 arquivos |
 | `lerToken` | função | `src/lib/api/regras.ts:69` | API pública, webhooks e rotinas agendadas | 2 arquivos |
 | `lerUf` | função | `src/lib/pontos.ts:37` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
 | `lerValor` | função | `src/lib/importacao-modelo.ts:348` | Importação | 1 arquivo |
@@ -1326,7 +1352,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `LotePlanejadoLinha` | tipo | `src/lib/planejamento-dados.ts:17` | Planejamento, previsões, custo do kg e relatórios | — |
 | `LotePrevisto` | tipo | `src/lib/previsao-dados.ts:21` | Planejamento, previsões, custo do kg e relatórios | — |
 | `LoteProjetado` | tipo | `src/lib/planejamento.ts:101` | Planejamento, previsões, custo do kg e relatórios | — |
-| `lotes` | tabela | `supabase/migrations/20261026000001_schema.sql:630` | Produção | 10 arquivos |
+| `lotes` | tabela | `supabase/migrations/20261026000001_schema.sql:630` | Produção | 11 arquivos |
 | `lotes_planejados` | tabela | `supabase/migrations/20261027193500_planejamento.sql:88` | Produção | 2 arquivos |
 | `LotesPlanejados` | componente | `src/app/(app)/planejamento/lotes-planejados.tsx:77` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `LoteTanque` | tipo | `src/lib/campo/tipos.ts:18` | Produção | 2 arquivos |
@@ -1352,11 +1378,12 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `MatrizPermissoes` | componente | `src/components/permissoes-visual.tsx:150` | Login, segurança, usuários e permissões | — |
 | `MAX_DIAS_LISTA` | constante | `src/lib/apontamento-excluir.ts:5` | Produção | — |
 | `MAX_ENVIADOS` | constante | `src/lib/campo/fila.ts:38` | Produção | 1 arquivo |
+| `MAX_GRUPOS` | constante | `src/lib/biometria-grupos.ts:7` | Comum | — |
 | `MAX_LOTE` | constante | `src/lib/selecao-lote.ts:3` | Produção | — |
-| `MAX_MENSAGENS` | constante | `src/lib/campo/contexto-chat.ts:8` | Produção | 2 arquivos |
+| `MAX_MENSAGENS` | constante | `src/lib/campo/contexto-chat.ts:10` | Produção | 2 arquivos |
 | `MAX_MESES` | constante | `src/lib/analise-periodo.ts:21` | Planejamento, previsões, custo do kg e relatórios | — |
 | `MAX_TENTATIVAS` | constante | `src/lib/sync/queue.ts:7` | Comum | 1 arquivo |
-| `MAX_TEXTO` | constante | `src/lib/campo/contexto-chat.ts:9` | Produção | 1 arquivo |
+| `MAX_TEXTO` | constante | `src/lib/campo/contexto-chat.ts:11` | Produção | 1 arquivo |
 | `maxDuration` | constante | `src/app/(app)/conciliacao/page.tsx:50` | Financeiro | — |
 | `maxDuration` | constante | `src/app/(app)/configuracoes/importar/page.tsx:14` | Importação | — |
 | `maxDuration` | constante | `src/app/(app)/relatorios/contador/baixar/route.ts:6` | Planejamento, previsões, custo do kg e relatórios | — |
@@ -1377,9 +1404,9 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `MEIOS_COBRANCA` | constante | `src/lib/asaas-mapa.ts:6` | Cobrança | 3 arquivos |
 | `Membro` | tipo | `src/app/(app)/configuracoes/usuarios/lista.tsx:18` | Login, segurança, usuários e permissões | 1 arquivo |
 | `mensagemAtivacao` | função | `src/lib/selecao-lote.ts:34` | Produção | 1 arquivo |
-| `mensagemBanco` | função | `src/lib/acao.ts:13` | Comum | 44 arquivos |
+| `mensagemBanco` | função | `src/lib/acao.ts:13` | Comum | 45 arquivos |
 | `mensagemBloqueio` | função | `src/lib/login-bloqueio.ts:4` | Login, segurança, usuários e permissões | 2 arquivos |
-| `MensagemChat` | tipo | `src/lib/campo/contexto-chat.ts:6` | Produção | 2 arquivos |
+| `MensagemChat` | tipo | `src/lib/campo/contexto-chat.ts:8` | Produção | 2 arquivos |
 | `mensagemErroAsaas` | função | `src/lib/asaas-mapa.ts:44` | Cobrança | 2 arquivos |
 | `mensagemErroVoz` | função | `src/lib/reconhecimento-voz.ts:16` | Comum | 2 arquivos |
 | `MensagemRecebida` | tipo | `src/lib/whatsapp-texto.ts:38` | Comum | 1 arquivo |
@@ -1445,12 +1472,12 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `moverPara` | função | `src/lib/ordem.ts:51` | Comum | 1 arquivo |
 | `moverRegra` | ação | `src/app/(app)/conciliacao/actions.ts:330` | Financeiro | 1 arquivo |
 | `movimentar_estoque` | função SQL | `supabase/migrations/20261105000003_piscicultura_despesca_estoque.sql:686` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
-| `movimentarEstoque` | ação | `src/app/(app)/estoque/actions.ts:11` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
+| `movimentarEstoque` | ação | `src/app/(app)/estoque/actions.ts:10` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `MovimentoConciliacao` | tipo | `src/lib/importacao-nibo.ts:338` | Importação | — |
 | `movimentos_apagados` | tabela | `supabase/migrations/20261029080000_desconciliar_e_apagar_extrato.sql:24` | Financeiro | — |
 | `movimentos_bancarios` | tabela | `supabase/migrations/20261026000001_schema.sql:392` | Financeiro | 5 arquivos |
 | `movimentos_caixa` | view | `supabase/migrations/20261026000004_financeiro_base.sql:7` | Financeiro | 3 arquivos |
-| `movimentos_estoque` | tabela | `supabase/migrations/20261026000001_schema.sql:774` | Vendas, PDV, estoque, produtos e ração | 4 arquivos |
+| `movimentos_estoque` | tabela | `supabase/migrations/20261026000001_schema.sql:774` | Vendas, PDV, estoque, produtos e ração | 5 arquivos |
 | `movimentosNibo` | função | `src/lib/importacao-nibo.ts:123` | Importação | — |
 | `mudarLinkPedido` | ação | `src/app/(app)/vendas/links/actions.ts:10` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `mudarSituacaoDocumento` | ação | `src/app/(app)/contas-a-pagar/documentos/actions.ts:54` | Financeiro | 1 arquivo |
@@ -1523,6 +1550,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `ordens_producao_racao` | tabela | `supabase/migrations/20261026000001_schema.sql:819` | Vendas, PDV, estoque, produtos e ração | — |
 | `organizarRotina` | função | `src/lib/pendencias.ts:26` | Comum | 2 arquivos |
 | `Origem` | tipo | `src/lib/planejamento.ts:14` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
+| `Origem` | tipo | `src/lib/previsao-racao.ts:16` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `origemDoPedido` | função | `src/lib/aceite-termos.ts:10` | Login, segurança, usuários e permissões | — |
 | `origensDoAviso` | função | `src/lib/focus-mapa.ts:148` | Fiscal | 2 arquivos |
 | `ovos_para_estoque` | trigger | `supabase/migrations/20261026000006_estoque_vendas_sanidade.sql:92` | Produção | — |
@@ -1574,7 +1602,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `PaginaDocumentos` | componente | `src/app/(app)/contas-a-pagar/documentos/page.tsx:23` | Financeiro | — |
 | `PaginaDre` | componente | `src/app/(app)/relatorios/dre/page.tsx:30` | Planejamento, previsões, custo do kg e relatórios | — |
 | `PaginaEspecies` | componente | `src/app/(app)/lotes/especies/page.tsx:10` | Produção | — |
-| `PaginaEstoque` | componente | `src/app/(app)/estoque/page.tsx:20` | Vendas, PDV, estoque, produtos e ração | — |
+| `PaginaEstoque` | componente | `src/app/(app)/estoque/page.tsx:19` | Vendas, PDV, estoque, produtos e ração | — |
 | `PaginaFluxo` | componente | `src/app/(app)/fluxo-de-caixa/page.tsx:15` | Financeiro | — |
 | `PaginaHistorico` | componente | `src/app/(app)/historico/page.tsx:55` | Login, segurança, usuários e permissões | — |
 | `PaginaImportar` | componente | `src/app/(app)/configuracoes/importar/page.tsx:16` | Importação | — |
@@ -1583,7 +1611,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `PaginaLinkEmail` | componente | `src/app/auth/mfa/email/page.tsx:5` | Login, segurança, usuários e permissões | — |
 | `PaginaLinksPedido` | componente | `src/app/(app)/vendas/links/page.tsx:10` | Vendas, PDV, estoque, produtos e ração | — |
 | `PaginaLogin` | componente | `src/app/login/page.tsx:11` | Login, segurança, usuários e permissões | — |
-| `PaginaLote` | componente | `src/app/(app)/lotes/[id]/page.tsx:28` | Produção | — |
+| `PaginaLote` | componente | `src/app/(app)/lotes/[id]/page.tsx:33` | Produção | — |
 | `PaginaLotes` | componente | `src/app/(app)/lotes/page.tsx:8` | Produção | — |
 | `PaginaMedicamentos` | componente | `src/app/(app)/medicamentos/page.tsx:7` | Produção | — |
 | `PaginaMfa` | componente | `src/app/auth/mfa/page.tsx:15` | Login, segurança, usuários e permissões | — |
@@ -1609,6 +1637,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `PaginaPrimeiroAcesso` | componente | `src/app/auth/primeiro-acesso/page.tsx:9` | Login, segurança, usuários e permissões | — |
 | `PaginaPrivacidade` | componente | `src/app/privacidade/page.tsx:10` | Login, segurança, usuários e permissões | — |
 | `PaginaProdutos` | componente | `src/app/(app)/produtos/page.tsx:3` | Vendas, PDV, estoque, produtos e ração | — |
+| `PaginaRacao` | componente | `src/app/(app)/racao/page.tsx:26` | Vendas, PDV, estoque, produtos e ração | — |
 | `PaginaRegras` | componente | `src/app/(app)/conciliacao/regras/page.tsx:19` | Financeiro | — |
 | `PaginaReguaCobranca` | componente | `src/app/(app)/contas-a-receber/regua/page.tsx:13` | Financeiro | — |
 | `PaginaRelatorioContas` | componente | `src/app/(app)/relatorios/contas/page.tsx:13` | Planejamento, previsões, custo do kg e relatórios | — |
@@ -1629,7 +1658,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `PaginaZerarSistema` | componente | `src/app/(app)/configuracoes/zerar-sistema/page.tsx:9` | Financeiro | — |
 | `Painel` | componente | `src/app/(app)/painel/page.tsx:117` | Início, painel, ajuda e configurações | — |
 | `painel_conciliacao` | função SQL | `supabase/migrations/20261104020000_conciliacao_multipla.sql:123` | Financeiro | 1 arquivo |
-| `painelCampo` | função | `src/lib/campo/servidor.ts:33` | Produção | 2 arquivos |
+| `painelCampo` | função | `src/lib/campo/servidor.ts:34` | Produção | 2 arquivos |
 | `PainelCampo` | tipo | `src/lib/campo/tipos.ts:60` | Produção | 5 arquivos |
 | `PainelContexto` | constante | `src/components/cadastro.tsx:18` | Comum | 1 arquivo |
 | `PainelLateral` | componente | `src/components/cadastro.tsx:381` | Comum | 2 arquivos |
@@ -1639,6 +1668,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `paraCsv` | função | `src/lib/relatorios.ts:43` | Planejamento, previsões, custo do kg e relatórios | 3 arquivos |
 | `parametroModelo` | função | `src/lib/whatsapp-texto.ts:25` | Comum | 2 arquivos |
 | `Parametros` | tipo | `src/lib/planejamento.ts:16` | Planejamento, previsões, custo do kg e relatórios | 3 arquivos |
+| `PARAMETROS_PADRAO` | constante | `src/lib/previsao-racao.ts:389` | Vendas, PDV, estoque, produtos e ração | 4 arquivos |
 | `parametrosCobranca` | função | `src/lib/whatsapp-texto.ts:91` | Comum | 2 arquivos |
 | `paraParametros` | função | `src/lib/planejamento-dados.ts:28` | Planejamento, previsões, custo do kg e relatórios | — |
 | `Parte` | tipo | `src/lib/regras-em-partes.ts:6` | Financeiro | 3 arquivos |
@@ -1682,15 +1712,18 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `permissoesDoApp` | função | `src/lib/app-celular/sessao.ts:54` | Comum | 7 arquivos |
 | `PESO_BIOMETRIA_QUINZENAL_G` | constante | `src/lib/campo/indicadores.ts:6` | Produção | — |
 | `pesoCurva` | função | `src/lib/crescimento.ts:21` | Produção | 1 arquivo |
-| `pesoEsperado` | função | `src/lib/crescimento.ts:47` | Produção | 4 arquivos |
+| `pesoEsperado` | função | `src/lib/crescimento.ts:47` | Produção | 5 arquivos |
 | `pesoMedioAmostra` | função | `src/lib/campo/indicadores.ts:22` | Produção | 2 arquivos |
 | `planejamento_custos` | tabela | `supabase/migrations/20261027193500_planejamento.sql:64` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
 | `planejamento_parametros` | tabela | `supabase/migrations/20261027193500_planejamento.sql:32` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
+| `PlanejamentoRacao` | componente | `src/app/(app)/lotes/[id]/planejamento-racao.tsx:40` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
+| `planejarReserva` | função | `src/lib/previsao-racao.ts:331` | Vendas, PDV, estoque, produtos e ração | 3 arquivos |
 | `PLANILHA` | constante | `src/lib/planilha.ts:8` | Comum | 2 arquivos |
 | `planilhaXlsx` | função | `src/lib/planilha.ts:170` | Comum | 3 arquivos |
 | `Plano` | tipo | `src/lib/assinatura-mapa.ts:5` | Cobrança | 2 arquivos |
 | `planoAbastecimento` | função | `src/lib/abastecimento.ts:11` | Comum | 2 arquivos |
 | `planoInclui` | função | `src/lib/permissoes-regras.ts:72` | Login, segurança, usuários e permissões | 3 arquivos |
+| `PlanoRacao` | tipo | `src/lib/previsao-racao-dados.ts:17` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
 | `planos` | tabela | `supabase/migrations/20261027050000_assinaturas.sql:8` | Cobrança | 2 arquivos |
 | `plural` | função | `src/lib/formato.ts:63` | Comum | 3 arquivos |
 | `podeDispensar2fa` | função | `src/lib/permissoes-regras.ts:92` | Login, segurança, usuários e permissões | 2 arquivos |
@@ -1701,7 +1734,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `Ponto` | tipo | `src/lib/regras-em-partes.ts:5` | Financeiro | 3 arquivos |
 | `PontoCrescimento` | tipo | `src/lib/campo/tipos.ts:15` | Produção | — |
 | `PontoCrescimento` | tipo | `src/lib/crescimento.ts:66` | Produção | — |
-| `PontoCurva` | tipo | `src/lib/crescimento.ts:11` | Produção | 1 arquivo |
+| `PontoCurva` | tipo | `src/lib/crescimento.ts:11` | Produção | 2 arquivos |
 | `pontoDoPdv` | função | `src/lib/pontos-dados.ts:33` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `PontoProjecao` | tipo | `src/lib/previsao.ts:22` | Planejamento, previsões, custo do kg e relatórios | — |
 | `pontos_venda` | tabela | `supabase/migrations/20261029173000_pontos_de_venda.sql:19` | Vendas, PDV, estoque, produtos e ração | 4 arquivos |
@@ -1738,7 +1771,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `POST` | função | `src/app/api/webhooks/focus/route.ts:10` | API pública, webhooks e rotinas agendadas | — |
 | `POST` | função | `src/app/api/webhooks/pluggy/route.ts:12` | API pública, webhooks e rotinas agendadas | — |
 | `povoar_lote` | função SQL | `supabase/migrations/20261105000001_piscicultura_estrutura.sql:360` | Produção | 3 arquivos |
-| `povoarLote` | ação | `src/app/(app)/lotes/actions.ts:23` | Produção | 1 arquivo |
+| `povoarLote` | ação | `src/app/(app)/lotes/actions.ts:24` | Produção | 1 arquivo |
 | `preco_na_lista` | trigger | `supabase/migrations/20261027133000_tabelas_de_preco.sql:120` | Vendas, PDV, estoque, produtos e ração | — |
 | `preco_so_de_venda` | trigger | `supabase/migrations/20261102170000_produtos_para_venda.sql:46` | Vendas, PDV, estoque, produtos e ração | — |
 | `preco_vigente` | função SQL | `supabase/migrations/20261028060000_fuso_da_empresa.sql:475` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
@@ -1756,9 +1789,12 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `preparar_nfce` | função SQL | `supabase/migrations/20261029140000_nfe_completa.sql:53` | Fiscal | 1 arquivo |
 | `preparar_nfe` | função SQL | `supabase/migrations/20261026220000_nfe.sql:41` | Fiscal | 1 arquivo |
 | `prever` | função | `src/lib/planejamento.ts:326` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
+| `preverLote` | função | `src/lib/previsao-racao.ts:116` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
 | `Previa` | tipo | `src/lib/importacao-modelo.ts:299` | Importação | 2 arquivos |
 | `previaModelo` | ação | `src/app/(app)/configuracoes/importar/actions.ts:279` | Importação | 1 arquivo |
 | `Previsao` | tipo | `src/lib/planejamento.ts:299` | Planejamento, previsões, custo do kg e relatórios | — |
+| `PrevisaoDoLote` | tipo | `src/lib/previsao-racao-dados.ts:16` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
+| `PrevisaoLote` | tipo | `src/lib/previsao-racao.ts:86` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `primeiroSaldoNegativo` | função | `src/lib/previsao.ts:213` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
 | `PrimeirosPassos` | componente | `src/app/(app)/primeiros-passos/page.tsx:12` | Início, painel, ajuda e configurações | — |
 | `primeiroVencimento` | função | `src/lib/assinatura-mapa.ts:21` | Cobrança | 2 arquivos |
@@ -1777,7 +1813,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `ProdutoPreco` | tipo | `src/app/(app)/tabelas-de-preco/lista.tsx:11` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `produtorDe` | função | `src/lib/lcdpr-dados.ts:10` | Comum | 1 arquivo |
 | `ProdutorLcdpr` | tipo | `src/lib/lcdpr.ts:6` | Comum | 1 arquivo |
-| `produtos` | tabela | `supabase/migrations/20261026000001_schema.sql:752` | Vendas, PDV, estoque, produtos e ração | 23 arquivos |
+| `produtos` | tabela | `supabase/migrations/20261026000001_schema.sql:752` | Vendas, PDV, estoque, produtos e ração | 25 arquivos |
 | `produtos_da_classe` | trigger | `supabase/migrations/20261105000005_piscicultura_cadastros.sql:404` | Produção | — |
 | `ProdutoVenda` | tipo | `src/lib/vendas-dados.ts:9` | Vendas, PDV, estoque, produtos e ração | 3 arquivos |
 | `produzir_racao` | função SQL | `supabase/migrations/20261111000002_remover_fabrica_racao.sql:17` | Vendas, PDV, estoque, produtos e ração | — |
@@ -1813,7 +1849,6 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `pushConfigurado` | função | `src/lib/push.ts:8` | Comum | 1 arquivo |
 | `quando` | função | `src/components/campo/pecas.tsx:210` | Produção | 2 arquivos |
 | `quantidadeQueCabe` | função | `src/lib/estoque-carrinho.ts:12` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
-| `Racao` | componente | `src/app/(app)/racao/page.tsx:4` | Vendas, PDV, estoque, produtos e ração | — |
 | `racao_ajustes` | tabela | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:496` | Vendas, PDV, estoque, produtos e ração | — |
 | `racao_apontamento_estoque` | trigger | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:302` | Produção | — |
 | `racao_entrada_conferir` | trigger | `supabase/migrations/20261111000001_racao_entradas.sql:101` | Vendas, PDV, estoque, produtos e ração | — |
@@ -1822,12 +1857,15 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `racao_estornos` | tabela | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:436` | Vendas, PDV, estoque, produtos e ração | — |
 | `racao_movimento_conferir` | trigger | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:148` | Vendas, PDV, estoque, produtos e ração | — |
 | `racao_movimento_sem_apagar` | trigger | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:181` | Vendas, PDV, estoque, produtos e ração | — |
-| `racao_movimentos` | view | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:619` | Vendas, PDV, estoque, produtos e ração | — |
+| `racao_movimentos` | view | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:619` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
+| `racao_parametros` | tabela | `supabase/migrations/20261111000004_biometria_grupos.sql:158` | Vendas, PDV, estoque, produtos e ração | 3 arquivos |
 | `racao_saldo_conferir` | trigger | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:168` | Vendas, PDV, estoque, produtos e ração | — |
-| `racao_saldos` | view | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:105` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
+| `racao_saldos` | view | `supabase/migrations/20261111000003_racao_baixa_por_entrada.sql:105` | Vendas, PDV, estoque, produtos e ração | 3 arquivos |
 | `racao_sugerida` | função SQL | `supabase/migrations/20261105000002_piscicultura_apontamento.sql:704` | Vendas, PDV, estoque, produtos e ração | 3 arquivos |
 | `RacaoApontamento` | tipo | `src/app/(app)/apontamentos/campos-lancamento.tsx:16` | Produção | — |
 | `RacaoCampo` | componente | `src/components/campo/racao-campo.tsx:13` | Produção | 1 arquivo |
+| `racaoDaFaixa` | função | `src/lib/previsao-racao.ts:74` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
+| `RacaoFicha` | tipo | `src/lib/previsao-racao.ts:24` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
 | `RacaoLancada` | tipo | `src/lib/apontamento-racao.ts:9` | Produção | 1 arquivo |
 | `racaoPorTurno` | função | `src/lib/campo/indicadores.ts:16` | Produção | 4 arquivos |
 | `RacaoSugerida` | tipo | `src/lib/campo/tipos.ts:3` | Produção | 1 arquivo |
@@ -1840,7 +1878,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `RateioImportado` | tipo | `src/lib/importacao.ts:35` | Importação | — |
 | `reabrir_lote` | função SQL | `supabase/migrations/20261105000001_piscicultura_estrutura.sql:651` | Produção | 1 arquivo |
 | `reabrir_mes` | função SQL | `supabase/migrations/20261026000005_conciliacao_relatorios.sql:239` | Comum | — |
-| `reabrirLote` | ação | `src/app/(app)/lotes/actions.ts:126` | Produção | 1 arquivo |
+| `reabrirLote` | ação | `src/app/(app)/lotes/actions.ts:127` | Produção | 1 arquivo |
 | `reabrirMes` | ação | `src/app/(app)/relatorios/dre/actions.ts:23` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `recalcularCustos` | ação | `src/app/(app)/custo-do-kg/actions.ts:10` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `receber_compra_do_grupo` | função SQL | `supabase/migrations/20261105000003_piscicultura_despesca_estoque.sql:1266` | Comum | 1 arquivo |
@@ -1865,6 +1903,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `Regime` | tipo | `src/lib/consultas-relatorio.ts:5` | Planejamento, previsões, custo do kg e relatórios | — |
 | `registrar_apontamento` | função SQL | `supabase/migrations/20261105000002_piscicultura_apontamento.sql:133` | Produção | 1 arquivo |
 | `registrar_biometria` | função SQL | `supabase/migrations/20261105000002_piscicultura_apontamento.sql:571` | Comum | 2 arquivos |
+| `registrar_biometria_grupos` | função SQL | `supabase/migrations/20261111000004_biometria_grupos.sql:87` | Comum | 2 arquivos |
 | `registrar_despesca` | função SQL | `supabase/migrations/20261105000003_piscicultura_despesca_estoque.sql:445` | Comum | 2 arquivos |
 | `registrar_entrada` | função SQL | `supabase/migrations/20261105000003_piscicultura_despesca_estoque.sql:775` | Comum | — |
 | `registrar_entrada_racao` | função SQL | `supabase/migrations/20261111000001_racao_entradas.sql:134` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
@@ -1880,7 +1919,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `registrar_uso_ia` | função SQL | `supabase/migrations/20261105000007_chat_campo_uso_ia.sql:16` | Comum | 3 arquivos |
 | `registrarAceite` | função | `src/lib/aceite-termos.ts:18` | Login, segurança, usuários e permissões | 2 arquivos |
 | `registrarApontamento` | ação | `src/app/(app)/apontamentos/actions.ts:21` | Produção | 1 arquivo |
-| `registrarBiometria` | ação | `src/app/(app)/lotes/actions.ts:135` | Produção | 1 arquivo |
+| `registrarBiometria` | ação | `src/app/(app)/lotes/actions.ts:144` | Produção | 1 arquivo |
 | `registrarConexao` | ação | `src/app/(app)/conciliacao/open-finance-actions.ts:48` | Financeiro | 1 arquivo |
 | `registrarDespesca` | ação | `src/app/(app)/despescas/actions.ts:16` | Comum | 1 arquivo |
 | `registrarEnviado` | função | `src/lib/campo/fila.ts:83` | Produção | 2 arquivos |
@@ -1912,15 +1951,16 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `reordenarCategorias` | ação | `src/app/(app)/categorias/actions.ts:73` | Financeiro | 1 arquivo |
 | `reordenarCentrosCusto` | ação | `src/app/(app)/centros-de-custo/actions.ts:52` | Financeiro | 1 arquivo |
 | `reprogramar_titulos` | função SQL | `supabase/migrations/20261028190000_acoes_titulos.sql:106` | Financeiro | 1 arquivo |
+| `ReservaRacao` | tipo | `src/lib/previsao-racao.ts:292` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `resolverPeriodo` | função | `src/lib/analise-periodo.ts:43` | Planejamento, previsões, custo do kg e relatórios | 3 arquivos |
-| `responderManejo` | função | `src/lib/campo/chat.ts:44` | Produção | 1 arquivo |
-| `responderManejoLocal` | função | `src/lib/campo/chat.ts:39` | Produção | 1 arquivo |
+| `responderManejo` | função | `src/lib/campo/chat.ts:48` | Produção | 1 arquivo |
+| `responderManejoLocal` | função | `src/lib/campo/chat.ts:43` | Produção | 1 arquivo |
 | `responderManejoOllama` | função | `src/lib/ai/offline-chat.ts:100` | Comum | 3 arquivos |
 | `respostaApi` | função | `src/lib/api/servidor.ts:28` | API pública, webhooks e rotinas agendadas | 12 arquivos |
-| `RespostaChat` | tipo | `src/lib/campo/manejo-ia.ts:59` | Produção | 2 arquivos |
+| `RespostaChat` | tipo | `src/lib/campo/manejo-ia.ts:67` | Produção | 2 arquivos |
 | `RespostaChecklist` | tipo | `src/lib/apontamento-racao.ts:29` | Produção | 2 arquivos |
-| `respostaDaSaida` | função | `src/lib/campo/manejo-ia.ts:69` | Produção | 2 arquivos |
-| `RespostaManejo` | constante | `src/lib/campo/manejo-ia.ts:53` | Produção | 2 arquivos |
+| `respostaDaSaida` | função | `src/lib/campo/manejo-ia.ts:77` | Produção | 2 arquivos |
+| `RespostaManejo` | constante | `src/lib/campo/manejo-ia.ts:61` | Produção | 2 arquivos |
 | `respostaManutencao` | função | `src/lib/manutencao.ts:34` | Manutenções | 2 arquivos |
 | `restanteDoRateio` | função | `src/lib/rateio.ts:32` | Financeiro | 2 arquivos |
 | `restaurar_centros_custo` | função SQL | `supabase/migrations/20261103010000_padroes_e_estoque_na_conciliacao.sql:194` | Financeiro | 1 arquivo |
@@ -1977,8 +2017,9 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `rotuloMes` | função | `src/lib/painel.ts:7` | Início, painel, ajuda e configurações | 2 arquivos |
 | `RotulosCelular` | componente | `src/components/tabela-celular.tsx:9` | Comum | 3 arquivos |
 | `rotulosSituacao` | função | `src/lib/planilha.ts:186` | Comum | 1 arquivo |
+| `sacosDoSaldo` | função | `src/lib/racao-estoque.ts:34` | Vendas, PDV, estoque, produtos e ração | 3 arquivos |
 | `sacosParaKg` | função | `src/lib/campo/indicadores.ts:34` | Produção | 3 arquivos |
-| `SaidaManejo` | tipo | `src/lib/campo/manejo-ia.ts:58` | Produção | — |
+| `SaidaManejo` | tipo | `src/lib/campo/manejo-ia.ts:66` | Produção | — |
 | `sair` | ação | `src/app/login/actions.ts:115` | Login, segurança, usuários e permissões | 3 arquivos |
 | `SaldoDeposito` | tipo | `src/components/movimento-estoque.tsx:24` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `saldoInicial` | função | `src/lib/open-finance-mapa.ts:73` | Financeiro | 2 arquivos |
@@ -2002,7 +2043,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `salvarConfigFiscal` | ação | `src/app/(app)/notas/actions.ts:252` | Fiscal | 1 arquivo |
 | `salvarConta` | ação | `src/app/(app)/contas/actions.ts:18` | Financeiro | 1 arquivo |
 | `salvarContato` | ação | `src/app/(app)/contatos/actions.ts:11` | Financeiro | 1 arquivo |
-| `salvarCurva` | ação | `src/app/(app)/lotes/actions.ts:193` | Produção | 1 arquivo |
+| `salvarCurva` | ação | `src/app/(app)/lotes/actions.ts:238` | Produção | 1 arquivo |
 | `salvarCusto` | ação | `src/app/(app)/planejamento/actions.ts:115` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `salvarFuso` | ação | `src/app/(app)/configuracoes/actions.ts:25` | Início, painel, ajuda e configurações | 1 arquivo |
 | `salvarLcdpr` | ação | `src/app/(app)/relatorios/contador/actions.ts:18` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
@@ -2013,6 +2054,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `salvarOrcamento` | ação | `src/app/(app)/relatorios/orcamento/actions.ts:14` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `salvarPagamentos` | ação | `src/app/(app)/configuracoes/automacoes/actions.ts:131` | Início, painel, ajuda e configurações | 1 arquivo |
 | `salvarParametros` | ação | `src/app/(app)/planejamento/actions.ts:15` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
+| `salvarParametrosRacao` | ação | `src/app/(app)/racao/actions.ts:84` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `salvarPedidoFixo` | ação | `src/app/(app)/vendas/fixos/actions.ts:11` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `salvarPerfil` | ação | `src/app/(app)/cobrancas/actions.ts:19` | Cobrança | 1 arquivo |
 | `salvarPonto` | ação | `src/app/(app)/pontos-de-venda/actions.ts:59` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
@@ -2034,7 +2076,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `segundoFatorPendente` | função | `src/lib/mfa.ts:15` | Login, segurança, usuários e permissões | 2 arquivos |
 | `Selecao` | componente | `src/components/campo/pecas.tsx:146` | Produção | 4 arquivos |
 | `Selecao` | componente | `src/components/ui.tsx:75` | Comum | 53 arquivos |
-| `SelecaoComNovo` | componente | `src/components/selecao-com-novo.tsx:13` | Produção | 3 arquivos |
+| `SelecaoComNovo` | componente | `src/components/selecao-com-novo.tsx:13` | Produção | 4 arquivos |
 | `SeletorEmpresa` | componente | `src/components/seletor-empresa.tsx:17` | Início, painel, ajuda e configurações | 1 arquivo |
 | `SeletorTema` | componente | `src/components/tema.tsx:65` | Comum | 3 arquivos |
 | `SeletorVersao` | componente | `src/components/versao.tsx:29` | Início, painel, ajuda e configurações | 2 arquivos |
@@ -2087,7 +2129,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `situacaoRenovacao` | função | `src/lib/planejamento.ts:320` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
 | `situacaoValidade` | função | `src/lib/racao-estoque.ts:11` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
 | `Slide` | tipo | `src/lib/apresentacao.ts:19` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
-| `somarDias` | função | `src/lib/formato.ts:38` | Comum | 23 arquivos |
+| `somarDias` | função | `src/lib/formato.ts:38` | Comum | 25 arquivos |
 | `somarMeses` | função | `src/lib/planejamento.ts:119` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `somarResultados` | função | `src/lib/importacao.ts:77` | Importação | 1 arquivo |
 | `sondas` | tabela | `supabase/migrations/20261106000001_sondas_iot.sql:8` | Comum | 1 arquivo |
@@ -2099,7 +2141,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `Subtitulo` | componente | `src/components/campo/pecas.tsx:198` | Produção | 4 arquivos |
 | `SUBTOTAIS_DRE` | constante | `src/lib/relatorios.ts:52` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `subtotal` | função | `src/lib/relatorios.ts:57` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
-| `sucesso` | função | `src/lib/acao.ts:8` | Comum | 42 arquivos |
+| `sucesso` | função | `src/lib/acao.ts:8` | Comum | 43 arquivos |
 | `sugerirApontamentos` | função | `src/lib/sugestao-apontamento.ts:29` | Produção | 2 arquivos |
 | `sugerirPelaMeta` | função | `src/lib/planejamento.ts:418` | Planejamento, previsões, custo do kg e relatórios | 2 arquivos |
 | `Sugestao` | tipo | `src/lib/sugestao-apontamento.ts:14` | Produção | 1 arquivo |
@@ -2110,14 +2152,15 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `SugestoesMultipla` | componente | `src/app/(app)/conciliacao/multipla.tsx:20` | Financeiro | 1 arquivo |
 | `supabaseEnv` | função | `src/lib/env.ts:1` | Comum | 8 arquivos |
 | `Tabela` | tipo | `src/app/(app)/tabelas-de-preco/lista.tsx:12` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
-| `Tabela` | componente | `src/components/ui.tsx:165` | Comum | 26 arquivos |
+| `Tabela` | componente | `src/components/ui.tsx:165` | Comum | 27 arquivos |
 | `TABELA_ARRACOAMENTO` | constante | `src/lib/campo/conhecimento-tambaqui.ts:28` | Produção | 1 arquivo |
-| `tabela_arracoamento` | tabela | `supabase/migrations/20261105000001_piscicultura_estrutura.sql:178` | Comum | 1 arquivo |
+| `tabela_arracoamento` | tabela | `supabase/migrations/20261105000001_piscicultura_estrutura.sql:178` | Comum | 2 arquivos |
 | `tabelas_preco` | tabela | `supabase/migrations/20261026000001_schema.sql:870` | Vendas, PDV, estoque, produtos e ração | 4 arquivos |
 | `TAG_SYNC` | constante | `src/lib/sync/worker.ts:10` | Comum | 1 arquivo |
 | `TAMANHO_MAXIMO` | constante | `src/lib/ia.ts:14` | Comum | 3 arquivos |
 | `Tanque` | tipo | `src/lib/campo/tipos.ts:45` | Produção | 8 arquivos |
 | `Tarefa` | tipo | `src/lib/sync/worker.ts:12` | Comum | — |
+| `taxaDoPeso` | função | `src/lib/previsao-racao.ts:63` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `taxaNaCurva` | função | `src/lib/previsao.ts:49` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `taxaSemana` | função | `src/lib/zootecnico.ts:55` | Produção | 2 arquivos |
 | `Tela` | tipo | `src/lib/menu.ts:68` | Comum | — |
@@ -2128,7 +2171,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `temPermissao` | função | `src/lib/permissoes-regras.ts:78` | Login, segurança, usuários e permissões | 6 arquivos |
 | `test` | constante | `e2e/apoio.ts:7` | Comum | 15 arquivos |
 | `textoBaseConhecimento` | função | `src/lib/campo/conhecimento-tambaqui.ts:165` | Produção | 3 arquivos |
-| `textoDadosPiscicultura` | função | `src/lib/campo/contexto-chat.ts:33` | Produção | 3 arquivos |
+| `textoDadosPiscicultura` | função | `src/lib/campo/contexto-chat.ts:35` | Produção | 3 arquivos |
 | `textoFaltam` | função | `src/lib/assistente.ts:63` | Início, painel, ajuda e configurações | 3 arquivos |
 | `textoKg` | função | `src/lib/pescado.ts:19` | Comum | 26 arquivos |
 | `textoLembrete` | função | `src/lib/lembretes.ts:7` | Comum | 2 arquivos |
@@ -2137,9 +2180,10 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `textoPacoteContador` | função | `src/lib/lembretes.ts:44` | Comum | 2 arquivos |
 | `textoPdf` | função | `src/lib/apresentacao-pdf.ts:12` | Planejamento, previsões, custo do kg e relatórios | 1 arquivo |
 | `textoPeso` | função | `src/lib/pescado.ts:25` | Comum | 11 arquivos |
+| `textoPlanoRacao` | função | `src/lib/campo/contexto-chat.ts:80` | Produção | — |
 | `textoQuantidade` | função | `src/lib/pescado.ts:60` | Comum | 4 arquivos |
 | `textoResumo` | função | `src/lib/lembretes.ts:25` | Comum | 2 arquivos |
-| `textoSacos` | função | `src/lib/racao-estoque.ts:20` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
+| `textoSacos` | função | `src/lib/racao-estoque.ts:20` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `tipoAceito` | função | `src/lib/documento-recebido.ts:10` | Comum | 2 arquivos |
 | `TipoArquivo` | tipo | `src/lib/ia.ts:13` | Comum | 1 arquivo |
 | `TipoColuna` | tipo | `src/lib/planilha.ts:72` | Comum | — |
@@ -2148,7 +2192,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `tipoContaPeloNome` | função | `src/lib/importacao.ts:133` | Importação | 2 arquivos |
 | `TipoContato` | tipo | `src/lib/importacao.ts:9` | Importação | 3 arquivos |
 | `TipoEnvio` | tipo | `src/lib/campo/fila.ts:7` | Produção | 1 arquivo |
-| `TipoInsumo` | tipo | `src/lib/campo/validar.ts:137` | Produção | 3 arquivos |
+| `TipoInsumo` | tipo | `src/lib/campo/validar.ts:158` | Produção | 3 arquivos |
 | `TipoLinhaDre` | tipo | `src/lib/relatorios.ts:115` | Planejamento, previsões, custo do kg e relatórios | — |
 | `TipoModelo` | tipo | `src/lib/importacao-modelo.ts:12` | Importação | 3 arquivos |
 | `TipoProduto` | tipo | `src/lib/importacao.ts:20` | Importação | 1 arquivo |
@@ -2158,7 +2202,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `TIPOS_DEPOSITO` | constante | `src/lib/estoque.ts:11` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `TIPOS_EMPRESA_ASAAS` | constante | `src/lib/asaas-mapa.ts:152` | Cobrança | 1 arquivo |
 | `TIPOS_EVENTO` | constante | `src/lib/rotulos.ts:7` | Comum | 2 arquivos |
-| `TIPOS_INSUMO` | constante | `src/lib/campo/validar.ts:129` | Produção | 3 arquivos |
+| `TIPOS_INSUMO` | constante | `src/lib/campo/validar.ts:150` | Produção | 3 arquivos |
 | `TIPOS_MEDICAMENTO` | constante | `src/lib/rotulos.ts:13` | Comum | 4 arquivos |
 | `TIPOS_PONTO` | constante | `src/lib/pontos.ts:3` | Vendas, PDV, estoque, produtos e ração | 4 arquivos |
 | `TIPOS_PRODUTO` | constante | `src/lib/estoque.ts:2` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
@@ -2166,7 +2210,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `TIPOS_REGRA` | constante | `src/lib/regras.ts:2` | Financeiro | 2 arquivos |
 | `TipoSinal` | tipo | `src/lib/previsao.ts:104` | Planejamento, previsões, custo do kg e relatórios | — |
 | `TipoTitulo` | tipo | `src/lib/titulos.ts:2` | Financeiro | 2 arquivos |
-| `Titulo` | componente | `src/components/ui.tsx:215` | Comum | 68 arquivos |
+| `Titulo` | componente | `src/components/ui.tsx:215` | Comum | 69 arquivos |
 | `titulo_autor_fixo` | trigger | `supabase/migrations/20261029224500_titulos_por_modulo.sql:60` | Financeiro | — |
 | `titulo_tem_rateio` | trigger | `supabase/migrations/20261026000001_schema.sql:283` | Financeiro | — |
 | `TituloApi` | tipo | `src/lib/api/regras.ts:132` | API pública, webhooks e rotinas agendadas | — |
@@ -2180,10 +2224,11 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `TOLERANCIA` | constante | `src/lib/sugestao-apontamento.ts:19` | Produção | — |
 | `Tom` | tipo | `src/lib/analise-periodo.ts:260` | Planejamento, previsões, custo do kg e relatórios | — |
 | `TOM_STATUS_PEDIDO` | constante | `src/lib/vendas.ts:17` | Vendas, PDV, estoque, produtos e ração | 3 arquivos |
-| `TomEtiqueta` | tipo | `src/components/ui.tsx:148` | Comum | 8 arquivos |
+| `TomEtiqueta` | tipo | `src/components/ui.tsx:148` | Comum | 9 arquivos |
 | `TomSlide` | tipo | `src/lib/apresentacao.ts:16` | Planejamento, previsões, custo do kg e relatórios | — |
 | `TopicoManejo` | tipo | `src/lib/campo/conhecimento-tambaqui.ts:17` | Produção | — |
 | `TOPICOS_MANEJO` | constante | `src/lib/campo/conhecimento-tambaqui.ts:45` | Produção | — |
+| `totaisGrupos` | função | `src/lib/biometria-grupos.ts:9` | Comum | 4 arquivos |
 | `totalizar_lancamento` | trigger | `supabase/migrations/20261027123000_apontamento_por_turno.sql:167` | Produção | — |
 | `TOUR_GERAL` | constante | `src/lib/tutoriais.ts:34` | Início, painel, ajuda e configurações | 2 arquivos |
 | `TransacaoPluggy` | tipo | `src/lib/open-finance-mapa.ts:5` | Financeiro | 2 arquivos |
@@ -2196,7 +2241,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `transferir` | ação | `src/app/(app)/contas/actions.ts:74` | Financeiro | 1 arquivo |
 | `transferir_lote` | função SQL | `supabase/migrations/20261105000001_piscicultura_estrutura.sql:470` | Produção | 1 arquivo |
 | `transferir_peixe` | função SQL | `supabase/migrations/20261105000003_piscicultura_despesca_estoque.sql:1081` | Comum | 1 arquivo |
-| `transferirLote` | ação | `src/app/(app)/lotes/actions.ts:228` | Produção | 1 arquivo |
+| `transferirLote` | ação | `src/app/(app)/lotes/actions.ts:273` | Produção | 1 arquivo |
 | `transferirPeixe` | ação | `src/app/(app)/pontos-de-venda/actions.ts:100` | Vendas, PDV, estoque, produtos e ração | 1 arquivo |
 | `trocarEmpresa` | ação | `src/app/(app)/actions.ts:7` | Comum | 2 arquivos |
 | `trocarSenhaInicial` | ação | `src/app/auth/primeiro-acesso/actions.ts:13` | Login, segurança, usuários e permissões | 1 arquivo |
@@ -2236,27 +2281,30 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `usePreferencia` | hook | `src/components/campo/fila-cliente.ts:137` | Produção | 2 arquivos |
 | `useServiceWorker` | hook | `src/components/offline.tsx:31` | Comum | 2 arquivos |
 | `useTarefaSync` | hook | `src/lib/sync/navegador.ts:38` | Comum | 2 arquivos |
+| `UsoEntrada` | tipo | `src/lib/previsao-racao.ts:393` | Vendas, PDV, estoque, produtos e ração | — |
 | `Usuario` | tipo | `e2e/apoio.ts:68` | Comum | — |
 | `Usuario` | tipo | `src/lib/auth.ts:6` | Login, segurança, usuários e permissões | — |
 | `USUARIOS` | constante | `src/lib/menu.ts:19` | Comum | — |
 | `usuarios_empresa` | tabela | `supabase/migrations/20261026000001_schema.sql:31` | Login, segurança, usuários e permissões | 3 arquivos |
 | `uuidValido` | função | `src/lib/api/regras.ts:105` | API pública, webhooks e rotinas agendadas | 8 arquivos |
-| `validarAbrirLote` | função | `src/lib/campo/validar.ts:78` | Produção | 3 arquivos |
+| `validarAbrirLote` | função | `src/lib/campo/validar.ts:99` | Produção | 3 arquivos |
 | `validarAgua` | função | `src/lib/agua.ts:28` | Comum | 3 arquivos |
 | `validarApontamentoCampo` | função | `src/lib/apontamento-campo.ts:81` | Produção | 2 arquivos |
 | `validarBaixa` | função | `src/lib/api/regras.ts:200` | API pública, webhooks e rotinas agendadas | 2 arquivos |
-| `validarBiometriaCampo` | função | `src/lib/campo/validar.ts:51` | Produção | 3 arquivos |
+| `validarBiometriaCampo` | função | `src/lib/campo/validar.ts:55` | Produção | 3 arquivos |
 | `validarCausas` | função | `src/lib/causas-morte.ts:19` | Produção | 2 arquivos |
 | `validarContato` | função | `src/lib/api/regras.ts:223` | API pública, webhooks e rotinas agendadas | 3 arquivos |
-| `validarConversa` | função | `src/lib/campo/contexto-chat.ts:12` | Produção | 3 arquivos |
-| `validarFecharLote` | função | `src/lib/campo/validar.ts:108` | Produção | 3 arquivos |
-| `validarInsumoCampo` | função | `src/lib/campo/validar.ts:146` | Produção | 3 arquivos |
+| `validarConversa` | função | `src/lib/campo/contexto-chat.ts:14` | Produção | 3 arquivos |
+| `validarFecharLote` | função | `src/lib/campo/validar.ts:129` | Produção | 3 arquivos |
+| `validarGrupos` | função | `src/lib/biometria-grupos.ts:17` | Comum | 3 arquivos |
+| `validarInsumoCampo` | função | `src/lib/campo/validar.ts:167` | Produção | 3 arquivos |
 | `validarMedicacao` | função | `src/lib/apontamento-campo.ts:37` | Produção | 2 arquivos |
 | `validarPedidoCampo` | função | `src/lib/pedido-campo.ts:25` | Produção | 2 arquivos |
 | `validarProduto` | função | `src/lib/api/regras.ts:268` | API pública, webhooks e rotinas agendadas | 3 arquivos |
 | `validarTitulo` | função | `src/lib/api/regras.ts:146` | API pública, webhooks e rotinas agendadas | 2 arquivos |
 | `validarUrlWebhook` | função | `src/lib/api/regras.ts:337` | API pública, webhooks e rotinas agendadas | 2 arquivos |
 | `validarVendaBalcao` | função | `src/lib/pdv.ts:24` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
+| `Valor` | tipo | `src/lib/previsao-racao.ts:17` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
 | `valorCargo` | função | `src/components/permissoes-cargos.tsx:25` | Login, segurança, usuários e permissões | 1 arquivo |
 | `variacao` | função | `src/lib/analise-periodo.ts:77` | Planejamento, previsões, custo do kg e relatórios | 3 arquivos |
 | `Vazio` | componente | `src/components/ui.tsx:206` | Comum | 9 arquivos |

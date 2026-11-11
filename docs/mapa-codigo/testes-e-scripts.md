@@ -34,6 +34,7 @@
 - [supabase/tests/99_automacoes_resumo.sql](../../supabase/tests/99_automacoes_resumo.sql) — Automações de rotina: resumo diário (H3) e aviso do pacote do contador (E1)
 - [supabase/tests/99_automacoes_vendas.sql](../../supabase/tests/99_automacoes_vendas.sql) — Automações de vendas: pedidos fixos gerados na véspera (D2), bloqueio de venda a prazo para quem está
 - [supabase/tests/99_biometria_crescimento.sql](../../supabase/tests/99_biometria_crescimento.sql) — Biometria, peso estimado pela curva do tambaqui, ração sugerida pela tabela de arraçoamento, alertas da água e
+- [supabase/tests/99_biometria_grupos.sql](../../supabase/tests/99_biometria_grupos.sql) — Biometria em grupos: média ponderada (peso total ÷ peixes), correção de grupos, reenvio offline sem duplicar,
 - [supabase/tests/99_bloqueio_login.sql](../../supabase/tests/99_bloqueio_login.sql) — Bloqueio temporário do login depois de 5 senhas erradas em 15 minutos na mesma conta.
 - [supabase/tests/99_campo_insumos.sql](../../supabase/tests/99_campo_insumos.sql) — App de campo: insumos aplicados no viveiro (corretivo, fertilizante, medicamento), com o viveiro vazio do preparo,
 - [supabase/tests/99_cancelar_importacao.sql](../../supabase/tests/99_cancelar_importacao.sql) — Cancelar a importação de um extrato lido por engano (quem pode conciliar; o que já foi feito fica), duplicados na
@@ -109,6 +110,7 @@
 - [src/lib/asaas-mapa.test.ts](../../src/lib/asaas-mapa.test.ts) — Testes de src/lib/asaas-mapa.ts.
 - [src/lib/assinatura-mapa.test.ts](../../src/lib/assinatura-mapa.test.ts) — Testes de src/lib/assinatura-mapa.ts.
 - [src/lib/assistente.test.ts](../../src/lib/assistente.test.ts) — Testes de src/lib/assistente.ts.
+- [src/lib/biometria-grupos.test.ts](../../src/lib/biometria-grupos.test.ts) — Testes de src/lib/biometria-grupos.ts.
 - [src/lib/boleto.test.ts](../../src/lib/boleto.test.ts) — Testes de src/lib/boleto.ts.
 - [src/lib/campo/conhecimento-tambaqui.test.ts](../../src/lib/campo/conhecimento-tambaqui.test.ts) — Testes de src/lib/campo/conhecimento-tambaqui.ts.
 - [src/lib/campo/contexto-chat.test.ts](../../src/lib/campo/contexto-chat.test.ts) — Testes de src/lib/campo/contexto-chat.ts.
@@ -153,6 +155,7 @@
 - [src/lib/planejamento.test.ts](../../src/lib/planejamento.test.ts) — Testes de src/lib/planejamento.ts.
 - [src/lib/planilha.test.ts](../../src/lib/planilha.test.ts) — Testes de src/lib/planilha.ts.
 - [src/lib/pontos.test.ts](../../src/lib/pontos.test.ts) — Testes de src/lib/pontos.ts.
+- [src/lib/previsao-racao.test.ts](../../src/lib/previsao-racao.test.ts) — Testes de src/lib/previsao-racao.ts.
 - [src/lib/previsao.test.ts](../../src/lib/previsao.test.ts) — Testes de src/lib/previsao.ts.
 - [src/lib/racao-estoque.test.ts](../../src/lib/racao-estoque.test.ts) — Testes de src/lib/racao-estoque.ts.
 - [src/lib/rateio.test.ts](../../src/lib/rateio.test.ts) — Testes de src/lib/rateio.ts.

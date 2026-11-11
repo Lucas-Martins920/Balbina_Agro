@@ -12,7 +12,7 @@ O domínio do peixe (vocabulário, ciclo do lote, tabela de arraçoamento, faixa
 
 **Viveiros** (`(app)/piscicultura`): setores (com licença ambiental) e viveiros com sistema (escavado, barragem, tanque-rede, alvenaria, lona), área, volume, profundidade, aeração e finalidade (alevinagem, recria, engorda). Cada um ganha um centro de custo (`app.cc_automatico`).
 
-**Lotes** (`(app)/lotes`): povoamento (`povoar_lote`: espécie, quantidade, peso inicial, custo dos alevinos e peso de abate), espécies e curvas de crescimento (`(app)/lotes/especies`), biometria (`registrar_biometria`), transferência entre viveiros (`transferir_lote`), encerramento e reabertura. Um viveiro não recebe dois lotes ao mesmo tempo (exclusion constraint em `lote_alocacoes`). Entre duas biometrias o peso vem da curva (`app.peso_estimado`).
+**Lotes** (`(app)/lotes`): povoamento (`povoar_lote`: espécie, quantidade, peso inicial, custo dos alevinos e peso de abate), espécies e curvas de crescimento (`(app)/lotes/especies`), biometria (`registrar_biometria`; em grupos por `registrar_biometria_grupos`, ver abaixo), transferência entre viveiros (`transferir_lote`), encerramento e reabertura. Um viveiro não recebe dois lotes ao mesmo tempo (exclusion constraint em `lote_alocacoes`). Entre duas biometrias o peso vem da curva (`app.peso_estimado`).
 
 **Apontamento diário** (`(app)/apontamentos`, `/campo`, `/api/apontamentos`): o trato do viveiro, o coração da produção.
 
@@ -35,6 +35,8 @@ flowchart LR
 
 **Sanidade** (`(app)/sanidade`, `(app)/medicamentos`): banhos e medicamentos na ração ou na água com **carência** (view `medicacoes`), calagem, adubação e análises. Os insumos aplicados no `/campo` entram por `/api/lancar-insumos` (`registrar_insumo_viveiro`).
 
+**Biometria em grupos** (`biometria_grupos`, migration `20261111000004_biometria_grupos.sql`; `lib/biometria-grupos`, `components/grupos-biometria.tsx` no site e `components/campo/form-biometria.tsx` no campo): cada puçá ou balde é um grupo (peixes, kg, ponto de captura). O peso médio é a média ponderada (peso total ÷ total de peixes), conferida no banco (`app.conferir_grupos_biometria`). `registrar_biometria_grupos` grava a biometria e os grupos numa transação, é idempotente pelo `client_id` da fila do celular (reenvio não duplica) e guarda jejum, temperatura, oxigênio e a população viva do dia. `corrigir_grupos_biometria` troca os grupos de uma biometria já lançada (acrescentar, corrigir ou tirar um grupo) e recalcula o peso. O rascunho fica no navegador até concluir. A amostra sugerida vem de `racao_parametros` (`amostra_pct` 2%, mínimo 30, máximo 100: 50 peixes para 2.500). Teste: `99_biometria_grupos.sql`.
+
 **Indicadores zootécnicos** (`(app)/relatorios/indicadores`, `(app)/lotes/[id]`, `lib/zootecnico`, `lib/crescimento`): sobrevivência, biomassa, ganho por dia, conversão alimentar e peso por semana de cultivo contra a curva da espécie (views `indicadores_lote_dia` e `indicadores_lote_semana`). Não há tabela derivada: tudo sai do lançamento, da biometria e da despesca.
 
 Testes: `20_producao_titulos.sql`, `99_apontamento_campo.sql`, `99_campo_insumos.sql`, `99_biometria_crescimento.sql`, `99_apagar_apontamentos.sql`, `99_checklist_racao_apontamento.sql`, `99_transferencia_lotes.sql`, `99_causas_mortalidade.sql`, `99_medicamentos.sql`; E2E `producao-vendas`, `apontamento-lixeira`, `tela-celular`. Regras puras do `/campo` em `src/lib/campo/*.test.ts`.
@@ -56,11 +58,15 @@ Toda movimentação de ração aponta para uma entrada (`movimentos_estoque.entr
 - **Ajuste de uma entrada** (`ajustar_entrada_racao`, tabela `racao_ajustes`): tipo (contagem, perda, avaria, vencimento, correção, outro), motivo, kg antes e depois. É o único jeito de tirar ração vencida.
 - Movimento de ração lançado não se apaga direto (`app.racao_movimento_sem_apagar`); só a função que o criou, o apontamento e o zerar do sistema.
 
+**Tela do estoque de ração** (`(app)/racao`, ações em `(app)/racao/actions.ts`): por ração (estoque, sacos, consumo por dia, cobertura, data de falta, reserva e quanto comprar) e por entrada com saldo, na ordem de consumo do FEFO (PB, granulometria, validade, saldo, sacos fechados, saco aberto, cobertura, alertas, movimentos e estorno). Os sacos saem de `sacosDoSaldo` (63 kg em saco de 25 kg = 2 fechados + 13 kg no aberto, 2,52 equivalentes); o kg real não é arredondado. O `/estoque` mostra só o resumo da ração e leva para cá.
+
+**Previsão e reserva** (`lib/previsao-racao.ts`, pura; `lib/previsao-racao-dados.ts` lê o banco): para cada lote, peso de hoje (biometria do dia ou ganho entre as duas últimas biometrias, senão a curva da espécie), biomassa (população viva × peso), taxa da tabela de arraçoamento da **espécie do lote** (interpolada na faixa), ajuste pelo apetite real (trato de pelo menos 7 dias, entre 0,5 e 1,5), consumo de 15/30/45 dias dia a dia, data provável da troca de ração (mudança de PB ou grânulo), cobertura e data de falta. Cada número leva a origem (`medido`, `calculado`, `previsao`, `recomendacao`, `ausente`) e a nota; a confiança cai com biometria velha, falta de trato ou de peso do saco. Espécie sem tabela fica "sem dados técnicos" e não recebe número da tabela de outra. A sobra de ração não é lançada no apontamento e aparece sempre como ausente. A reserva (`planejarReserva`) divide até N sacos (`racao_parametros.reserva_sacos`, padrão 10) entre a ração atual e a próxima pelo consumo previsto na janela (prazo de entrega + 15 dias, até 45), desconta o estoque que vence antes de usar e não guarda ração de alevino além do que o lote ainda come. Aparece na ficha do lote (`lotes/[id]/planejamento-racao.tsx`) e na tela da ração.
+
 **Fábrica de ração (desativada)**: a fábrica herdada da granja saiu em `20261111000002_remover_fabrica_racao.sql`. `salvar_formula` e `produzir_racao` só devolvem a mensagem de desativada; as tabelas `formulas_racao`, `formula_itens` e `ordens_producao_racao` ficam só para leitura (histórico e backup), e o tipo `insumo_racao` virou `outro` (planilha antiga com esse tipo também entra como `outro`). A compra sugerida (`lib/abastecimento`) cobre só a ração comprada.
 
 **Pontos de venda** (`(app)/pontos-de-venda`, `lib/pontos`): cada ponto tem depósito de pescado, caixa e centro de custo próprios (`criar_ponto_venda`). O peixe vai por transferência com frete e perda (`transferir_peixe`, `receber_transferencia_peixe`) ou por venda entre empresas do mesmo dono. Detalhes em [`docs/pontos-de-venda.md`](../pontos-de-venda.md).
 
-Testes: `50_estoque_vendas.sql`, `99_movimentar_estoque.sql`, `99_pontos_venda.sql`, `99_produtos_para_venda.sql`, `99_racao_entradas.sql`, `99_racao_baixa.sql`.
+Testes: `50_estoque_vendas.sql`, `99_movimentar_estoque.sql`, `99_pontos_venda.sql`, `99_produtos_para_venda.sql`, `99_racao_entradas.sql`, `99_racao_baixa.sql`; regras puras em `lib/previsao-racao.test.ts` e `lib/racao-estoque.test.ts`.
 
 ---
 
