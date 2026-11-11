@@ -491,7 +491,8 @@ function lerTipoProduto(v: string): TipoProduto | "peixe" | undefined {
   const t = opcao(v);
   if (/alevino|juvenil|pos larva/.test(t)) return "alevino";
   if (/^peixes?$|pescado/.test(t)) return "peixe";
-  if (/insumo|ingrediente|materia prima|premix|milho|soja|farelo/.test(t)) return "insumo_racao";
+  // ingrediente de fábrica de ração (milho, farelo…) vira "outro": a piscicultura compra ração pronta
+  if (/insumo|ingrediente|materia prima|premix|milho|soja|farelo/.test(t)) return "outro";
   if (/racao/.test(t)) return "racao";
   if (/embalagem|caixa|bandeja|gelo/.test(t)) return "embalagem";
   if (/vacina/.test(t)) return "vacina";

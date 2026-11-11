@@ -258,7 +258,7 @@ export function validarContato(corpo: unknown, parcial = false): Resultado<Conta
   return { ok: saida };
 }
 
-const TIPOS_PRODUTO = ["peixe", "alevino", "racao", "insumo_racao", "corretivo", "embalagem", "medicamento", "vacina", "outro"];
+const TIPOS_PRODUTO = ["peixe", "alevino", "racao", "corretivo", "embalagem", "medicamento", "vacina", "outro"];
 
 export type ProdutoApi = {
   tipo?: string; nome?: string; unidade?: string; sku?: string | null; ncm?: string | null; observacoes?: string | null;

@@ -100,7 +100,7 @@ function FichaRacao({ produto, fases }: { produto?: Produto; fases: string[] }) 
 }
 
 function FormProduto({ produto, grupo, classes, categorias, embalagens, fases, podeEditar, podePreco }: PropsForm & { produto?: Produto }) {
-  const [tipo, setTipo] = useState(produto?.tipo ?? (grupo === "venda" ? "outro" : "insumo_racao"));
+  const [tipo, setTipo] = useState(produto?.tipo ?? (grupo === "venda" ? "outro" : "racao"));
   const [marcado, setMarcado] = useState(produto?.para_venda ?? grupo === "venda");
   const peixe = tipo === "peixe";
   // produto que guarda o estoque da classe, em kg: não vai para a venda (vende-se o kg e a caixa da classe)

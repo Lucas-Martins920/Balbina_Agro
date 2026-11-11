@@ -107,7 +107,7 @@ select pg_temp.ok((select ordem = 2 from centros_custo where empresa_id = curren
 -- ---------------------------------------------------------------------------
 insert into contatos (empresa_id, nome, tipos) values (current_setting('t.emp')::uuid, 'Agropecuária Boa', array['fornecedor']);
 select set_config('t.forn', (select id::text from contatos where empresa_id = current_setting('t.emp')::uuid and nome = 'Agropecuária Boa'), false);
-insert into produtos (empresa_id, nome, tipo, unidade) values (current_setting('t.emp')::uuid, 'Milho grão', 'insumo_racao', 'kg');
+insert into produtos (empresa_id, nome, tipo, unidade) values (current_setting('t.emp')::uuid, 'Milho grão', 'outro', 'kg');
 select set_config('t.prod', (select id::text from produtos where empresa_id = current_setting('t.emp')::uuid and nome = 'Milho grão'), false);
 select set_config('t.cat', (select id::text from categorias where empresa_id = current_setting('t.emp')::uuid and nome = 'Milho'), false);
 

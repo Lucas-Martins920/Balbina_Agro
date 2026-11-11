@@ -114,7 +114,7 @@ test("contatos, categorias, produtos e transferências", () => {
   assert.equal(pacote.contatos![1].cpf_cnpj, undefined);
   assert.equal(pacote.contatos!.length, 2);
   assert.deepEqual(pacote.categorias, [{ nome: "Farelo de soja", sentido: "saida", grupo: "custo_operacional", pai: "Insumos" }]);
-  assert.deepEqual(pacote.produtos, [{ nome: "Milho moído", tipo: "insumo_racao", unidade: "kg", sku: undefined, ncm: undefined,
+  assert.deepEqual(pacote.produtos, [{ nome: "Milho moído", tipo: "outro", unidade: "kg", sku: undefined, ncm: undefined,
     estoque_minimo: 1000, observacoes: undefined }]);
   assert.equal(pacote.transferencias!.length, 1);
   assert.equal(pacote.transferencias![0].valor_cents, 30000);

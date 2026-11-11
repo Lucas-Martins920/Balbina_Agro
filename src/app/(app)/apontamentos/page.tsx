@@ -7,7 +7,6 @@ import { diasAtrasISO, formatarData, formatarInteiro, formatarNumero, hojeISO } 
 import { textoKg, textoPeso } from "@/lib/pescado";
 import { createClient } from "@/lib/supabase/server";
 import { FASES, TIPOS_MEDICAMENTO, TURNOS, UNIDADES_DOSE, turnoAgora } from "@/lib/rotulos";
-import { produzirRacao } from "../racao/actions";
 import { editarLancamento, excluirLancamento, registrarApontamento, restaurarLancamento } from "./actions";
 import { EditarLancamento } from "./editar-lancamento";
 import { ExcluirLancamento, RestaurarLancamento } from "./excluir-lancamento";
@@ -29,7 +28,7 @@ export default async function PaginaApontamentos({ searchParams }: PageProps<"/a
   const { data: claims } = await supabase.auth.getClaims();
   const eu = (claims?.claims.sub as string | undefined) ?? null;
 
-  const [{ data: ocupados }, { data: lancamentos, error: erroLancamentos }, { data: recentes }, { data: racoes }, { data: checklist }, { data: formulas }, { data: depositos }, { data: saldos }, { data: medicamentos }, { data: lixeira }, { data: usuarios }] = await Promise.all([
+  const [{ data: ocupados }, { data: lancamentos, error: erroLancamentos }, { data: recentes }, { data: racoes }, { data: checklist }, { data: saldos }, { data: medicamentos }, { data: lixeira }, { data: usuarios }] = await Promise.all([
     supabase.from("alocacoes_atuais").select("viveiro_id, viveiro_nome, setor_nome, lote_id, lote_codigo, fase, peixes_atuais, ultimo_apontamento, peso_medio_g, biomassa_kg")
       .eq("empresa_id", atual.id).order("setor_nome").order("viveiro_nome"),
     supabase.from("apontamento_lancamentos")
@@ -41,8 +40,6 @@ export default async function PaginaApontamentos({ searchParams }: PageProps<"/a
       .eq("empresa_id", atual.id).gte("data", desde).order("data", { ascending: false }).limit(100),
     supabase.from("produtos").select("id, nome").eq("empresa_id", atual.id).eq("tipo", "racao").eq("ativo", true).order("nome"),
     supabase.from("checklist_itens").select("id, nome, tipo, unidade, aplica_em").eq("empresa_id", atual.id).eq("ativo", true).order("ordem").order("nome"),
-    supabase.from("custo_formulas").select("formula_id, racao, fase, versao").eq("empresa_id", atual.id).order("racao"),
-    supabase.from("depositos").select("id, nome").eq("empresa_id", atual.id).neq("tipo", "peixe").order("nome"),
     supabase.from("saldos_produtos").select("produto_id, saldo").eq("empresa_id", atual.id),
     supabase.from("medicamentos").select("id, nome, tipo, dose_por_unidade, unidade_dose, via, carencia_dias")
       .eq("empresa_id", atual.id).eq("ativo", true).order("nome"),
@@ -89,27 +86,6 @@ export default async function PaginaApontamentos({ searchParams }: PageProps<"/a
         acoes={
           <>
             <Link href="/campo" className={classeBotao("secundario", "sm")}>Abrir no celular (funciona sem internet)</Link>
-            {(formulas ?? []).length > 0 && (
-              <BotaoLancamento rotulo="Produção de ração" titulo="Produção da fábrica de ração hoje" acao={produzirRacao} botao="Lançar produção" variante="secundario" tamanho="sm"
-                descricao={<>Tira os ingredientes da fórmula do estoque e põe a ração pronta no depósito. Depois é só escolher o tipo de ração no lançamento do viveiro. Fórmulas e ingredientes ficam em <Link href="/racao" className={CLASSE_BOTAO_TEXTO}>Fábrica de ração</Link>.</>}>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <Selecao rotulo="Fórmula" id="o_formula" name="formula_id" required defaultValue="">
-                  <option value="" disabled>Escolha…</option>
-                  {(formulas ?? []).map((f) => <option key={f.formula_id} value={f.formula_id}>{f.racao} · {f.fase} v{f.versao}</option>)}
-                </Selecao>
-                <Campo rotulo="Toneladas" id="o_t" name="toneladas" inputMode="decimal" required placeholder="Ex.: 2,5" />
-                <Selecao rotulo="Tirar os ingredientes de" id="o_ins" name="deposito_insumos" required defaultValue="">
-                  <option value="" disabled>Escolha…</option>
-                  {(depositos ?? []).map((d) => <option key={d.id} value={d.id}>{d.nome}</option>)}
-                </Selecao>
-                <Selecao rotulo="Guardar a ração em" id="o_dest" name="deposito_destino" required defaultValue="">
-                  <option value="" disabled>Escolha…</option>
-                  {(depositos ?? []).map((d) => <option key={d.id} value={d.id}>{d.nome}</option>)}
-                </Selecao>
-                <Campo rotulo="Data" id="o_data" name="data" type="date" defaultValue={hoje} max={hoje} required />
-              </div>
-            </BotaoLancamento>
-            )}
             {(ocupados ?? []).length > 0 && (
               ocupados && <BotaoLancamento rotulo="Novo apontamento" titulo="Novo lançamento" acao={registrarApontamento} botao="Salvar apontamento">
             <CamposLancamento

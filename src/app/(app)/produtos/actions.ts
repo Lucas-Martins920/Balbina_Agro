@@ -12,7 +12,6 @@ import { createClient } from "@/lib/supabase/server";
 function revalidar() {
   revalidatePath("/produtos");
   revalidatePath("/insumos");
-  revalidatePath("/racao");
   revalidatePath("/estoque");
 }
 

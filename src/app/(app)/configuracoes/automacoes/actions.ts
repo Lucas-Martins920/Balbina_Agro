@@ -35,11 +35,9 @@ export async function salvarLembreteApontamento(_: EstadoAcao, form: FormData): 
 
 export async function salvarAbastecimento(_: EstadoAcao, form: FormData): Promise<EstadoAcao> {
   const compra = Number(form.get("compra_dias"));
-  const producao = Number(form.get("producao_dias"));
   if (!Number.isInteger(compra) || compra < 1 || compra > 180) return falha("Dias de compra: de 1 a 180.");
-  if (!Number.isInteger(producao) || producao < 1 || producao > 60) return falha("Dias de produção: de 1 a 60.");
   revalidatePath("/previsoes");
-  return gravar({ compra_dias: compra, producao_dias: producao }, `Compra para ${compra} dias e produção para ${producao} dias.`);
+  return gravar({ compra_dias: compra }, `Compra de ração para ${compra} dias.`);
 }
 
 const dia = (v: FormDataEntryValue | null) => {

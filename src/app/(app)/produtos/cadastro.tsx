@@ -71,7 +71,6 @@ export async function CadastroProdutos({ grupo }: { grupo: GrupoProduto }) {
       />
       <div className="flex flex-wrap gap-2">
         <Link href={TELAS[grupo].outra.href} className={CLASSE_BOTAO_TEXTO}>{TELAS[grupo].outra.nome}</Link>
-        {grupo === "consumo" && <Link href="/racao" className={CLASSE_BOTAO_TEXTO}>Fórmulas e produção de ração</Link>}
       </div>
     </div>
   );

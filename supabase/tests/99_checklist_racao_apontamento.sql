@@ -38,7 +38,7 @@ insert into depositos (id, empresa_id, nome, tipo) values
 insert into produtos (id, empresa_id, tipo, nome, unidade) values
   ('99c00000-0000-0000-0000-0000000000b1', current_setting('t.emp')::uuid, 'racao', 'Inicial', 'kg'),
   ('99c00000-0000-0000-0000-0000000000b2', current_setting('t.emp')::uuid, 'racao', 'Crescimento', 'kg'),
-  ('99c00000-0000-0000-0000-0000000000b3', current_setting('t.emp')::uuid, 'insumo_racao', 'Milho', 'kg');
+  ('99c00000-0000-0000-0000-0000000000b3', current_setting('t.emp')::uuid, 'outro', 'Milho', 'kg');
 select registrar_entrada('99c00000-0000-0000-0000-0000000000b1', '99c00000-0000-0000-0000-0000000000d1', current_setting('t.mes')::date, 1000, 200000);
 select registrar_entrada('99c00000-0000-0000-0000-0000000000b2', '99c00000-0000-0000-0000-0000000000d1', current_setting('t.mes')::date, 1000, 150000);
 

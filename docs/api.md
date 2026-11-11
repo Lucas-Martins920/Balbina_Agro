@@ -105,7 +105,7 @@ Campos: `tipos` (cliente, fornecedor, funcionario, socio), `nome`, `cpf_cnpj`, `
 
 ### Produto
 
-`tipo` (alevino, racao, insumo_racao, corretivo, embalagem, medicamento, vacina, outro), `nome`, `unidade`, `sku`, `ncm`, `estoque_minimo`, `observacoes`, `ativo`, `para_venda`. Produtos de peixe (kg e caixa de 20 kg) nascem das classes de pescado no Balbina e não são criados pela API.
+`tipo` (alevino, racao, corretivo, embalagem, medicamento, vacina, outro), `nome`, `unidade`, `sku`, `ncm`, `estoque_minimo`, `observacoes`, `ativo`, `para_venda`. Produtos de peixe (kg e caixa de 20 kg) nascem das classes de pescado no Balbina e não são criados pela API.
 
 ## Códigos de erro
 

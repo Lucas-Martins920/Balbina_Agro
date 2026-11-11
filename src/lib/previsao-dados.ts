@@ -8,7 +8,7 @@ import {
   alertasTendencia, coberturaRacao, custoSemanalVariavel, margemProjetada, mortalidadeSemanal, precoRacaoKg, primeiroSaldoNegativo,
   projetarLote, type AlertaTendencia, type Cobertura, type CurvaPadrao, type DiaLote, type Projecao,
 } from "@/lib/previsao";
-import { planoAbastecimento, DIAS_COMPRA, DIAS_PRODUCAO, type FormulaVigente } from "@/lib/abastecimento";
+import { planoAbastecimento, DIAS_COMPRA } from "@/lib/abastecimento";
 import { createClient } from "@/lib/supabase/server";
 import { lerTodas } from "@/lib/supabase/todas";
 import type { SemanaFluxo } from "@/lib/fluxo";
@@ -47,9 +47,9 @@ export async function carregarPrevisoes({ projetar, verCaixa, verCusto, abastece
     supabase.from("alocacoes_atuais").select("lote_id, peixes_atuais, peso_medio_g, biomassa_kg").eq("empresa_id", atual.id).limit(500),
     lerTodas(() => supabase.from("indicadores_lote_dia").select("lote_id, data, semana, consumo_g_peixe_dia, mortalidade_dia_pct, oxigenio_min_mg_l")
       .eq("empresa_id", atual.id).gte("data", desdeDias).order("data").order("lote_id")),
-    supabase.from("estoque_produtos").select("produto_id, nome, unidade, saldo").eq("empresa_id", atual.id).in("tipo", ["racao", "insumo_racao"]).limit(2000),
+    supabase.from("estoque_produtos").select("produto_id, nome, unidade, saldo").eq("empresa_id", atual.id).eq("tipo", "racao").limit(2000),
     lerTodas(() => supabase.from("movimentos_estoque").select("produto_id, quantidade").eq("empresa_id", atual.id)
-      .in("tipo", ["consumo_lote", "consumo_producao"]).gte("data", desdeConsumo).order("id")),
+      .eq("tipo", "consumo_lote").gte("data", desdeConsumo).order("id")),
     verCaixa
       ? Promise.all([
         supabase.from("saldos_contas").select("saldo_cents, tipo").eq("empresa_id", atual.id).eq("arquivada", false),
@@ -72,7 +72,7 @@ export async function carregarPrevisoes({ projetar, verCaixa, verCusto, abastece
 
   const especies = [...new Set(lotesAtivos.map((l) => l.especie_id).filter(Boolean))] as string[];
   const ids = lotesAtivos.map((l) => l.id);
-  const [{ data: curvas }, { data: semanas }, { data: biometrias }, { data: custos }, { data: formulas }, { data: dias_automacao }] = await Promise.all([
+  const [{ data: curvas }, { data: semanas }, { data: biometrias }, { data: custos }, { data: dias_automacao }] = await Promise.all([
     projetar && especies.length
       ? lerTodas(() => supabase.from("curvas_crescimento").select("especie_id, semana, peso_g, taxa_alimentacao_pct").in("especie_id", especies)
         .order("especie_id").order("semana"))
@@ -87,13 +87,9 @@ export async function carregarPrevisoes({ projetar, verCaixa, verCusto, abastece
       ? supabase.from("custo_kg_lote").select("lote_id, mes, custo_total_cents, alevinos_cents, indiretos_rateados_cents, racao_cents, racao_kg, preco_kg_cents")
         .eq("empresa_id", atual.id).in("lote_id", ids).order("mes", { ascending: false }).limit(1000)
       : { data: [] },
-    // compra e produção sugeridas: fórmulas vigentes e os dias que a piscicultura quer cobrir
+    // compra sugerida: os dias que a piscicultura quer cobrir
     abastecer
-      ? supabase.from("formulas_racao").select("produto_racao_id, formula_itens(insumo_id, kg_por_tonelada)")
-        .eq("empresa_id", atual.id).eq("vigente", true).limit(500)
-      : { data: [] },
-    abastecer
-      ? supabase.from("automacoes_empresa").select("compra_dias, producao_dias").eq("empresa_id", atual.id).maybeSingle()
+      ? supabase.from("automacoes_empresa").select("compra_dias").eq("empresa_id", atual.id).maybeSingle()
       : { data: null },
   ]);
 
@@ -161,7 +157,7 @@ export async function carregarPrevisoes({ projetar, verCaixa, verCusto, abastece
       nivel: c.nivel!, tipo: "racao",
       titulo: `${c.nome}: estoque para ${Math.floor(c.dias!)} ${Math.floor(c.dias!) === 1 ? "dia" : "dias"}`,
       detalhe: `consumo médio de ${c.consumoDia.toLocaleString("pt-BR", { maximumFractionDigits: 1 })} ${c.unidade} por dia nos últimos ${DIAS_CONSUMO} dias`,
-      link: "/racao",
+      link: "/estoque#racao",
     })),
     ...(fluxo?.negativa ? [{
       nivel: "critico" as const, tipo: "caixa",
@@ -172,13 +168,8 @@ export async function carregarPrevisoes({ projetar, verCaixa, verCusto, abastece
   ];
 
   const diasCompra = dias_automacao?.compra_dias ?? DIAS_COMPRA;
-  const diasProducao = dias_automacao?.producao_dias ?? DIAS_PRODUCAO;
-  const formulasVigentes: FormulaVigente[] = (formulas ?? []).map((f) => ({
-    racao_id: f.produto_racao_id,
-    itens: (f.formula_itens ?? []).map((i) => ({ insumo_id: i.insumo_id, kg_por_tonelada: Number(i.kg_por_tonelada) })),
-  }));
   const abastecimento = abastecer
-    ? { ...planoAbastecimento(cobertura, formulasVigentes, diasCompra, diasProducao), diasCompra, diasProducao, empresa: nomeEmpresa(atual) }
+    ? { ...planoAbastecimento(cobertura, diasCompra), diasCompra, empresa: nomeEmpresa(atual) }
     : null;
 
   return { hoje, tendencia, cobertura, fluxo, lotes: previstos, alertas, abastecimento };

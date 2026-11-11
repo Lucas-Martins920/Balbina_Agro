@@ -168,16 +168,16 @@ export default async function PaginaPrevisoes() {
       </section>
 
       <div id="racao" className="scroll-mt-6">
-        <Cartao titulo="Ração e insumos" icone={Wheat} cor="verde"
-          descricao={`Quantos dias o estoque dura no consumo médio dos últimos ${DIAS_CONSUMO} dias (consumo dos lotes e da fábrica de ração).`}
-          acoes={<LinkBotao href="/racao" tamanho="sm" variante="fantasma">Ração e insumos <ArrowRight size={14} aria-hidden /></LinkBotao>}>
+        <Cartao titulo="Ração" icone={Wheat} cor="verde"
+          descricao={`Quantos dias o estoque de ração dura no consumo médio dos lotes nos últimos ${DIAS_CONSUMO} dias.`}
+          acoes={<LinkBotao href="/estoque#racao" tamanho="sm" variante="fantasma">Estoque de ração <ArrowRight size={14} aria-hidden /></LinkBotao>}>
           {d.cobertura.length === 0 ? (
-            <p className="text-sm text-texto-suave">Nenhuma ração ou insumo com estoque cadastrado.</p>
+            <p className="text-sm text-texto-suave">Nenhuma ração com estoque cadastrado.</p>
           ) : (
             <table className="w-full text-sm">
               <thead className="text-left text-[13px] text-texto-suave">
                 <tr>
-                  <th scope="col" className="pb-2 font-medium">Item</th>
+                  <th scope="col" className="pb-2 font-medium">Ração</th>
                   <th scope="col" className="pb-2 text-right font-medium">Saldo</th>
                   <th scope="col" className="pb-2 text-right font-medium max-sm:hidden">Consumo por dia</th>
                   <th scope="col" className="pb-2 text-right font-medium">Dura</th>
@@ -206,32 +206,18 @@ export default async function PaginaPrevisoes() {
         </Cartao>
       </div>
 
-      {ab && (ab.produzir.length > 0 || ab.comprar.length > 0) && (
+      {ab && ab.comprar.length > 0 && (
         <Cartao titulo="Abastecimento sugerido" icone={ShoppingCart} cor="verde"
-          descricao={`Pelo consumo médio: o que produzir na fábrica para ${ab.diasProducao} dias e o que comprar para ${ab.diasCompra} dias (inclui os insumos da produção sugerida). Os dias mudam em Configurações › Automações.`}
+          descricao={`Pelo consumo médio: a ração a comprar para ${ab.diasCompra} dias. Os dias mudam em Configurações › Automações.`}
           acoes={ab.comprar.length > 0 ? <BotaoCopiar texto={textoListaCompra(ab.comprar, ab.empresa)} rotulo="Copiar lista de compra" /> : undefined}>
           <div className="grid gap-6 md:grid-cols-2">
-            <div>
-              <h3 className="mb-2 text-sm font-semibold">Produzir na fábrica</h3>
-              {ab.produzir.length === 0 ? <p className="text-sm text-texto-suave">Ração de fórmula com estoque suficiente.</p> : (
-                <ul className="divide-y divide-linha text-sm">
-                  {ab.produzir.map((p) => (
-                    <li key={p.produto_id} className="flex justify-between gap-3 py-2 tabular-nums">
-                      <span className="font-medium">{p.nome}</span>
-                      <span>{formatarNumero(p.kg, 0)} kg{p.dias !== null && <span className="text-texto-suave"> · dura {formatarNumero(p.dias, 0)} dias</span>}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {ab.produzir.length > 0 && <LinkBotao href="/racao" tamanho="sm" variante="fantasma" className="mt-2">Abrir ordem de produção <ArrowRight size={14} aria-hidden /></LinkBotao>}
-            </div>
             <div>
               <h3 className="mb-2 text-sm font-semibold">Comprar</h3>
               {ab.comprar.length === 0 ? <p className="text-sm text-texto-suave">Nada a comprar no período.</p> : (
                 <ul className="divide-y divide-linha text-sm">
                   {ab.comprar.map((c) => (
                     <li key={c.produto_id} className="flex justify-between gap-3 py-2 tabular-nums">
-                      <span className="font-medium">{c.nome}{c.motivo === "producao" && <span className="font-normal text-texto-suave"> · para a produção</span>}</span>
+                      <span className="font-medium">{c.nome}</span>
                       <span>{formatarNumero(c.quantidade, 0)} {c.unidade}</span>
                     </li>
                   ))}
@@ -239,7 +225,7 @@ export default async function PaginaPrevisoes() {
               )}
             </div>
           </div>
-          <p className="mt-3 text-xs text-texto-suave">Sugestão: nada é comprado nem produzido sozinho. Ração em lotes de 100 kg; insumo em kg arredondado de 10 em 10.</p>
+          <p className="mt-3 text-xs text-texto-suave">Sugestão: nada é comprado sozinho. Quantidade em kg arredondada de 10 em 10.</p>
         </Cartao>
       )}
 

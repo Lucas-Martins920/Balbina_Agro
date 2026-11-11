@@ -53,7 +53,7 @@ select pg_temp.ok(not exists (select 1 from categorias where id = '98000000-0000
 -- Produto: com movimento não muda unidade; base de estoque não sai
 insert into depositos (id, empresa_id, nome, tipo) values ('98000000-0000-0000-0000-0000000000d1', current_setting('t.emp')::uuid, 'Silo', 'insumos');
 insert into produtos (id, empresa_id, tipo, nome, unidade, estoque_minimo) values
-  ('98000000-0000-0000-0000-0000000000b1', current_setting('t.emp')::uuid, 'insumo_racao', 'Milho', 'kg', 5000),
+  ('98000000-0000-0000-0000-0000000000b1', current_setting('t.emp')::uuid, 'outro', 'Milho', 'kg', 5000),
   ('98000000-0000-0000-0000-0000000000b2', current_setting('t.emp')::uuid, 'embalagem', 'Bandeja', 'un', null);
 update produtos set unidade = 't', nome = 'Milho grão' where id = '98000000-0000-0000-0000-0000000000b1';
 select pg_temp.ok((select unidade = 't' from produtos where id = '98000000-0000-0000-0000-0000000000b1'), 'produto sem movimento muda a unidade');
