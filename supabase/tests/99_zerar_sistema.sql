@@ -32,7 +32,7 @@ insert into apagadas values
   ('movimentos_estoque'), ('ordens_producao_racao'),
   ('lotes'), ('lote_alocacoes'), ('lote_transferencias'), ('custos_lote_mensal'), ('apontamentos_diarios'),
   ('apontamento_lancamentos'), ('apontamento_racoes'), ('apontamento_checklist'), ('apontamentos_lixeira'),
-  ('eventos_sanitarios'), ('despescas'), ('biometrias'), ('leituras_sonda'), ('racao_entradas'),
+  ('eventos_sanitarios'), ('despescas'), ('biometrias'), ('leituras_sonda'), ('racao_entradas'), ('racao_estornos'), ('racao_ajustes'),
   ('documentos'), ('documentos_recebidos'), ('lembretes_enviados'), ('sugestoes_dispensadas'),
   ('api_webhook_entregas'), ('auditorias_importacao');
 create temp table mantidas (tabela text primary key);

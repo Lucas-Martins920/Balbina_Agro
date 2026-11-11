@@ -35,6 +35,8 @@ const TABELAS: { tabela: string; ordem: string[]; colunas?: string }[] = [
   // estoque e produção
   { tabela: "movimentos_estoque", ordem: ["id"] },
   { tabela: "racao_entradas", ordem: ["id"] },
+  { tabela: "racao_estornos", ordem: ["id"] },
+  { tabela: "racao_ajustes", ordem: ["id"] },
   { tabela: "ordens_producao_racao", ordem: ["id"] },
   { tabela: "lotes", ordem: ["id"] },
   { tabela: "lote_alocacoes", ordem: ["id"] },

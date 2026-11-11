@@ -12,7 +12,7 @@
 - [supabase/tests/50_estoque_vendas.sql](../../supabase/tests/50_estoque_vendas.sql) — Marco 3: despesca, estoque de pescado em kg, carência, pedidos de venda e alertas.
 - [supabase/tests/60_custo_kg.sql](../../supabase/tests/60_custo_kg.sql) — Marco 4: custo do kg por lote.
 - [supabase/tests/70_regras_aging_orcamento.sql](../../supabase/tests/70_regras_aging_orcamento.sql) — Marco 5a: regras de conciliação, aging e orçamento.
-- [supabase/tests/80_racao_cartao_comercial.sql](../../supabase/tests/80_racao_cartao_comercial.sql) — Marco 5b: insumos, fábrica de ração, cartão de crédito e relatórios comerciais.
+- [supabase/tests/80_racao_cartao_comercial.sql](../../supabase/tests/80_racao_cartao_comercial.sql) — Marco 5b: insumos, cartão de crédito e relatórios comerciais (a fábrica de ração foi desativada em 2026-11-11).
 - [supabase/tests/90_cobranca.sql](../../supabase/tests/90_cobranca.sql) — Marco 5c: cobrança pelo Asaas e baixa pelo webhook.
 - [supabase/tests/95_open_finance_conciliacao.sql](../../supabase/tests/95_open_finance_conciliacao.sql) — Conciliação simplificada: palpite pelo histórico, transferência sugerida, certeiras em lote e conexões Open Finance.
 - [supabase/tests/95_usuarios_permissoes.sql](../../supabase/tests/95_usuarios_permissoes.sql) — Usuário master, convites, perfis e permissões por módulo.
@@ -75,6 +75,7 @@
 - [supabase/tests/99_planos.sql](../../supabase/tests/99_planos.sql) — Planos do Balbina: cada nível só libera os módulos dele, inclusive para o master.
 - [supabase/tests/99_pontos_venda.sql](../../supabase/tests/99_pontos_venda.sql) — Pontos de venda: sede automática, estoque por ponto, transferência com frete e perda no transporte, PDV no ponto,
 - [supabase/tests/99_produtos_para_venda.sql](../../supabase/tests/99_produtos_para_venda.sql) — Produtos de venda x insumos de consumo: milho não pede preço de venda nem entra em pedido.
+- [supabase/tests/99_racao_baixa.sql](../../supabase/tests/99_racao_baixa.sql) — Estoque de ração, fase 2: toda saída ligada às entradas (FEFO), custo histórico por lote, estorno, ajuste,
 - [supabase/tests/99_racao_entradas.sql](../../supabase/tests/99_racao_entradas.sql) — Estoque de ração: ficha técnica, entradas numeradas com lote e validade, saldo por entrada pelo FEFO.
 - [supabase/tests/99_rateio_conciliacao.sql](../../supabase/tests/99_rateio_conciliacao.sql) — Rateio em várias categorias: conciliar um lançamento do extrato dividindo o valor entre categorias e
 - [supabase/tests/99_recorrencias_cron.sql](../../supabase/tests/99_recorrencias_cron.sql) — Recorrências renovadas por rotina diária no banco (pg_cron), não mais a cada abertura de tela.
@@ -129,7 +130,6 @@
 - [src/lib/fluxo.test.ts](../../src/lib/fluxo.test.ts) — Testes de src/lib/fluxo.ts.
 - [src/lib/focus-mapa.test.ts](../../src/lib/focus-mapa.test.ts) — Testes de src/lib/focus-mapa.ts.
 - [src/lib/formato.test.ts](../../src/lib/formato.test.ts) — Testes de src/lib/formato.ts.
-- [src/lib/formula-racao.test.ts](../../src/lib/formula-racao.test.ts) — Testes de src/lib/formula-racao.ts.
 - [src/lib/historico.test.ts](../../src/lib/historico.test.ts) — Testes de src/lib/historico.ts.
 - [src/lib/importacao-modelo.test.ts](../../src/lib/importacao-modelo.test.ts) — Testes de src/lib/importacao-modelo.ts.
 - [src/lib/importacao.test.ts](../../src/lib/importacao.test.ts) — Testes de src/lib/importacao.ts.

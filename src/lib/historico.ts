@@ -63,6 +63,8 @@ const TABELAS: Record<string, string> = {
   produtos: "Produtos e insumos",
   movimentos_estoque: "Movimentos de estoque",
   racao_entradas: "Entradas de ração",
+  racao_estornos: "Estornos de ração",
+  racao_ajustes: "Ajustes de ração",
   formulas_racao: "Fórmulas de ração",
   formula_itens: "Itens da fórmula",
   ordens_producao_racao: "Produção de ração",

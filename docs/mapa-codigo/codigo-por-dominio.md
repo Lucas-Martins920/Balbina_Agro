@@ -26,8 +26,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `modeloXlsx` *função* L10 (usado em 2) · `lerXlsx` *função* L89 (usado em 2)
   - internas: `texto` L72
 - **[src/lib/importacao-modelo.ts](../../src/lib/importacao-modelo.ts)** — Planilha modelo do Balbina: quem não usa outro sistema baixa o modelo, preenche e envia. Este arquivo define as abas e colunas do modelo, reconhece a aba e as colunas de qualquer planilha parecida (nomes com ou sem acen…
-  - `TipoModelo` *tipo* L12 (usado em 3) · `Etapa` *tipo* L14 · `ColunaModelo` *tipo* L16 · `Modelo` *tipo* L27 · `MODELOS` *constante* L40 (usado em 4) · `modelo` *função* L267 · `chaveCabecalho` *função* L270 · `nomeChave` *função* L275 · `LinhaLida` *tipo* L279 · `AbaLida` *tipo* L280 (usado em 3) · `Contexto` *tipo* L282 (usado em 2) · `Problema` *tipo* L294 · `ResumoAba` *tipo* L295 · `Previa` *tipo* L299 (usado em 2) · `mapearColunas` *função* L313 · `reconhecerAba` *função* L333 (usado em 1) · `lerValor` *função* L348 (usado em 1) · `lerData` *função* L373 (usado em 1) · `lerCompetencia` *função* L390 (usado em 1) · `interpretarPlanilha` *função* L529 (usado em 2) · `modeloCsv` *função* L816 (usado em 2) · `abaCsv` *função* L823 (usado em 2)
-  - internas: `dataValida` L367 · `opcao` L402 · `lerTipoLancamento` L404 · `lerTiposContato` L412 · `lerSimNao` L424 · `lerSentido` L432 · `lerTipoConta` L444 · `lerFinalidade` L455 · `lerSistema` L466 · `lerInteiro` L479 · `lerPositivo` L485 · `lerTipoProduto` L490 · `hash` L504 · `gerador` L517
+  - `TipoModelo` *tipo* L12 (usado em 3) · `Etapa` *tipo* L14 · `ColunaModelo` *tipo* L16 · `Modelo` *tipo* L27 · `MODELOS` *constante* L40 (usado em 4) · `modelo` *função* L267 · `chaveCabecalho` *função* L270 · `nomeChave` *função* L275 · `LinhaLida` *tipo* L279 · `AbaLida` *tipo* L280 (usado em 3) · `Contexto` *tipo* L282 (usado em 2) · `Problema` *tipo* L294 · `ResumoAba` *tipo* L295 · `Previa` *tipo* L299 (usado em 2) · `mapearColunas` *função* L313 · `reconhecerAba` *função* L333 (usado em 1) · `lerValor` *função* L348 (usado em 1) · `lerData` *função* L373 (usado em 1) · `lerCompetencia` *função* L390 (usado em 1) · `interpretarPlanilha` *função* L530 (usado em 2) · `modeloCsv` *função* L817 (usado em 2) · `abaCsv` *função* L824 (usado em 2)
+  - internas: `dataValida` L367 · `opcao` L402 · `lerTipoLancamento` L404 · `lerTiposContato` L412 · `lerSimNao` L424 · `lerSentido` L432 · `lerTipoConta` L444 · `lerFinalidade` L455 · `lerSistema` L466 · `lerInteiro` L479 · `lerPositivo` L485 · `lerTipoProduto` L490 · `hash` L505 · `gerador` L518
 - **[src/lib/importacao-nibo.ts](../../src/lib/importacao-nibo.ts)** — Converte as respostas da API do NIBO (api.nibo.com.br/empresas/v1) no pacote de importação. Os nomes dos campos seguem nibo.readme.io; os valores de "type" não são documentados, por isso o sentido das categorias vem pri…
   - `NiboCategoria` *tipo* L12 · `NiboCentro` *tipo* L13 · `NiboConta` *tipo* L14 · `NiboPessoa` *tipo* L18 · `NiboAgendamento` *tipo* L26 · `NiboLancamento` *tipo* L32 · `NiboSaldo` *tipo* L39 · `NiboExtrato` *tipo* L41 (usado em 1) · `NiboPendente` *tipo* L47 · `DadosNibo` *tipo* L49 (usado em 2) · `DiagnosticoConta` *tipo* L64 · `diagnosticarNibo` *função* L75 · `sinalExtrato` *função* L95 · `extratoComSinal` *função* L107 · `movimentosNibo` *função* L123 · `pacoteNibo` *função* L187 (usado em 2) · `chavesSincronizacao` *função* L324 (usado em 1) · `MovimentoConciliacao` *tipo* L338 · `ConciliacaoConta` *tipo* L342 (usado em 1) · `conciliadoNoNibo` *função* L345 · `conciliacaoNibo` *função* L350 (usado em 1) · `AuditoriaConta` *tipo* L371 (usado em 1) · `auditarNibo` *função* L378 (usado em 1) · `limiteNibo` *constante* L417 (usado em 1) · `desdeNiboValido` *função* L479 (usado em 2) · `mesesEntre` *função* L487 · `lerNibo` *função* L528 (usado em 1)
   - internas: `idsPorSentido` L102 · `sentidoPeloTipo` L145 · `pessoa` L152 · `rateio` L170 · `dormir` L421 · `chamarNibo` L423 · `erroFatal` L453 · `lerPagina` L458 · `lerTudo` L466 · `lerPorMes` L500 · `somarMeses` L521 · `lerListaComChaves` L552 · `lerLista` L567 · `lerContasNibo` L571
@@ -198,8 +198,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/app/(app)/apontamentos/foto-mortes-action.ts](../../src/app/(app)/apontamentos/foto-mortes-action.ts)** (servidor) — A8: conta os peixes mortos da foto e sugere a causa. Experimental: a pessoa confere antes de salvar.
   - `contarMortesPorFoto` *ação* L11 (usado em 1)
 - **[src/app/(app)/apontamentos/page.tsx](../../src/app/(app)/apontamentos/page.tsx)** (rota `/apontamentos`) — Ração, mortalidade, qualidade da água e medicamentos aplicados por viveiro.
-  - `PaginaApontamentos` *componente* L20
-  - internas: `porLancamento` L322 · `aguaDe` L341 · `faixa` L350 · `racoesDe` L356 · `resumoChecklist` L361
+  - `PaginaApontamentos` *componente* L19
+  - internas: `porLancamento` L298 · `aguaDe` L317 · `faixa` L326 · `racoesDe` L332 · `resumoChecklist` L337
 - **[src/app/(app)/conciliacao/campos-novo.tsx](../../src/app/(app)/conciliacao/campos-novo.tsx)** (navegador) — Campos de "Novo pagamento/recebimento" na conciliação: descrição, fornecedor/cliente (com cadastro rápido já preenchido com o nome do extrato) e, no pagamento, a entrada do produto comprado no estoque. O fornecedor guar…
   - `ContatoConciliacao` *tipo* L9 (usado em 1) · `ProdutoEstoque` *tipo* L10 · `CamposNovoLancamento` *componente* L15 (usado em 1)
 - **[src/app/(app)/lotes/[id]/page.tsx](../../src/app/(app)/lotes/%5Bid%5D/page.tsx)** (rota `/lotes/[id]`) — Tela /lotes/[id].
@@ -302,7 +302,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `ViveirosCampo` *componente* L73 (usado em 1)
   - internas: `CartaoTanque` L15
 - **[src/components/selecao-com-novo.tsx](../../src/components/selecao-com-novo.tsx)** (navegador) — Lista de escolha com "+ Novo": cadastra ali mesmo, sem sair do lançamento, e já deixa o novo escolhido. Os campos do cadastro rápido não têm `name` (não vão junto com o formulário de fora) e o Enter neles cria em vez de…
-  - `SelecaoComNovo` *componente* L13 (usado em 4)
+  - `SelecaoComNovo` *componente* L13 (usado em 3)
 - **[src/lib/apontamento-campo-servidor.ts](../../src/lib/apontamento-campo-servidor.ts)** — O que o apontamento de campo precisa para funcionar sem sinal, e a gravação do que chega da fila. Usado pela tela /campo + /api/apontamentos (sessão por cookie) e pelo app de celular (/api/app/campo e /api/app/apontamen…
   - `EmpresaCampo` *tipo* L11 (usado em 3) · `dadosCampo` *função* L13 (usado em 2) · `gravarApontamentoCampo` *função* L43 (usado em 2)
 - **[src/lib/apontamento-campo.ts](../../src/lib/apontamento-campo.ts)** — Lançamento enviado pelo app de campo (pode chegar horas depois, quando o celular pega sinal).
@@ -368,8 +368,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 ## Vendas, PDV, estoque, produtos e ração
 
 - **[src/app/(app)/estoque/actions.ts](../../src/app/(app)/estoque/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /estoque.
-  - `movimentarEstoque` *ação* L11 (usado em 1) · `contarPescado` *ação* L43 (usado em 1) · `lancarEntradaRacao` *ação* L69 (usado em 1) · `excluirEntradaRacao` *ação* L93 (usado em 1)
-- **[src/app/(app)/estoque/page.tsx](../../src/app/(app)/estoque/page.tsx)** (rota `/estoque`) — Pescado em kg por classe, insumos, ração, embalagens e medicamentos.
+  - `movimentarEstoque` *ação* L11 (usado em 1) · `contarPescado` *ação* L42 (usado em 1) · `lancarEntradaRacao` *ação* L68 (usado em 1) · `excluirEntradaRacao` *ação* L92 (usado em 1)
+- **[src/app/(app)/estoque/page.tsx](../../src/app/(app)/estoque/page.tsx)** (rota `/estoque`) — Pescado em kg por classe, ração, corretivos, embalagens e medicamentos.
   - `PaginaEstoque` *componente* L20
 - **[src/app/(app)/pontos-de-venda/[id]/page.tsx](../../src/app/(app)/pontos-de-venda/%5Bid%5D/page.tsx)** (rota `/pontos-de-venda/[id]`) — Tela /pontos-de-venda/[id].
   - `PaginaPontoVenda` *componente* L14
@@ -383,7 +383,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/app/(app)/pontos-de-venda/transferencias/page.tsx](../../src/app/(app)/pontos-de-venda/transferencias/page.tsx)** (rota `/pontos-de-venda/transferencias`) — Tela /pontos-de-venda/transferencias.
   - `PaginaTransferencias` *componente* L17
 - **[src/app/(app)/produtos/actions.ts](../../src/app/(app)/produtos/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /produtos.
-  - `salvarProduto` *ação* L19 (usado em 1) · `excluirProduto` *ação* L124 (usado em 1) · `ativarProdutosEmLote` *ação* L136 (usado em 1)
+  - `salvarProduto` *ação* L18 (usado em 1) · `excluirProduto` *ação* L123 (usado em 1) · `ativarProdutosEmLote` *ação* L135 (usado em 1)
   - internas: `revalidar` L12
 - **[src/app/(app)/produtos/cadastro.tsx](../../src/app/(app)/produtos/cadastro.tsx)** — Mesma tela para as duas listas: /produtos (venda) e /insumos (consumo)
   - `CadastroProdutos` *componente* L25 (usado em 2)
@@ -392,13 +392,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - internas: `FichaEmbalagem` L51 · `FichaRacao` L82 · `FormProduto` L102 · `PainelProduto` L192
 - **[src/app/(app)/produtos/page.tsx](../../src/app/(app)/produtos/page.tsx)** (rota `/produtos`) — O que a piscicultura vende: peixe por kg e em caixa, alevinos e outros itens com preço de venda.
   - `PaginaProdutos` *componente* L3
-- **[src/app/(app)/racao/actions.ts](../../src/app/(app)/racao/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /racao.
-  - `criarProduto` *ação* L17 (usado em 1) · `criarDeposito` *ação* L31 (usado em 1) · `registrarEntrada` *ação* L43 (usado em 1) · `registrarSaida` *ação* L60 (usado em 1) · `salvarFormula` *ação* L74 (usado em 1) · `produzirRacao` *ação* L94 (usado em 2)
-  - internas: `revalidar` L11
-- **[src/app/(app)/racao/linhas-formula.tsx](../../src/app/(app)/racao/linhas-formula.tsx)** (navegador) — Linhas da fórmula com o total da batida e a parte de cada ingrediente na hora. A batida pode ter qualquer total (não precisa fechar 1.000 kg).
-  - `LinhasFormula` *componente* L11 (usado em 1)
-- **[src/app/(app)/racao/page.tsx](../../src/app/(app)/racao/page.tsx)** (rota `/racao`) — Estoque de insumos, fórmulas, ordens de produção e custo médio.
-  - `PaginaRacao` *componente* L12
+- **[src/app/(app)/racao/page.tsx](../../src/app/(app)/racao/page.tsx)** (rota `/racao`) — Ração comprada pronta: entradas numeradas com lote e validade, consumo pelo FEFO, sacos, cobertura e movimentos.
+  - `Racao` *componente* L4
 - **[src/app/(app)/relatorios/vendas/page.tsx](../../src/app/(app)/relatorios/vendas/page.tsx)** (rota `/relatorios/vendas`) — Tela /relatorios/vendas.
   - `RelatoriosVendas` *componente* L19
   - internas: `mesValido` L12 · `diasValidos` L13 · `Ranking` L117
@@ -479,11 +474,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - internas: `ler` L40 · `gravar` L43 · `useGuardado` L46
 - **[src/lib/estoque-carrinho.ts](../../src/lib/estoque-carrinho.ts)** — O estoque do pescado é um só por classe (Pequeno, Médio, Grande...), em kg: vender por kg ou em caixa de 20 kg são formas de vender o MESMO peixe. Ao montar a venda, o que já está no carrinho sai do estoque na hora, em…
   - `ProdutoEstoque` *tipo* L5 · `EstoqueLinha` *tipo* L9 · `quantidadeQueCabe` *função* L12 (usado em 2) · `estoqueNoCarrinho` *função* L18 (usado em 4)
-- **[src/lib/estoque.ts](../../src/lib/estoque.ts)** — Produtos que não são pescado: insumos, ração, embalagens e medicamentos
-  - `TIPOS_PRODUTO` *constante* L2 (usado em 4) · `TIPOS_DEPOSITO` *constante* L12 (usado em 3) · `LINHAS_FORMULA` *constante* L20 (usado em 2) · `TIPOS_PRODUTO_TODOS` *constante* L23 (usado em 6) · `UNIDADES` *constante* L26 (usado em 1) · `ABAS_PRODUTO` *constante* L29 (usado em 2) · `AbaProduto` *tipo* L37 (usado em 2) · `produtoNaAba` *função* L39 (usado em 2) · `unidadeSaldo` *função* L45 (usado em 3)
-- **[src/lib/formula-racao.ts](../../src/lib/formula-racao.ts)** — Fórmula de ração: a batida pode ter qualquer total (não precisa fechar 1.000 kg). O banco guarda o kg de cada ingrediente na batida e calcula a proporção por tonelada.
-  - `MedidaFormula` *tipo* L4 · `LinhaFormula` *tipo* L5 (usado em 1) · `ItensFormula` *tipo* L6 · `montarItensFormula` *função* L12 (usado em 2) · `resumoFormula` *função* L30 (usado em 2)
-  - internas: `arred` L10
+- **[src/lib/estoque.ts](../../src/lib/estoque.ts)** — Produtos que não são pescado: ração (comprada pronta), corretivos, embalagens e medicamentos
+  - `TIPOS_PRODUTO` *constante* L2 (usado em 2) · `TIPOS_DEPOSITO` *constante* L11 (usado em 1) · `TIPOS_PRODUTO_TODOS` *constante* L19 (usado em 6) · `UNIDADES` *constante* L22 (usado em 1) · `ABAS_PRODUTO` *constante* L25 (usado em 2) · `AbaProduto` *tipo* L33 (usado em 2) · `produtoNaAba` *função* L35 (usado em 2) · `unidadeSaldo` *função* L41 (usado em 3)
 - **[src/lib/pdv-servidor.ts](../../src/lib/pdv-servidor.ts)** — Gravação da venda de balcão: a mesma para o PDV do site (venderNoBalcao) e o do app de celular (/api/app/pdv/vender). Quem só opera o caixa não muda preço: com tabela escolhida, o preço vem de preco_vigente aqui no serv…
   - `RetornoBalcao` *tipo* L7 (usado em 1) · `gravarVendaBalcao` *função* L12 (usado em 2)
 - **[src/lib/pdv.ts](../../src/lib/pdv.ts)** — Venda de balcão (PDV) vinda do caixa do site ou do app de celular. Só lê o que o caixa escolhe: produtos e quantidades, cliente, tabela, ponto e como foi pago. O preço sai da tabela no servidor e venda_balcao no banco c…
@@ -721,7 +713,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `cifrar` *função* L10 (usado em 4) · `decifrar` *função* L17 (usado em 4) · `hashToken` *função* L26 (usado em 5) · `tokenConfereHash` *função* L30 (usado em 2) · `novoToken` *função* L37 (usado em 2)
   - internas: `chaveMestra` L5
 - **[src/lib/historico.ts](../../src/lib/historico.ts)** — Histórico de alterações (tabela audit_log, gravada por trigger no banco): nomes e formatação para a tela.
-  - `Acao` *tipo* L4 (usado em 1) · `ACOES` *constante* L6 (usado em 1) · `OPCOES_TABELA` *constante* L78 (usado em 1) · `nomeTabela` *função* L82 (usado em 2) · `nomeCampo` *função* L88 (usado em 2) · `formatarValorCampo` *função* L94 (usado em 2) · `Registro` *tipo* L109 (usado em 1) · `Detalhe` *tipo* L110 · `detalhesAlteracao` *função* L112 (usado em 2) · `formatarDataHora` *função* L122 (usado em 2) · `inicioDoDia` *função* L131 (usado em 2)
+  - `Acao` *tipo* L4 (usado em 1) · `ACOES` *constante* L6 (usado em 1) · `OPCOES_TABELA` *constante* L80 (usado em 1) · `nomeTabela` *função* L84 (usado em 2) · `nomeCampo` *função* L90 (usado em 2) · `formatarValorCampo` *função* L96 (usado em 2) · `Registro` *tipo* L111 (usado em 1) · `Detalhe` *tipo* L112 · `detalhesAlteracao` *função* L114 (usado em 2) · `formatarDataHora` *função* L124 (usado em 2) · `inicioDoDia` *função* L133 (usado em 2)
 - **[src/lib/login-bloqueio.ts](../../src/lib/login-bloqueio.ts)** — Texto para quem está com o login travado (public.login_bloqueado_ate: 5 senhas erradas em 15 minutos).
   - `mensagemBloqueio` *função* L4 (usado em 2)
 - **[src/lib/login-local.ts](../../src/lib/login-local.ts)** — Login por usuário e senha (sem e-mail), criado pelo master. O Supabase Auth só entra por e-mail, então o usuário vira um e-mail interno no domínio reservado .test, que nunca entrega mensagem. A mesma regra está em app.d…
@@ -734,7 +726,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `Acesso` *tipo* L6 (usado em 6) · `SEM_ACESSO` *constante* L8 (usado em 2) · `Acao` *tipo* L10 · `ModuloPermissao` *tipo* L11 (usado em 1) · `CATALOGO` *constante* L26 (usado em 3) · `GRUPOS_CATALOGO` *constante* L39 (usado em 2) · `CHAVES_VALIDAS` *constante* L41 (usado em 4) · `PERFIS` *constante* L45 (usado em 3) · `chavesDoCargo` *função* L63 (usado em 2) · `planoInclui` *função* L72 (usado em 3) · `temPermissao` *função* L78 (usado em 6) · `podeDispensar2fa` *função* L92 (usado em 2)
   - internas: `modulo` L68
 - **[src/lib/permissoes.ts](../../src/lib/permissoes.ts)** — Acesso do usuário logado na empresa atual. O banco aplica a mesma regra nas policies.
-  - `Permissoes` *tipo* L9 · `getPermissoes` *função* L12 (usado em 72) · `exigirAcesso` *função* L22 (usado em 58) · `exigirMaster` *função* L27 (usado em 6) · `foraDoPlano` *função* L34 (usado em 7)
+  - `Permissoes` *tipo* L9 · `getPermissoes` *função* L12 (usado em 72) · `exigirAcesso` *função* L22 (usado em 57) · `exigirMaster` *função* L27 (usado em 6) · `foraDoPlano` *função* L34 (usado em 7)
 - **[src/lib/supabase/falha-auth.ts](../../src/lib/supabase/falha-auth.ts)** — Erro do Auth ao conferir a sessão: só rede, timeout ou 5xx são temporários (vale tentar de novo). 4xx (refresh token vencido ou já usado, JWT inválido) quer dizer sessão morta: o caminho é o login.
   - `falhaTemporaria` *função* L5 (usado em 2)
 - **[src/lib/supabase/proxy.ts](../../src/lib/supabase/proxy.ts)** — Renova a sessão a cada navegação e manda quem não está logado para /login.
@@ -810,7 +802,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/app/(app)/configuracoes/zerar-sistema/actions.ts](../../src/app/(app)/configuracoes/zerar-sistema/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /configuracoes/zerar-sistema.
   - `zerarSistema` *ação* L10 (usado em 1)
 - **[src/app/(app)/configuracoes/zerar-sistema/backup/route.ts](../../src/app/(app)/configuracoes/zerar-sistema/backup/route.ts)** (rota `/configuracoes/zerar-sistema/backup`) — API GET /configuracoes/zerar-sistema/backup.
-  - `GET` *função* L59
+  - `GET` *função* L61
 - **[src/app/(app)/configuracoes/zerar-sistema/form.tsx](../../src/app/(app)/configuracoes/zerar-sistema/form.tsx)** (navegador) — Confirmação em três travas: nome da empresa, a frase ZERAR TUDO e, por último, o código do autenticador, que eleva a sessão (TOTP de agora) logo antes de chamar o banco.
   - `FormZerarSistema` *componente* L13 (usado em 1)
   - internas: `normalizar` L9
@@ -854,7 +846,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/app/api/v1/centros-de-custo/route.ts](../../src/app/api/v1/centros-de-custo/route.ts)** (rota `/api/v1/centros-de-custo`) — API GET /api/v1/centros-de-custo.
   - `GET` *constante* L3
 - **[src/components/lancamento.tsx](../../src/components/lancamento.tsx)** (navegador)
-  - `BotaoLancamento` *componente* L15 (usado em 21)
+  - `BotaoLancamento` *componente* L15 (usado em 20)
 - **[src/components/rateio.tsx](../../src/components/rateio.tsx)** (navegador) — Linhas de rateio (categoria + centro de custo + valor + descrição). Com uma linha só, o valor é o total. O total vem de `total` (centavos, ex.: valor do extrato) ou do campo `campoTotal` do mesmo formulário; com ele a t…
   - `LinhaInicial` *tipo* L9 (usado em 1) · `Rateio` *componente* L25 (usado em 3)
   - internas: `emReais` L12 · `montar` L14
@@ -887,8 +879,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/app/(app)/configuracoes/actions.ts](../../src/app/(app)/configuracoes/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /configuracoes.
   - `salvarApontarAgua` *ação* L12 (usado em 1) · `salvarFuso` *ação* L25 (usado em 1)
 - **[src/app/(app)/configuracoes/automacoes/actions.ts](../../src/app/(app)/configuracoes/automacoes/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /configuracoes/automacoes.
-  - `salvarLembreteApontamento` *ação* L26 (usado em 1) · `salvarAbastecimento` *ação* L36 (usado em 1) · `salvarAvisosRotina` *ação* L50 (usado em 1) · `salvarBuscaNfe` *ação* L63 (usado em 1) · `salvarVendas` *ação* L87 (usado em 1) · `salvarLeituraIa` *ação* L100 (usado em 1) · `salvarChatIa` *ação* L107 (usado em 1) · `novoEnderecoEntrada` *ação* L113 (usado em 1) · `salvarCobrancaWhatsApp` *ação* L120 (usado em 1) · `salvarPagamentos` *ação* L133 (usado em 1)
-  - internas: `gravar` L14 · `dia` L45
+  - `salvarLembreteApontamento` *ação* L26 (usado em 1) · `salvarAbastecimento` *ação* L36 (usado em 1) · `salvarAvisosRotina` *ação* L48 (usado em 1) · `salvarBuscaNfe` *ação* L61 (usado em 1) · `salvarVendas` *ação* L85 (usado em 1) · `salvarLeituraIa` *ação* L98 (usado em 1) · `salvarChatIa` *ação* L105 (usado em 1) · `novoEnderecoEntrada` *ação* L111 (usado em 1) · `salvarCobrancaWhatsApp` *ação* L118 (usado em 1) · `salvarPagamentos` *ação* L131 (usado em 1)
+  - internas: `gravar` L14 · `dia` L43
 - **[src/app/(app)/configuracoes/automacoes/page.tsx](../../src/app/(app)/configuracoes/automacoes/page.tsx)** (rota `/configuracoes/automacoes`) — Tela /configuracoes/automacoes.
   - `PaginaAutomacoes` *componente* L15
 - **[src/app/(app)/configuracoes/page.tsx](../../src/app/(app)/configuracoes/page.tsx)** (rota `/configuracoes`) — Empresa, importação de dados e atalhos para os cadastros.
@@ -950,7 +942,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/assistente.ts](../../src/lib/assistente.ts)** — Assistente de início: o que cada passo pede e para onde leva. O banco (assistente_inicio) diz o que já está feito, o que foi pulado e quais passos o plano da empresa inclui.
   - `PassoBanco` *tipo* L4 · `SituacaoAssistente` *tipo* L5 (usado em 3) · `InfoPasso` *tipo* L7 · `PASSOS` *constante* L9 · `passosConhecidos` *função* L49 (usado em 2) · `mostrarNoPainel` *função* L54 (usado em 2) · `proximoPasso` *função* L59 (usado em 3) · `textoFaltam` *função* L63 (usado em 3) · `progresso` *função* L69 (usado em 3)
 - **[src/lib/empresa.ts](../../src/lib/empresa.ts)** — O RLS só devolve as empresas de que o usuário participa.
-  - `COOKIE_EMPRESA` *constante* L8 (usado em 2) · `Empresa` *tipo* L10 (usado em 2) · `nomeEmpresa` *função* L12 (usado em 13) · `listarEmpresas` *função* L17 (usado em 1) · `aceitarConvites` *função* L28 · `getEmpresaAtual` *função* L35 (usado em 123)
+  - `COOKIE_EMPRESA` *constante* L8 (usado em 2) · `Empresa` *tipo* L10 (usado em 2) · `nomeEmpresa` *função* L12 (usado em 13) · `listarEmpresas` *função* L17 (usado em 1) · `aceitarConvites` *função* L28 · `getEmpresaAtual` *função* L35 (usado em 121)
 - **[src/lib/online.ts](../../src/lib/online.ts)** — O aparelho tem internet de verdade? Muda sozinho quando a conexão cai ou volta, e também quando o celular está num Wi-Fi sem internet (src/lib/sync/detector.ts confere com o servidor). No servidor, sempre true.
   - `useOnline` *hook* L6 (usado em 4)
 - **[src/lib/painel.ts](../../src/lib/painel.ts)** — Contas do painel de acompanhamento: puras, para testar sem banco.
@@ -960,7 +952,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/tutoriais-dados.ts](../../src/lib/tutoriais-dados.ts)** — Telas cujo tutorial a pessoa logada já viu (o RLS só devolve as dela).
   - `telasVistas` *função* L6 (usado em 2) · `chavesPermitidas` *função* L13 (usado em 2)
 - **[src/lib/tutoriais.ts](../../src/lib/tutoriais.ts)** — Tutoriais guiados por tela (balões em cima da tela, com destaque no ponto explicado). Cada tela tem o seu: aparece no primeiro acesso de cada pessoa e pode ser refeito pelo botão de ajuda. Os passos apontam para marcas…
-  - `Passo` *tipo* L8 · `Duvida` *tipo* L16 · `Tutorial` *tipo* L18 (usado em 1) · `TOUR_GERAL` *constante* L34 (usado em 2) · `TUTORIAIS` *constante* L83 (usado em 1) · `tutorialDaTela` *função* L713 (usado em 2) · `podeVerTutorial` *função* L724 (usado em 2) · `passosPermitidos` *função* L728 (usado em 2) · `chavesDosTutoriais` *função* L733 (usado em 2) · `DuvidaEncontrada` *tipo* L738 · `buscarDuvidas` *função* L741 (usado em 2) · `TUTORIAIS_DESLIGADOS` *constante* L754 (usado em 1)
+  - `Passo` *tipo* L8 · `Duvida` *tipo* L16 · `Tutorial` *tipo* L18 (usado em 1) · `TOUR_GERAL` *constante* L34 (usado em 2) · `TUTORIAIS` *constante* L83 (usado em 1) · `tutorialDaTela` *função* L711 (usado em 2) · `podeVerTutorial` *função* L722 (usado em 2) · `passosPermitidos` *função* L726 (usado em 2) · `chavesDosTutoriais` *função* L731 (usado em 2) · `DuvidaEncontrada` *tipo* L736 · `buscarDuvidas` *função* L739 (usado em 2) · `TUTORIAIS_DESLIGADOS` *constante* L752 (usado em 1)
   - internas: `t` L28 · `cartao` L29 · `lancamento` L31
 - **[src/lib/versao.ts](../../src/lib/versao.ts)** — Versão completa no celular: a página passa a ser desenhada com 1280px de largura, como no computador (lateral com todos os módulos, tabelas inteiras), e a pessoa aproxima com os dedos. Sem ela, o celular mostra a versão…
   - `CHAVE_VERSAO` *constante* L5 (usado em 2) · `LARGURA_COMPLETA` *constante* L6 (usado em 1) · `SCRIPT_VERSAO` *constante* L12 (usado em 1)
@@ -1030,15 +1022,15 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `Tema` *tipo* L10 · `SCRIPT_TEMA` *constante* L17 (usado em 1) · `SeletorTema` *componente* L65 (usado em 3) · `InterruptorTema` *componente* L93 (usado em 1) · `BotaoTema` *componente* L119 (usado em 1)
   - internas: `ler` L22 · `assinar` L32 · `aplicar` L44
 - **[src/components/ui.tsx](../../src/components/ui.tsx)** — `quebrar` deixa um texto longo passar para a linha de baixo (a cápsula cresce na altura) em vez de vazar no celular.
-  - `classeBotao` *função* L21 (usado em 52) · `Botao` *componente* L31 (usado em 40) · `LinkBotao` *componente* L41 (usado em 24) · `CLASSE_BOTAO_TEXTO` *constante* L51 (usado em 35) · `CLASSE_CONTROLE` *constante* L54 (usado em 18) · `Campo` *componente* L66 (usado em 69) · `Selecao` *componente* L75 (usado em 55) · `AreaTexto` *componente* L86 (usado em 16) · `Cartao` *componente* L95 (usado em 47) · `Aviso` *componente* L140 (usado em 55) · `TomEtiqueta` *tipo* L148 (usado em 8) · `Etiqueta` *componente* L150 (usado em 47) · `Tabela` *componente* L165 (usado em 27) · `Vazio` *componente* L206 (usado em 9) · `Titulo` *componente* L215 (usado em 69) · `Secao` *componente* L228 (usado em 3) · `Segmentos` *componente* L244 (usado em 12) · `Cor` *tipo* L266 (usado em 3) · `COR_FICHA` *constante* L267 · `Ficha` *componente* L278 (usado em 3) · `CartaoKpi` *componente* L291 (usado em 2) · `Indicador` *componente* L317 (usado em 8) · `Faixa` *componente* L348 (usado em 8)
+  - `classeBotao` *função* L21 (usado em 52) · `Botao` *componente* L31 (usado em 40) · `LinkBotao` *componente* L41 (usado em 24) · `CLASSE_BOTAO_TEXTO` *constante* L51 (usado em 35) · `CLASSE_CONTROLE` *constante* L54 (usado em 18) · `Campo` *componente* L66 (usado em 67) · `Selecao` *componente* L75 (usado em 53) · `AreaTexto` *componente* L86 (usado em 16) · `Cartao` *componente* L95 (usado em 46) · `Aviso` *componente* L140 (usado em 55) · `TomEtiqueta` *tipo* L148 (usado em 8) · `Etiqueta` *componente* L150 (usado em 47) · `Tabela` *componente* L165 (usado em 26) · `Vazio` *componente* L206 (usado em 9) · `Titulo` *componente* L215 (usado em 68) · `Secao` *componente* L228 (usado em 2) · `Segmentos` *componente* L244 (usado em 12) · `Cor` *tipo* L266 (usado em 3) · `COR_FICHA` *constante* L267 · `Ficha` *componente* L278 (usado em 3) · `CartaoKpi` *componente* L291 (usado em 2) · `Indicador` *componente* L317 (usado em 8) · `Faixa` *componente* L348 (usado em 8)
   - internas: `Rotulo` L57
 - **[src/components/whatsapp-pessoal.tsx](../../src/components/whatsapp-pessoal.tsx)** — H2: o celular da própria pessoa no WhatsApp do Balbina (avisos e envio de documentos).
   - `WhatsAppPessoal` *componente* L11 (usado em 2)
-- **[src/lib/abastecimento.ts](../../src/lib/abastecimento.ts)** — Compra sugerida (B2) e ordem da fábrica sugerida (B3): a partir da cobertura de cada item (saldo e consumo médio por dia), quanto produzir de cada ração com fórmula e quanto comprar do resto.
-  - `FormulaVigente` *tipo* L5 (usado em 1) · `Produzir` *tipo* L6 · `Comprar` *tipo* L7 · `DIAS_COMPRA` *constante* L9 (usado em 1) · `DIAS_PRODUCAO` *constante* L10 (usado em 1) · `planoAbastecimento` *função* L14 (usado em 2) · `textoListaCompra` *função* L54 (usado em 2)
-  - internas: `arredondaCima` L12
+- **[src/lib/abastecimento.ts](../../src/lib/abastecimento.ts)** — Compra sugerida (B2): a partir da cobertura de cada ração (saldo e consumo médio por dia), quanto comprar para cobrir os dias de compra. A piscicultura compra ração pronta (a fábrica própria da granja saiu).
+  - `Comprar` *tipo* L5 · `DIAS_COMPRA` *constante* L7 (usado em 1) · `planoAbastecimento` *função* L11 (usado em 2) · `textoListaCompra` *função* L26 (usado em 2)
+  - internas: `arredondaCima` L9
 - **[src/lib/acao.ts](../../src/lib/acao.ts)** — Formato de retorno das server actions usadas pelos formulários.
-  - `EstadoAcao` *tipo* L2 (usado em 60) · `falha` *função* L4 (usado em 43) · `sucesso` *função* L8 (usado em 43) · `mensagemBanco` *função* L13 (usado em 45)
+  - `EstadoAcao` *tipo* L2 (usado em 59) · `falha` *função* L4 (usado em 42) · `sucesso` *função* L8 (usado em 42) · `mensagemBanco` *função* L13 (usado em 44)
 - **[src/lib/agua.ts](../../src/lib/agua.ts)** — Qualidade da água do viveiro, medida no turno do apontamento. O banco guarda cada medida no lançamento (apontamento_lancamentos) e o resumo do dia no apontamento; os alertas (view alertas) usam as mesmas faixas. Referên…
   - `ChaveAgua` *tipo* L7 (usado em 1) · `Agua` *tipo* L8 (usado em 6) · `CAMPOS_AGUA` *constante* L10 (usado em 3) · `lerMedida` *função* L21 (usado em 2) · `validarAgua` *função* L28 (usado em 3) · `lerAguaForm` *função* L46 (usado em 1) · `amoniaToxica` *função* L53 (usado em 1) · `NivelAgua` *tipo* L59 · `AvisoAgua` *tipo* L60 · `avisosAgua` *função* L65 (usado em 6) · `resumoAgua` *função* L85 (usado em 3)
   - internas: `br` L62
@@ -1073,7 +1065,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/env.ts](../../src/lib/env.ts)**
   - `supabaseEnv` *função* L1 (usado em 8)
 - **[src/lib/formato.ts](../../src/lib/formato.ts)** — Conversões entre o que a pessoa digita (pt-BR) e o que o banco guarda.
-  - `formatarMoeda` *função* L6 (usado em 60) · `formatarNumero` *função* L10 (usado em 27) · `formatarQuantidade` *função* L16 (usado em 5) · `formatarInteiro` *função* L21 (usado em 25) · `formatarData` *função* L26 (usado em 62) · `centavosParaCampo` *função* L33 (usado em 12) · `somarDias` *função* L38 (usado em 23) · `MESES_CURTOS` *constante* L43 (usado em 2) · `MESES_LONGOS` *constante* L44 (usado em 3) · `rotuloMes` *função* L47 (usado em 8) · `deslocarMes` *função* L52 (usado em 5) · `semAcento` *função* L58 (usado em 9) · `plural` *função* L63 (usado em 3) · `lerCentavos` *função* L68 (usado em 21) · `lerDecimal` *função* L77 (usado em 20) · `lerInteiro` *função* L85 (usado em 10) · `FUSO_PADRAO` *constante* L91 · `FUSOS_BRASIL` *constante* L94 (usado em 2) · `hojeISO` *função* L109 (usado em 79) · `diasAtrasISO` *função* L114 (usado em 10)
+  - `formatarMoeda` *função* L6 (usado em 58) · `formatarNumero` *função* L10 (usado em 24) · `formatarQuantidade` *função* L16 (usado em 5) · `formatarInteiro` *função* L21 (usado em 25) · `formatarData` *função* L26 (usado em 61) · `centavosParaCampo` *função* L33 (usado em 12) · `somarDias` *função* L38 (usado em 23) · `MESES_CURTOS` *constante* L43 (usado em 2) · `MESES_LONGOS` *constante* L44 (usado em 3) · `rotuloMes` *função* L47 (usado em 8) · `deslocarMes` *função* L52 (usado em 5) · `semAcento` *função* L58 (usado em 9) · `plural` *função* L63 (usado em 3) · `lerCentavos` *função* L68 (usado em 20) · `lerDecimal` *função* L77 (usado em 18) · `lerInteiro` *função* L85 (usado em 10) · `FUSO_PADRAO` *constante* L91 · `FUSOS_BRASIL` *constante* L94 (usado em 2) · `hojeISO` *função* L109 (usado em 78) · `diasAtrasISO` *função* L114 (usado em 10)
 - **[src/lib/ia.ts](../../src/lib/ia.ts)** — Leitura por IA (C3 documentos e A8 mortalidade por foto do estudo de automação). Usa a API da Anthropic com a chave ANTHROPIC_API_KEY do servidor. Tudo que sai daqui é PROPOSTA: a tela mostra preenchido e a pessoa confe…
   - `MODELO` *constante* L11 (usado em 1) · `TIPOS_ARQUIVO` *constante* L12 (usado em 1) · `TipoArquivo` *tipo* L13 (usado em 1) · `TAMANHO_MAXIMO` *constante* L14 (usado em 3) · `iaConfigurada` *função* L16 (usado em 6) · `ErroIa` *classe* L20 (usado em 4) · `cliente` *função* L22 (usado em 1) · `DocumentoLido` *tipo* L68 (usado em 1) · `lerDocumento` *função* L70 (usado em 1) · `MortalidadeLida` *tipo* L85 (usado em 1) · `contarMortes` *função* L87 (usado em 1)
   - internas: `blocoArquivo` L27 · `ler` L34
@@ -1118,7 +1110,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/supabase/client.ts](../../src/lib/supabase/client.ts)** (navegador) — Cliente do navegador (sessão nos mesmos cookies do servidor). Criado só dentro de efeitos e eventos: no build as páginas são pré-renderizadas sem as variáveis do Supabase.
   - `clienteNavegador` *função* L8 (usado em 7)
 - **[src/lib/supabase/server.ts](../../src/lib/supabase/server.ts)** — Cliente com o JWT do usuário: toda consulta passa pelo RLS do banco.
-  - `createClient` *função* L7 (usado em 147)
+  - `createClient` *função* L7 (usado em 145)
 - **[src/lib/supabase/todas.ts](../../src/lib/supabase/todas.ts)** — O Supabase (PostgREST) devolve no máximo 1.000 linhas por consulta (max_rows em supabase/config.toml, igual na nuvem) e ignora um .limit() maior sem avisar. Toda soma ou relatório que pode passar disso lê por aqui, em p…
   - `PAGINA_SUPABASE` *constante* L5 (usado em 1) · `lerTodas` *função* L11 (usado em 13)
 - **[src/lib/sync/detector.ts](../../src/lib/sync/detector.ts)** — Tem internet de verdade? O navigator.onLine só diz se o aparelho está ligado a uma rede: no viveiro o celular pega o Wi-Fi da sede sem a sede ter internet e o navegador diz "online". Aqui a resposta vem de um pedido peq…
