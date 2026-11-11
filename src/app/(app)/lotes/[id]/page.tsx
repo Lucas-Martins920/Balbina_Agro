@@ -15,7 +15,12 @@ import { baseDoCiclo, custoSemanalVariavel, mortalidadeSemanal, precoRacaoKg, pr
 import { FASES } from "@/lib/rotulos";
 import { createClient } from "@/lib/supabase/server";
 import { frasesLote, referenciaEspecie, resumoLote, taxaSemana, type SemanaLote } from "@/lib/zootecnico";
-import { encerrarLote, excluirBiometria, reabrirLote, registrarBiometria } from "../actions";
+import { corrigirGruposBiometria, encerrarLote, excluirBiometria, reabrirLote, registrarBiometria } from "../actions";
+import { GruposBiometria } from "@/components/grupos-biometria";
+import type { GrupoBiometria } from "@/lib/biometria-grupos";
+import { amostraBiometria, PARAMETROS_PADRAO } from "@/lib/previsao-racao";
+import { carregarPlanoRacao } from "@/lib/previsao-racao-dados";
+import { PlanejamentoRacao } from "./planejamento-racao";
 import { SimuladorCiclo } from "./simulador";
 import { ViveirosDoLote, type Alocacao, type Transferencia } from "./viveiros";
 
@@ -53,6 +58,22 @@ export default async function PaginaLote({ params }: PageProps<"/lotes/[id]">) {
       .eq("lote_id", id).order("mes", { ascending: false }).limit(24),
   ]);
   const locais = (ocupacao ?? []).filter((o) => o.lote_id === id);
+  // grupos das biometrias (para corrigir) e o planejamento da ração do lote (previsão, estoque e reserva)
+  const idsBio = (biometrias ?? []).map((b) => b.id);
+  const [{ data: gruposBio }, plano] = await Promise.all([
+    idsBio.length
+      ? supabase.from("biometria_grupos").select("biometria_id, ordem, peixes, peso_kg, ponto_captura, observacao").in("biometria_id", idsBio).order("ordem")
+      : Promise.resolve({ data: [] as { biometria_id: string; ordem: number; peixes: number; peso_kg: number; ponto_captura: string | null; observacao: string | null }[] }),
+    lote.fase === "encerrado" ? Promise.resolve(null) : carregarPlanoRacao(supabase, atual.id, hoje, id),
+  ]);
+  const gruposDe = new Map<string, GrupoBiometria[]>();
+  for (const g of gruposBio ?? []) {
+    gruposDe.set(g.biometria_id, [...(gruposDe.get(g.biometria_id) ?? []), {
+      peixes: Number(g.peixes), peso_kg: Number(g.peso_kg), ponto_captura: g.ponto_captura ?? undefined, observacao: g.observacao ?? undefined,
+    }]);
+  }
+  const peixesLote = locais.reduce((s, a) => s + (a.peixes_atuais ?? 0), 0);
+  const amostra = amostraBiometria(peixesLote, plano?.parametros ?? PARAMETROS_PADRAO);
   const sugestoes = await Promise.all(locais.map(async (l) => {
     const { data } = await supabase.rpc("racao_sugerida", { p_viveiro: l.viveiro_id, p_data: hoje });
     return { local: l, sugestao: ((Array.isArray(data) ? data[0] : data) ?? null) as RacaoSugerida | null };
@@ -126,19 +147,31 @@ export default async function PaginaLote({ params }: PageProps<"/lotes/[id]">) {
         acoes={<div className="flex flex-wrap gap-2">
           {!encerrado && podeBiometria && locais.length > 0 && (
             <BotaoLancamento rotulo="Lançar biometria" titulo={`Biometria do lote ${lote.codigo}`} acao={registrarBiometria} botao="Salvar biometria" tamanho="sm"
-              descricao="Pese uma amostra de cerca de 10% dos peixes (ou pelo menos 30), com rede, a cada 15 dias até uns 70 g e depois todo mês.">
+              descricao={`Pese a amostra em grupos (puçá ou balde), de pontos diferentes do viveiro, a cada 15 dias. Sugestão: ${formatarInteiro(amostra)} peixes para os ${formatarInteiro(peixesLote)} do lote.`}>
               <input type="hidden" name="lote_id" value={lote.id} />
-              <Selecao rotulo="Viveiro" id="b_viveiro" name="viveiro_id" defaultValue={locais[0].viveiro_id} required>
-                {locais.map((l) => <option key={l.viveiro_id} value={l.viveiro_id}>{l.setor_nome} / {l.viveiro_nome}</option>)}
-              </Selecao>
               <div className="grid grid-cols-2 gap-3">
+                <Selecao rotulo="Viveiro" id="b_viveiro" name="viveiro_id" defaultValue={locais[0].viveiro_id} required>
+                  {locais.map((l) => <option key={l.viveiro_id} value={l.viveiro_id}>{l.setor_nome} / {l.viveiro_nome}</option>)}
+                </Selecao>
                 <Campo rotulo="Data" id="b_data" name="data" type="date" max={hoje} defaultValue={hoje} required />
-                <Campo rotulo="Peixes pesados" id="b_peixes" name="peixes" inputMode="numeric" placeholder="Ex.: 50" required />
-                <Campo rotulo="Peso total da amostra (g)" id="b_total" name="peso_total_g" inputMode="decimal" placeholder="Ex.: 17.500" ajuda="Ou preencha o peso médio" />
-                <Campo rotulo="Peso médio (g)" id="b_medio" name="peso_medio_g" inputMode="decimal" placeholder="Ex.: 350" />
-                <Campo rotulo="Comprimento médio (cm)" id="b_comp" name="comprimento_cm" inputMode="decimal" />
-                <Campo rotulo="Uniformidade (%)" id="b_unif" name="uniformidade_pct" inputMode="decimal" ajuda="Peixes a até 10% do peso médio" />
               </div>
+              <GruposBiometria rascunho={`lote-${lote.id}`} sugestao={amostra} />
+              <div className="grid grid-cols-3 gap-3">
+                <Campo rotulo="Jejum (h)" id="b_jejum" name="jejum_horas" inputMode="decimal" placeholder="Ex.: 12" />
+                <Campo rotulo="Água (°C)" id="b_temp" name="temperatura_c" inputMode="decimal" placeholder="Ex.: 29,5" />
+                <Campo rotulo="Oxigênio (mg/L)" id="b_ox" name="oxigenio_mg_l" inputMode="decimal" placeholder="Ex.: 5,2" />
+              </div>
+              <details className="rounded-lg border border-borda p-3 text-sm">
+                <summary className="cursor-pointer font-medium">Sem grupos: lançar só o total ou o peso médio</summary>
+                <p className="mt-2 text-xs text-texto-suave">Use quando não houver grupos preenchidos acima.</p>
+                <div className="mt-2 grid grid-cols-2 gap-3">
+                  <Campo rotulo="Peixes pesados" id="b_peixes" name="peixes" inputMode="numeric" placeholder="Ex.: 50" />
+                  <Campo rotulo="Peso total da amostra (g)" id="b_total" name="peso_total_g" inputMode="decimal" placeholder="Ex.: 17.500" ajuda="Ou preencha o peso médio" />
+                  <Campo rotulo="Peso médio (g)" id="b_medio" name="peso_medio_g" inputMode="decimal" placeholder="Ex.: 350" />
+                  <Campo rotulo="Comprimento médio (cm)" id="b_comp" name="comprimento_cm" inputMode="decimal" />
+                  <Campo rotulo="Uniformidade (%)" id="b_unif" name="uniformidade_pct" inputMode="decimal" ajuda="Peixes a até 10% do peso médio" />
+                </div>
+              </details>
               <AreaTexto rotulo="Observações" id="b_obs" name="observacoes" className="font-sans" />
             </BotaoLancamento>
           )}
@@ -164,6 +197,8 @@ export default async function PaginaLote({ params }: PageProps<"/lotes/[id]">) {
           </Cartao>
         ))}
       </div>
+
+      {plano && plano.lotes[0] && <PlanejamentoRacao plano={plano} lote={plano.lotes[0]} />}
 
       {sugestoes.length > 0 && (
         <Cartao titulo="Ração sugerida para hoje" descricao="Biomassa do viveiro × taxa da tabela de arraçoamento da espécie para o peso médio (Embrapa). É sugestão: ajuste pelo apetite dos peixes, pela sobra de ração e pela água.">
@@ -252,7 +287,17 @@ export default async function PaginaLote({ params }: PageProps<"/lotes/[id]">) {
                 </td>
                 <td className="text-right">{p.gpd === null ? "–" : `${formatarNumero(p.gpd, 1)} g/dia`}</td>
                 <td className="text-right">{p.uniformidade === null ? "–" : `${formatarNumero(p.uniformidade, 0)}%`}</td>
-                {podeBiometria && !encerrado && <td className="text-right"><ExcluirLinha acao={excluirBiometria} id={b.id} /></td>}
+                {podeBiometria && !encerrado && <td className="text-right whitespace-nowrap">
+                  {(gruposDe.get(b.id) ?? []).length > 0 && (
+                    <BotaoLancamento rotulo="Grupos" titulo={`Grupos da biometria de ${formatarData(b.data)}`} acao={corrigirGruposBiometria} botao="Salvar grupos"
+                      variante="secundario" tamanho="sm" icone={null} chave={`grupos-${b.id}`}
+                      descricao="Some, corrija ou tire um grupo: o peso médio da biometria é recalculado (peso total ÷ peixes).">
+                      <input type="hidden" name="id" value={b.id} />
+                      <GruposBiometria iniciais={gruposDe.get(b.id)} />
+                    </BotaoLancamento>
+                  )}
+                  <ExcluirLinha acao={excluirBiometria} id={b.id} />
+                </td>}
               </tr>
             );
           })}
