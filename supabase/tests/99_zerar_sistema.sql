@@ -32,7 +32,7 @@ insert into apagadas values
   ('movimentos_estoque'), ('ordens_producao_racao'),
   ('lotes'), ('lote_alocacoes'), ('lote_transferencias'), ('custos_lote_mensal'), ('apontamentos_diarios'),
   ('apontamento_lancamentos'), ('apontamento_racoes'), ('apontamento_checklist'), ('apontamentos_lixeira'),
-  ('eventos_sanitarios'), ('despescas'), ('biometrias'), ('leituras_sonda'), ('racao_entradas'), ('racao_estornos'), ('racao_ajustes'),
+  ('eventos_sanitarios'), ('despescas'), ('biometrias'), ('leituras_sonda'), ('racao_entradas'), ('racao_estornos'), ('racao_ajustes'), ('biometria_grupos'),
   ('documentos'), ('documentos_recebidos'), ('lembretes_enviados'), ('sugestoes_dispensadas'),
   ('api_webhook_entregas'), ('auditorias_importacao');
 create temp table mantidas (tabela text primary key);
@@ -47,7 +47,7 @@ insert into mantidas values
   ('contatos'), ('produtos'), ('produto_embalagens'), ('classes_peixe'), ('depositos'), ('setores'), ('viveiros'),
   ('especies'), ('categorias'), ('centros_custo'), ('contas_financeiras'), ('formulas_racao'), ('medicamentos'),
   ('listas_preco'), ('tabelas_preco'), ('pontos_venda'), ('regras_conciliacao'), ('regras_fiscais'),
-  ('pedidos_fixos'), ('checklist_itens'), ('importacao_vinculos'), ('sondas'),
+  ('pedidos_fixos'), ('checklist_itens'), ('importacao_vinculos'), ('sondas'), ('racao_parametros'),
   -- planejamento e orçamento
   ('lotes_planejados'), ('planejamento_parametros'), ('planejamento_custos'), ('orcamentos');
 
