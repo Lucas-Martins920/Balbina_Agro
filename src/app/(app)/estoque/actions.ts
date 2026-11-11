@@ -6,7 +6,6 @@ import { getEmpresaAtual } from "@/lib/empresa";
 import { formatarQuantidade, hojeISO, lerCentavos, lerDecimal } from "@/lib/formato";
 import { lerKg, textoKg } from "@/lib/pescado";
 import { createClient } from "@/lib/supabase/server";
-import { numeroEntrada } from "@/lib/racao-estoque";
 
 export async function movimentarEstoque(_: EstadoAcao, form: FormData): Promise<EstadoAcao> {
   const t = (k: string) => String(form.get(k) ?? "").trim();
@@ -61,41 +60,4 @@ export async function contarPescado(_: EstadoAcao, form: FormData): Promise<Esta
   revalidatePath("/estoque");
   if (!ajustes) return sucesso("A contagem bate com o sistema; nada lançado.");
   return sucesso(`${ajustes} ${ajustes === 1 ? "ajuste lançado" : "ajustes lançados"}: ${diferenca > 0 ? "+" : "-"}${textoKg(Math.abs(diferenca), 2)} no total.`);
-}
-
-// Entrada de ração numerada (R-1, R-2...): sacos ou kg, lote de fabricação, validade, preço e fornecedor.
-// As regras (validade, ração vencida, data futura, número) ficam em registrar_entrada_racao, no banco.
-export async function lancarEntradaRacao(_: EstadoAcao, form: FormData): Promise<EstadoAcao> {
-  const t = (k: string) => String(form.get(k) ?? "").trim();
-  const produto = t("produto_id");
-  if (!produto) return falha("Escolha a ração.");
-  const sacos = t("sacos") ? lerDecimal(t("sacos")) : null;
-  const kg = t("kg") ? lerDecimal(t("kg")) : null;
-  if ((t("sacos") && (sacos === null || sacos <= 0)) || (t("kg") && (kg === null || kg <= 0))) return falha("Informe uma quantidade válida.");
-  if (sacos === null && kg === null) return falha("Informe os sacos ou os kg que chegaram.");
-  if (!t("validade")) return falha("Informe a validade da ração.");
-  const custo = t("custo_total") ? lerCentavos(t("custo_total")) : null;
-  if (t("custo_total") && (custo === null || custo < 0)) return falha("Valor inválido. Use o formato 1.250,00.");
-
-  const supabase = await createClient();
-  const { data: numero, error } = await supabase.rpc("registrar_entrada_racao", {
-    p_produto: produto, p_validade: t("validade"), p_sacos: sacos, p_kg: kg, p_deposito: t("deposito_id") || null,
-    p_data: t("data") || null, p_custo_total_cents: custo, p_lote_fabricacao: t("lote_fabricacao") || null,
-    p_fabricacao: t("fabricacao") || null, p_fornecedor: t("fornecedor_id") || null, p_observacoes: t("observacoes") || null,
-  });
-  if (error) return falha(mensagemBanco(error));
-  revalidatePath("/estoque");
-  revalidatePath("/insumos");
-  return sucesso(`Entrada ${numeroEntrada(Number(numero))} lançada.`);
-}
-
-export async function excluirEntradaRacao(_: EstadoAcao, form: FormData): Promise<EstadoAcao> {
-  const id = String(form.get("id") ?? "");
-  if (!id) return falha("Entrada não encontrada.");
-  const supabase = await createClient();
-  const { error } = await supabase.rpc("excluir_entrada_racao", { p_entrada: id });
-  if (error) return falha(mensagemBanco(error));
-  revalidatePath("/estoque");
-  revalidatePath("/insumos");
-  return sucesso("Entrada excluída.");
 }

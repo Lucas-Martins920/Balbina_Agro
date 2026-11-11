@@ -21,11 +21,11 @@ test("rotina do dia marca o que entrou e leva direto ao lançamento", async ({ p
 
 test("cadastro rápido de dentro do lançamento já deixa o novo escolhido", async ({ page }) => {
   await page.goto("/racao");
-  await page.getByRole("button", { name: "Lançar entrada" }).click();
-  const gaveta = page.getByRole("dialog", { name: "Entrada de compra" });
+  await page.getByRole("button", { name: "Entrada de ração" }).click();
+  const gaveta = page.getByRole("dialog", { name: "Entrada de ração" });
   await gaveta.getByRole("button", { name: "Novo produto" }).click();
-  await gaveta.getByPlaceholder("Nome").fill("Calcário E2E");
+  await gaveta.getByPlaceholder("Nome").fill("Ração E2E");
   await gaveta.getByPlaceholder("Nome").press("Enter");
-  await expect(gaveta.locator("#e_produto option:checked")).toHaveText("Calcário E2E (kg)");
+  await expect(gaveta.locator("#er_produto option:checked")).toHaveText("Ração E2E (kg)");
   await expect(gaveta).toBeVisible();
 });
