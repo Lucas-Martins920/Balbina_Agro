@@ -76,6 +76,13 @@ a sugestão como ponto de partida e ajuste pela saciedade (sobra no cocho, peixe
 fica 15% a 50% acima da tabela e a conversão do ciclo fica entre 1,4 e 1,5 (1,7 na barragem, que passou do ponto de
 abate). Se a conversão real da piscicultura destoar muito disso, ajuste a curva da espécie com as biometrias.
 
+## Estoque de ração
+
+O estoque de ração é por entrada: cada compra recebe um número (R-1, R-2...), com fabricante, proteína bruta,
+grânulo, peso do saco, lote de fabricação, validade, preço e fornecedor. O consumo segue o **FEFO**: sai primeiro a
+ração que vence primeiro. A tela Estoque mostra as entradas com saldo na ordem de uso e marca as vencidas e as que
+vencem em até 30 dias. Medicamentos ficam na Sanidade e o pescado no estoque de pescado.
+
 ## Qualidade da água
 
 Faixas do tambaqui (D1), em `src/lib/agua.ts` e na view de alertas: oxigênio de 4 a 8 mg/L (abaixo de 3, suspender a

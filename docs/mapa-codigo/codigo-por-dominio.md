@@ -368,9 +368,9 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 ## Vendas, PDV, estoque, produtos e ração
 
 - **[src/app/(app)/estoque/actions.ts](../../src/app/(app)/estoque/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /estoque.
-  - `movimentarEstoque` *ação* L10 (usado em 1) · `contarPescado` *ação* L42 (usado em 1)
+  - `movimentarEstoque` *ação* L11 (usado em 1) · `contarPescado` *ação* L43 (usado em 1) · `lancarEntradaRacao` *ação* L69 (usado em 1) · `excluirEntradaRacao` *ação* L93 (usado em 1)
 - **[src/app/(app)/estoque/page.tsx](../../src/app/(app)/estoque/page.tsx)** (rota `/estoque`) — Pescado em kg por classe, insumos, ração, embalagens e medicamentos.
-  - `PaginaEstoque` *componente* L18
+  - `PaginaEstoque` *componente* L20
 - **[src/app/(app)/pontos-de-venda/[id]/page.tsx](../../src/app/(app)/pontos-de-venda/%5Bid%5D/page.tsx)** (rota `/pontos-de-venda/[id]`) — Tela /pontos-de-venda/[id].
   - `PaginaPontoVenda` *componente* L14
 - **[src/app/(app)/pontos-de-venda/actions.ts](../../src/app/(app)/pontos-de-venda/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /pontos-de-venda.
@@ -383,13 +383,13 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/app/(app)/pontos-de-venda/transferencias/page.tsx](../../src/app/(app)/pontos-de-venda/transferencias/page.tsx)** (rota `/pontos-de-venda/transferencias`) — Tela /pontos-de-venda/transferencias.
   - `PaginaTransferencias` *componente* L17
 - **[src/app/(app)/produtos/actions.ts](../../src/app/(app)/produtos/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /produtos.
-  - `salvarProduto` *ação* L19 (usado em 1) · `excluirProduto` *ação* L112 (usado em 1) · `ativarProdutosEmLote` *ação* L124 (usado em 1)
+  - `salvarProduto` *ação* L19 (usado em 1) · `excluirProduto` *ação* L124 (usado em 1) · `ativarProdutosEmLote` *ação* L136 (usado em 1)
   - internas: `revalidar` L12
 - **[src/app/(app)/produtos/cadastro.tsx](../../src/app/(app)/produtos/cadastro.tsx)** — Mesma tela para as duas listas: /produtos (venda) e /insumos (consumo)
   - `CadastroProdutos` *componente* L25 (usado em 2)
 - **[src/app/(app)/produtos/lista.tsx](../../src/app/(app)/produtos/lista.tsx)** (navegador) — Cadastro separado em duas telas: produtos de venda (/produtos) e insumos de consumo da piscicultura (/insumos)
-  - `Produto` *tipo* L12 (usado em 1) · `GrupoProduto` *tipo* L35 (usado em 1) · `DadosEstoque` *tipo* L44 · `ListaProdutos` *componente* L185 (usado em 1)
-  - internas: `FichaEmbalagem` L46 · `FormProduto` L76 · `PainelProduto` L165
+  - `Produto` *tipo* L12 (usado em 1) · `GrupoProduto` *tipo* L40 (usado em 1) · `DadosEstoque` *tipo* L49 · `ListaProdutos` *componente* L212 (usado em 1)
+  - internas: `FichaEmbalagem` L51 · `FichaRacao` L82 · `FormProduto` L102 · `PainelProduto` L192
 - **[src/app/(app)/produtos/page.tsx](../../src/app/(app)/produtos/page.tsx)** (rota `/produtos`) — O que a piscicultura vende: peixe por kg e em caixa, alevinos e outros itens com preço de venda.
   - `PaginaProdutos` *componente* L3
 - **[src/app/(app)/racao/actions.ts](../../src/app/(app)/racao/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /racao.
@@ -493,6 +493,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `PontoVenda` *tipo* L6 (usado em 1) · `carregarPontos` *função* L25 (usado em 7) · `pontoDoPdv` *função* L33 (usado em 1)
 - **[src/lib/pontos.ts](../../src/lib/pontos.ts)** — Pontos de venda: regras puras usadas nas telas (o banco confere de novo).
   - `TIPOS_PONTO` *constante* L3 (usado em 4) · `STATUS_TRANSFERENCIA` *constante* L11 (usado em 1) · `fretePorUnidade` *função* L18 (usado em 3) · `pctPerda` *função* L24 (usado em 2) · `lerDocumento` *função* L30 (usado em 2) · `lerUf` *função* L37 (usado em 2) · `cookiePonto` *função* L44 (usado em 3)
+- **[src/lib/racao-estoque.ts](../../src/lib/racao-estoque.ts)** — Estoque de ração: textos e alertas das entradas numeradas (o saldo por entrada, pelo FEFO, vem do banco: view racao_saldos).
+  - `DIAS_ALERTA_VALIDADE` *constante* L4 · `numeroEntrada` *função* L6 (usado em 3) · `Situacao` *tipo* L8 · `situacaoValidade` *função* L11 (usado em 2) · `textoSacos` *função* L20 (usado em 2) · `descricaoRacao` *função* L27 (usado em 2)
 - **[src/lib/vendas-dados.ts](../../src/lib/vendas-dados.ts)** — Tudo que as telas de venda (nova venda e PDV) precisam numa ida ao banco. Com ponto, o disponível é o estoque daquele ponto de venda; sem, o da piscicultura. `app`: chamada do app de celular (cliente com o token do cabe…
   - `ClienteVenda` *tipo* L8 (usado em 3) · `ProdutoVenda` *tipo* L9 (usado em 3) · `ContaVenda` *tipo* L10 (usado em 2) · `UltimoPedido` *tipo* L11 (usado em 2) · `carregarCatalogo` *função* L22 (usado em 5)
   - internas: `chaveCondicao` L14
@@ -719,7 +721,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `cifrar` *função* L10 (usado em 4) · `decifrar` *função* L17 (usado em 4) · `hashToken` *função* L26 (usado em 5) · `tokenConfereHash` *função* L30 (usado em 2) · `novoToken` *função* L37 (usado em 2)
   - internas: `chaveMestra` L5
 - **[src/lib/historico.ts](../../src/lib/historico.ts)** — Histórico de alterações (tabela audit_log, gravada por trigger no banco): nomes e formatação para a tela.
-  - `Acao` *tipo* L4 (usado em 1) · `ACOES` *constante* L6 (usado em 1) · `OPCOES_TABELA` *constante* L77 (usado em 1) · `nomeTabela` *função* L81 (usado em 2) · `nomeCampo` *função* L87 (usado em 2) · `formatarValorCampo` *função* L93 (usado em 2) · `Registro` *tipo* L108 (usado em 1) · `Detalhe` *tipo* L109 · `detalhesAlteracao` *função* L111 (usado em 2) · `formatarDataHora` *função* L121 (usado em 2) · `inicioDoDia` *função* L130 (usado em 2)
+  - `Acao` *tipo* L4 (usado em 1) · `ACOES` *constante* L6 (usado em 1) · `OPCOES_TABELA` *constante* L78 (usado em 1) · `nomeTabela` *função* L82 (usado em 2) · `nomeCampo` *função* L88 (usado em 2) · `formatarValorCampo` *função* L94 (usado em 2) · `Registro` *tipo* L109 (usado em 1) · `Detalhe` *tipo* L110 · `detalhesAlteracao` *função* L112 (usado em 2) · `formatarDataHora` *função* L122 (usado em 2) · `inicioDoDia` *função* L131 (usado em 2)
 - **[src/lib/login-bloqueio.ts](../../src/lib/login-bloqueio.ts)** — Texto para quem está com o login travado (public.login_bloqueado_ate: 5 senhas erradas em 15 minutos).
   - `mensagemBloqueio` *função* L4 (usado em 2)
 - **[src/lib/login-local.ts](../../src/lib/login-local.ts)** — Login por usuário e senha (sem e-mail), criado pelo master. O Supabase Auth só entra por e-mail, então o usuário vira um e-mail interno no domínio reservado .test, que nunca entrega mensagem. A mesma regra está em app.d…
@@ -808,7 +810,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/app/(app)/configuracoes/zerar-sistema/actions.ts](../../src/app/(app)/configuracoes/zerar-sistema/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /configuracoes/zerar-sistema.
   - `zerarSistema` *ação* L10 (usado em 1)
 - **[src/app/(app)/configuracoes/zerar-sistema/backup/route.ts](../../src/app/(app)/configuracoes/zerar-sistema/backup/route.ts)** (rota `/configuracoes/zerar-sistema/backup`) — API GET /configuracoes/zerar-sistema/backup.
-  - `GET` *função* L58
+  - `GET` *função* L59
 - **[src/app/(app)/configuracoes/zerar-sistema/form.tsx](../../src/app/(app)/configuracoes/zerar-sistema/form.tsx)** (navegador) — Confirmação em três travas: nome da empresa, a frase ZERAR TUDO e, por último, o código do autenticador, que eleva a sessão (TOTP de agora) logo antes de chamar o banco.
   - `FormZerarSistema` *componente* L13 (usado em 1)
   - internas: `normalizar` L9
@@ -1003,7 +1005,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/components/dialogo-acao.tsx](../../src/components/dialogo-acao.tsx)** (navegador) — Botão que abre uma caixa de confirmação/edição como <dialog> modal: fica centralizada na tela, por cima de tudo, e não é cortada por tabela com rolagem nem pela borda da tela (celular e tablet). Esc ou "fechar" fecham.
   - `DialogoAcao` *componente* L12 (usado em 2)
 - **[src/components/excluir-linha.tsx](../../src/components/excluir-linha.tsx)** (navegador) — Botão "excluir" de uma linha de tabela que mostra o motivo quando o banco recusa.
-  - `ExcluirLinha` *componente* L8 (usado em 4)
+  - `ExcluirLinha` *componente* L8 (usado em 5)
 - **[src/components/form-acao.tsx](../../src/components/form-acao.tsx)** (navegador) — Formulário ligado a uma server action: mostra erro/sucesso e limpa ao salvar.
   - `FormAcao` *componente* L17 (usado em 27)
 - **[src/components/marca.tsx](../../src/components/marca.tsx)** — Marca do Balbina: um tambaqui sobre a lâmina d'água, na cor da marca. Desenhada em SVG para seguir o tema (no escuro a marca clareia e o peixe escurece, mantendo o contraste). Os ícones do app (public/icone*.png e mobil…
@@ -1028,7 +1030,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `Tema` *tipo* L10 · `SCRIPT_TEMA` *constante* L17 (usado em 1) · `SeletorTema` *componente* L65 (usado em 3) · `InterruptorTema` *componente* L93 (usado em 1) · `BotaoTema` *componente* L119 (usado em 1)
   - internas: `ler` L22 · `assinar` L32 · `aplicar` L44
 - **[src/components/ui.tsx](../../src/components/ui.tsx)** — `quebrar` deixa um texto longo passar para a linha de baixo (a cápsula cresce na altura) em vez de vazar no celular.
-  - `classeBotao` *função* L21 (usado em 52) · `Botao` *componente* L31 (usado em 40) · `LinkBotao` *componente* L41 (usado em 24) · `CLASSE_BOTAO_TEXTO` *constante* L51 (usado em 35) · `CLASSE_CONTROLE` *constante* L54 (usado em 18) · `Campo` *componente* L66 (usado em 69) · `Selecao` *componente* L75 (usado em 54) · `AreaTexto` *componente* L86 (usado em 15) · `Cartao` *componente* L95 (usado em 47) · `Aviso` *componente* L140 (usado em 54) · `TomEtiqueta` *tipo* L148 (usado em 8) · `Etiqueta` *componente* L150 (usado em 46) · `Tabela` *componente* L165 (usado em 27) · `Vazio` *componente* L206 (usado em 9) · `Titulo` *componente* L215 (usado em 69) · `Secao` *componente* L228 (usado em 3) · `Segmentos` *componente* L244 (usado em 12) · `Cor` *tipo* L266 (usado em 3) · `COR_FICHA` *constante* L267 · `Ficha` *componente* L278 (usado em 3) · `CartaoKpi` *componente* L291 (usado em 2) · `Indicador` *componente* L317 (usado em 8) · `Faixa` *componente* L348 (usado em 8)
+  - `classeBotao` *função* L21 (usado em 52) · `Botao` *componente* L31 (usado em 40) · `LinkBotao` *componente* L41 (usado em 24) · `CLASSE_BOTAO_TEXTO` *constante* L51 (usado em 35) · `CLASSE_CONTROLE` *constante* L54 (usado em 18) · `Campo` *componente* L66 (usado em 69) · `Selecao` *componente* L75 (usado em 55) · `AreaTexto` *componente* L86 (usado em 16) · `Cartao` *componente* L95 (usado em 47) · `Aviso` *componente* L140 (usado em 55) · `TomEtiqueta` *tipo* L148 (usado em 8) · `Etiqueta` *componente* L150 (usado em 47) · `Tabela` *componente* L165 (usado em 27) · `Vazio` *componente* L206 (usado em 9) · `Titulo` *componente* L215 (usado em 69) · `Secao` *componente* L228 (usado em 3) · `Segmentos` *componente* L244 (usado em 12) · `Cor` *tipo* L266 (usado em 3) · `COR_FICHA` *constante* L267 · `Ficha` *componente* L278 (usado em 3) · `CartaoKpi` *componente* L291 (usado em 2) · `Indicador` *componente* L317 (usado em 8) · `Faixa` *componente* L348 (usado em 8)
   - internas: `Rotulo` L57
 - **[src/components/whatsapp-pessoal.tsx](../../src/components/whatsapp-pessoal.tsx)** — H2: o celular da própria pessoa no WhatsApp do Balbina (avisos e envio de documentos).
   - `WhatsAppPessoal` *componente* L11 (usado em 2)
@@ -1071,7 +1073,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/lib/env.ts](../../src/lib/env.ts)**
   - `supabaseEnv` *função* L1 (usado em 8)
 - **[src/lib/formato.ts](../../src/lib/formato.ts)** — Conversões entre o que a pessoa digita (pt-BR) e o que o banco guarda.
-  - `formatarMoeda` *função* L6 (usado em 60) · `formatarNumero` *função* L10 (usado em 27) · `formatarQuantidade` *função* L16 (usado em 5) · `formatarInteiro` *função* L21 (usado em 25) · `formatarData` *função* L26 (usado em 62) · `centavosParaCampo` *função* L33 (usado em 12) · `somarDias` *função* L38 (usado em 23) · `MESES_CURTOS` *constante* L43 (usado em 2) · `MESES_LONGOS` *constante* L44 (usado em 3) · `rotuloMes` *função* L47 (usado em 8) · `deslocarMes` *função* L52 (usado em 5) · `semAcento` *função* L58 (usado em 9) · `plural` *função* L63 (usado em 3) · `lerCentavos` *função* L68 (usado em 21) · `lerDecimal` *função* L77 (usado em 20) · `lerInteiro` *função* L85 (usado em 10) · `FUSO_PADRAO` *constante* L91 · `FUSOS_BRASIL` *constante* L94 (usado em 2) · `hojeISO` *função* L109 (usado em 78) · `diasAtrasISO` *função* L114 (usado em 10)
+  - `formatarMoeda` *função* L6 (usado em 60) · `formatarNumero` *função* L10 (usado em 27) · `formatarQuantidade` *função* L16 (usado em 5) · `formatarInteiro` *função* L21 (usado em 25) · `formatarData` *função* L26 (usado em 62) · `centavosParaCampo` *função* L33 (usado em 12) · `somarDias` *função* L38 (usado em 23) · `MESES_CURTOS` *constante* L43 (usado em 2) · `MESES_LONGOS` *constante* L44 (usado em 3) · `rotuloMes` *função* L47 (usado em 8) · `deslocarMes` *função* L52 (usado em 5) · `semAcento` *função* L58 (usado em 9) · `plural` *função* L63 (usado em 3) · `lerCentavos` *função* L68 (usado em 21) · `lerDecimal` *função* L77 (usado em 20) · `lerInteiro` *função* L85 (usado em 10) · `FUSO_PADRAO` *constante* L91 · `FUSOS_BRASIL` *constante* L94 (usado em 2) · `hojeISO` *função* L109 (usado em 79) · `diasAtrasISO` *função* L114 (usado em 10)
 - **[src/lib/ia.ts](../../src/lib/ia.ts)** — Leitura por IA (C3 documentos e A8 mortalidade por foto do estudo de automação). Usa a API da Anthropic com a chave ANTHROPIC_API_KEY do servidor. Tudo que sai daqui é PROPOSTA: a tela mostra preenchido e a pessoa confe…
   - `MODELO` *constante* L11 (usado em 1) · `TIPOS_ARQUIVO` *constante* L12 (usado em 1) · `TipoArquivo` *tipo* L13 (usado em 1) · `TAMANHO_MAXIMO` *constante* L14 (usado em 3) · `iaConfigurada` *função* L16 (usado em 6) · `ErroIa` *classe* L20 (usado em 4) · `cliente` *função* L22 (usado em 1) · `DocumentoLido` *tipo* L68 (usado em 1) · `lerDocumento` *função* L70 (usado em 1) · `MortalidadeLida` *tipo* L85 (usado em 1) · `contarMortes` *função* L87 (usado em 1)
   - internas: `blocoArquivo` L27 · `ler` L34

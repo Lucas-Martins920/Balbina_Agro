@@ -16,7 +16,7 @@ const TELAS: Record<GrupoProduto, { titulo: string; descricao: string; outra: { 
   },
   consumo: {
     titulo: "Insumos da piscicultura",
-    descricao: "O que a piscicultura compra e consome: ração e ingredientes, embalagens, calcário, adubo e medicamentos. Não pedem preço de venda. Clique numa linha para editar ou lançar entrada, saída e ajuste de estoque.",
+    descricao: "O que a piscicultura compra e consome: ração, embalagens, calcário, adubo e medicamentos. Não pedem preço de venda. Na ração, preencha a ficha técnica (fabricante, proteína, grânulo, peso do saco e fase); as compras de ração entram numeradas, com lote e validade, na tela Estoque.",
     outra: { href: "/produtos", nome: "Produtos de venda" },
   },
 };
@@ -27,9 +27,9 @@ export async function CadastroProdutos({ grupo }: { grupo: GrupoProduto }) {
   const { pode } = await getPermissoes();
   const { atual } = await getEmpresaAtual();
   const supabase = await createClient();
-  const [{ data: produtos }, { data: saldos }, { data: classes }, { data: categorias }, { data: precos }, { data: saldosDeposito }, { data: depositos }, { data: lotes }, { data: fichas }] = await Promise.all([
+  const [{ data: produtos }, { data: saldos }, { data: classes }, { data: categorias }, { data: precos }, { data: saldosDeposito }, { data: depositos }, { data: lotes }, { data: fichas }, { data: faixas }] = await Promise.all([
     supabase.from("produtos")
-      .select("id, tipo, nome, sku, unidade, fator_kg, classe_peixe_id, ncm, cfop_padrao, categoria_financeira_id, custo_medio_cents, ativo, base_estoque, para_venda, estoque_minimo, observacoes")
+      .select("id, tipo, nome, sku, unidade, fator_kg, classe_peixe_id, ncm, cfop_padrao, categoria_financeira_id, custo_medio_cents, ativo, base_estoque, para_venda, estoque_minimo, observacoes, fabricante, proteina_pct, granulometria, saco_kg, fase_recomendada")
       .eq("empresa_id", atual.id).order("nome"),
     supabase.from("saldos_produtos").select("produto_id, saldo").eq("empresa_id", atual.id),
     supabase.from("classes_peixe").select("id, nome").eq("empresa_id", atual.id).order("ordem").order("nome"),
@@ -41,6 +41,8 @@ export async function CadastroProdutos({ grupo }: { grupo: GrupoProduto }) {
     supabase.from("depositos").select("id, nome").eq("empresa_id", atual.id).neq("tipo", "peixe").order("nome"),
     supabase.from("lotes").select("id, codigo").eq("empresa_id", atual.id).neq("fase", "encerrado").order("codigo"),
     supabase.from("produto_embalagens").select("produto_id, embalagem_id, quantidade").eq("empresa_id", atual.id),
+    // fases da tabela de arraçoamento, para a ficha técnica da ração
+    supabase.from("tabela_arracoamento").select("fase, peso_min_g").order("peso_min_g"),
   ]);
   const ficha = new Map<string, { embalagem_id: string; quantidade: number }[]>();
   for (const f of fichas ?? []) ficha.set(f.produto_id, [...(ficha.get(f.produto_id) ?? []), { embalagem_id: f.embalagem_id, quantidade: Number(f.quantidade) }]);
@@ -57,6 +59,7 @@ export async function CadastroProdutos({ grupo }: { grupo: GrupoProduto }) {
         produtos={((produtos ?? []) as Produto[]).map((p) => ({ ...p, saldo: saldo.get(p.id) ?? null, preco_venda: precoVenda.get(p.id) ?? null, embalagens: ficha.get(p.id) ?? [] }))}
         classes={classes ?? []}
         categorias={categorias ?? []}
+        fases={[...new Set((faixas ?? []).map((f) => f.fase))]}
         podeEditar={pode("produtos.editar") || pode("estoque.editar") || pode("racao.editar")}
         podePreco={pode("vendas.precos")}
         estoque={{

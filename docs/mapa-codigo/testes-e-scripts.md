@@ -75,6 +75,7 @@
 - [supabase/tests/99_planos.sql](../../supabase/tests/99_planos.sql) — Planos do Balbina: cada nível só libera os módulos dele, inclusive para o master.
 - [supabase/tests/99_pontos_venda.sql](../../supabase/tests/99_pontos_venda.sql) — Pontos de venda: sede automática, estoque por ponto, transferência com frete e perda no transporte, PDV no ponto,
 - [supabase/tests/99_produtos_para_venda.sql](../../supabase/tests/99_produtos_para_venda.sql) — Produtos de venda x insumos de consumo: milho não pede preço de venda nem entra em pedido.
+- [supabase/tests/99_racao_entradas.sql](../../supabase/tests/99_racao_entradas.sql) — Estoque de ração: ficha técnica, entradas numeradas com lote e validade, saldo por entrada pelo FEFO.
 - [supabase/tests/99_rateio_conciliacao.sql](../../supabase/tests/99_rateio_conciliacao.sql) — Rateio em várias categorias: conciliar um lançamento do extrato dividindo o valor entre categorias e
 - [supabase/tests/99_recorrencias_cron.sql](../../supabase/tests/99_recorrencias_cron.sql) — Recorrências renovadas por rotina diária no banco (pg_cron), não mais a cada abertura de tela.
 - [supabase/tests/99_regra_ignorar.sql](../../supabase/tests/99_regra_ignorar.sql) — Regra "Ignorar": aplicação/resgate automático (BB Rende Fácil) fica ignorado sozinho, sem título nem baixa,
@@ -153,6 +154,7 @@
 - [src/lib/planilha.test.ts](../../src/lib/planilha.test.ts) — Testes de src/lib/planilha.ts.
 - [src/lib/pontos.test.ts](../../src/lib/pontos.test.ts) — Testes de src/lib/pontos.ts.
 - [src/lib/previsao.test.ts](../../src/lib/previsao.test.ts) — Testes de src/lib/previsao.ts.
+- [src/lib/racao-estoque.test.ts](../../src/lib/racao-estoque.test.ts) — Testes de src/lib/racao-estoque.ts.
 - [src/lib/rateio.test.ts](../../src/lib/rateio.test.ts) — Testes de src/lib/rateio.ts.
 - [src/lib/regras-em-partes.test.ts](../../src/lib/regras-em-partes.test.ts) — Testes de src/lib/regras-em-partes.ts.
 - [src/lib/regras.test.ts](../../src/lib/regras.test.ts) — Testes de src/lib/regras.ts.

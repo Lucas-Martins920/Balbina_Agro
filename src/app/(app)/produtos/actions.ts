@@ -39,8 +39,20 @@ export async function salvarProduto(_: EstadoAcao, form: FormData): Promise<Esta
   const cfop = t("cfop_padrao").replace(/\D/g, "");
   if (cfop && cfop.length !== 4) return falha("CFOP tem 4 números.");
 
+  // Ficha técnica da ração (só tipo ração): fabricante, proteína bruta, grânulo, peso do saco e fase indicada
+  const racao = tipo === "racao";
+  const proteina = racao && t("proteina_pct") ? lerDecimal(t("proteina_pct")) : null;
+  if (racao && t("proteina_pct") && (proteina === null || proteina < 0 || proteina > 70)) return falha("Proteína bruta inválida: informe a % (ex.: 32).");
+  const saco = racao && t("saco_kg") ? lerDecimal(t("saco_kg")) : null;
+  if (racao && t("saco_kg") && (saco === null || saco <= 0)) return falha("Peso do saco inválido (ex.: 25).");
+
   const dados = {
     nome, tipo, unidade,
+    fabricante: racao ? t("fabricante") || null : null,
+    proteina_pct: proteina,
+    granulometria: racao ? t("granulometria") || null : null,
+    saco_kg: saco,
+    fase_recomendada: racao ? t("fase_recomendada") || null : null,
     sku: t("sku") || null,
     classe_peixe_id: peixe ? t("classe_peixe_id") : null,
     fator_kg: fator,

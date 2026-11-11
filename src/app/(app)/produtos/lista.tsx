@@ -26,6 +26,11 @@ export type Produto = {
   para_venda: boolean;
   estoque_minimo: number | null;
   observacoes: string | null;
+  fabricante?: string | null;
+  proteina_pct?: number | null;
+  granulometria?: string | null;
+  saco_kg?: number | null;
+  fase_recomendada?: string | null;
   saldo?: number | null;
   preco_venda?: number | null;
   embalagens?: { embalagem_id: string; quantidade: number }[];
@@ -71,9 +76,30 @@ function FichaEmbalagem({ produto, embalagens }: { produto?: Produto; embalagens
   );
 }
 
-type PropsForm = { grupo: GrupoProduto; classes: Opcao[]; categorias: Categoria[]; embalagens: Opcao[]; podeEditar: boolean; podePreco: boolean };
+type PropsForm = { grupo: GrupoProduto; classes: Opcao[]; categorias: Categoria[]; embalagens: Opcao[]; fases: string[]; podeEditar: boolean; podePreco: boolean };
 
-function FormProduto({ produto, grupo, classes, categorias, embalagens, podeEditar, podePreco }: PropsForm & { produto?: Produto }) {
+// Ficha técnica da ração: é o que a entrada de ração, o FEFO e a previsão de compra usam
+function FichaRacao({ produto, fases }: { produto?: Produto; fases: string[] }) {
+  return (
+    <SecaoForm titulo="Ficha técnica da ração">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Campo rotulo="Fabricante" id="p_fabricante" name="fabricante" defaultValue={produto?.fabricante ?? ""} placeholder="Ex.: Guabi, Nutripiscis" />
+        <Campo rotulo="Proteína bruta (%)" id="p_pb" name="proteina_pct" inputMode="decimal"
+          defaultValue={produto?.proteina_pct == null ? "" : formatarNumero(produto.proteina_pct, 1)} placeholder="Ex.: 32" />
+        <Campo rotulo="Granulometria" id="p_granulo" name="granulometria" defaultValue={produto?.granulometria ?? ""} placeholder="Ex.: 4–6 mm" />
+        <Campo rotulo="Peso do saco (kg)" id="p_saco" name="saco_kg" inputMode="decimal"
+          defaultValue={produto?.saco_kg == null ? "" : formatarNumero(produto.saco_kg, 1)} placeholder="25" />
+      </div>
+      <Selecao rotulo="Fase indicada" id="p_fase" name="fase_recomendada" defaultValue={produto?.fase_recomendada ?? ""}
+        ajuda="Da tabela de arraçoamento">
+        <option value="">Não informada</option>
+        {[...new Set([...fases, ...(produto?.fase_recomendada ? [produto.fase_recomendada] : [])])].map((f) => <option key={f} value={f}>{f}</option>)}
+      </Selecao>
+    </SecaoForm>
+  );
+}
+
+function FormProduto({ produto, grupo, classes, categorias, embalagens, fases, podeEditar, podePreco }: PropsForm & { produto?: Produto }) {
   const [tipo, setTipo] = useState(produto?.tipo ?? (grupo === "venda" ? "outro" : "insumo_racao"));
   const [marcado, setMarcado] = useState(produto?.para_venda ?? grupo === "venda");
   const peixe = tipo === "peixe";
@@ -138,6 +164,7 @@ function FormProduto({ produto, grupo, classes, categorias, embalagens, podeEdit
       </SecaoForm>
 
       {peixe && !travado && <FichaEmbalagem produto={produto} embalagens={embalagens} />}
+      {tipo === "racao" && <FichaRacao produto={produto} fases={fases} />}
 
       <SecaoForm titulo="Fiscal e financeiro">
         <div className="grid gap-3 sm:grid-cols-2">
@@ -182,7 +209,7 @@ function PainelProduto({ produto, produtos, estoque, ...cadastro }: PropsForm & 
 }
 
 // `produtos` traz todos (a ficha de embalagem e o lançamento de estoque precisam deles); a lista mostra só os do grupo.
-export function ListaProdutos({ grupo, produtos, classes, categorias, podeEditar, podePreco, estoque }: { grupo: GrupoProduto; produtos: Produto[]; classes: Opcao[]; categorias: Categoria[]; podeEditar: boolean; podePreco: boolean; estoque: DadosEstoque }) {
+export function ListaProdutos({ grupo, produtos, classes, categorias, fases = [], podeEditar, podePreco, estoque }: { grupo: GrupoProduto; produtos: Produto[]; classes: Opcao[]; categorias: Categoria[]; fases?: string[]; podeEditar: boolean; podePreco: boolean; estoque: DadosEstoque }) {
   const [aba, setAba] = useState<AbaProduto>("todos");
   const venda = grupo === "venda";
   // o produto que guarda o estoque da classe não se vende, mas fica junto do pescado
@@ -197,7 +224,7 @@ export function ListaProdutos({ grupo, produtos, classes, categorias, podeEditar
   const classe = new Map(classes.map((c) => [c.id, c.nome]));
   const embalagens = produtos.filter((p) => p.tipo === "embalagem" && p.ativo).map((p) => ({ id: p.id, nome: `${p.nome} (${p.unidade})` }));
   const novoTitulo = venda ? "Novo produto de venda" : "Novo insumo";
-  const cadastro = { grupo, classes, categorias, embalagens, podeEditar, podePreco };
+  const cadastro = { grupo, classes, categorias, embalagens, fases, podeEditar, podePreco };
 
   return (
     <ListaCadastro
