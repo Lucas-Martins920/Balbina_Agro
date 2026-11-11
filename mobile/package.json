@@ -32,8 +32,8 @@
   },
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "test": "node --import ./scripts/regras-nos-testes.mjs --test --experimental-strip-types 'src/**/*.test.ts'"
