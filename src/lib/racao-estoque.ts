@@ -28,3 +28,12 @@ export function descricaoRacao(r: { nome: string; proteina_pct?: number | string
   const pb = r.proteina_pct === null || r.proteina_pct === undefined || r.proteina_pct === "" ? null : Number(r.proteina_pct);
   return [r.nome, pb === null ? null : `${pb.toLocaleString("pt-BR")}% PB`, r.granulometria || null].filter(Boolean).join(" · ");
 }
+
+// Sacos fechados e o que sobra no saco aberto, sem arredondar o estoque real (63 kg em sacos de 25 kg:
+// 2 fechados, 13 kg no aberto, 2,52 sacos equivalentes)
+export function sacosDoSaldo(kg: number, sacoKg: number | null | undefined) {
+  if (!sacoKg || sacoKg <= 0) return null;
+  const fechados = Math.floor(kg / sacoKg + 1e-9);
+  const aberto = Math.round((kg - fechados * sacoKg) * 1000) / 1000;
+  return { equivalentes: Math.round((kg / sacoKg) * 100) / 100, fechados, abertoKg: aberto < 1e-6 ? 0 : aberto };
+}
