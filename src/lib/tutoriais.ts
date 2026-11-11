@@ -501,13 +501,11 @@ export const TUTORIAIS: Tutorial[] = [
   },
   {
     tela: "/racao",
-    nome: "Ração e insumos",
+    nome: "Estoque de ração",
     permissao: "racao.ver",
     passos: [
-      { alvo: t("titulo"), titulo: "Ração e insumos", texto: "O estoque de insumos ao custo médio, as fórmulas e as ordens de produção." },
-      { alvo: lancamento("Lançar entrada"), permissao: "racao.editar", titulo: "Entrada de compra", texto: "Lance a compra do insumo: o custo médio é recalculado." },
-      { alvo: lancamento("Nova fórmula"), permissao: "racao.editar", titulo: "Fórmula", texto: "A receita da ração em kg por batida, de qualquer total (não precisa fechar 1.000 kg). Mudar a fórmula cria uma nova versão e guarda a antiga." },
-      { alvo: lancamento("Produzir ração"), permissao: "racao.editar", titulo: "Produzir", texto: "A ordem tira os ingredientes do estoque e coloca a ração pronta no depósito." },
+      { alvo: t("titulo"), titulo: "Estoque de ração", texto: "Cada compra de ração é uma entrada numerada (R-1, R-2…) com lote de fabricação e validade. O trato usa primeiro a que vence primeiro (FEFO)." },
+      { alvo: lancamento("Entrada de ração"), permissao: "racao.editar", titulo: "Entrada de ração", texto: "Lance a compra em sacos ou kg, com lote, validade, fornecedor e valor. O custo da entrada é o que vai para o custo do lote." },
     ],
   },
   {

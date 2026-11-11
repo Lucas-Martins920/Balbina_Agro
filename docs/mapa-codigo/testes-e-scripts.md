@@ -12,7 +12,7 @@
 - [supabase/tests/50_estoque_vendas.sql](../../supabase/tests/50_estoque_vendas.sql) — Marco 3: despesca, estoque de pescado em kg, carência, pedidos de venda e alertas.
 - [supabase/tests/60_custo_kg.sql](../../supabase/tests/60_custo_kg.sql) — Marco 4: custo do kg por lote.
 - [supabase/tests/70_regras_aging_orcamento.sql](../../supabase/tests/70_regras_aging_orcamento.sql) — Marco 5a: regras de conciliação, aging e orçamento.
-- [supabase/tests/80_racao_cartao_comercial.sql](../../supabase/tests/80_racao_cartao_comercial.sql) — Marco 5b: insumos, fábrica de ração, cartão de crédito e relatórios comerciais.
+- [supabase/tests/80_racao_cartao_comercial.sql](../../supabase/tests/80_racao_cartao_comercial.sql) — Marco 5b: insumos, cartão de crédito e relatórios comerciais (a fábrica de ração foi desativada em 2026-11-11).
 - [supabase/tests/90_cobranca.sql](../../supabase/tests/90_cobranca.sql) — Marco 5c: cobrança pelo Asaas e baixa pelo webhook.
 - [supabase/tests/95_open_finance_conciliacao.sql](../../supabase/tests/95_open_finance_conciliacao.sql) — Conciliação simplificada: palpite pelo histórico, transferência sugerida, certeiras em lote e conexões Open Finance.
 - [supabase/tests/95_usuarios_permissoes.sql](../../supabase/tests/95_usuarios_permissoes.sql) — Usuário master, convites, perfis e permissões por módulo.
@@ -34,6 +34,7 @@
 - [supabase/tests/99_automacoes_resumo.sql](../../supabase/tests/99_automacoes_resumo.sql) — Automações de rotina: resumo diário (H3) e aviso do pacote do contador (E1)
 - [supabase/tests/99_automacoes_vendas.sql](../../supabase/tests/99_automacoes_vendas.sql) — Automações de vendas: pedidos fixos gerados na véspera (D2), bloqueio de venda a prazo para quem está
 - [supabase/tests/99_biometria_crescimento.sql](../../supabase/tests/99_biometria_crescimento.sql) — Biometria, peso estimado pela curva do tambaqui, ração sugerida pela tabela de arraçoamento, alertas da água e
+- [supabase/tests/99_biometria_grupos.sql](../../supabase/tests/99_biometria_grupos.sql) — Biometria em grupos: média ponderada (peso total ÷ peixes), correção de grupos, reenvio offline sem duplicar,
 - [supabase/tests/99_bloqueio_login.sql](../../supabase/tests/99_bloqueio_login.sql) — Bloqueio temporário do login depois de 5 senhas erradas em 15 minutos na mesma conta.
 - [supabase/tests/99_campo_insumos.sql](../../supabase/tests/99_campo_insumos.sql) — App de campo: insumos aplicados no viveiro (corretivo, fertilizante, medicamento), com o viveiro vazio do preparo,
 - [supabase/tests/99_cancelar_importacao.sql](../../supabase/tests/99_cancelar_importacao.sql) — Cancelar a importação de um extrato lido por engano (quem pode conciliar; o que já foi feito fica), duplicados na
@@ -75,6 +76,8 @@
 - [supabase/tests/99_planos.sql](../../supabase/tests/99_planos.sql) — Planos do Balbina: cada nível só libera os módulos dele, inclusive para o master.
 - [supabase/tests/99_pontos_venda.sql](../../supabase/tests/99_pontos_venda.sql) — Pontos de venda: sede automática, estoque por ponto, transferência com frete e perda no transporte, PDV no ponto,
 - [supabase/tests/99_produtos_para_venda.sql](../../supabase/tests/99_produtos_para_venda.sql) — Produtos de venda x insumos de consumo: milho não pede preço de venda nem entra em pedido.
+- [supabase/tests/99_racao_baixa.sql](../../supabase/tests/99_racao_baixa.sql) — Estoque de ração, fase 2: toda saída ligada às entradas (FEFO), custo histórico por lote, estorno, ajuste,
+- [supabase/tests/99_racao_entradas.sql](../../supabase/tests/99_racao_entradas.sql) — Estoque de ração: ficha técnica, entradas numeradas com lote e validade, saldo por entrada pelo FEFO.
 - [supabase/tests/99_rateio_conciliacao.sql](../../supabase/tests/99_rateio_conciliacao.sql) — Rateio em várias categorias: conciliar um lançamento do extrato dividindo o valor entre categorias e
 - [supabase/tests/99_recorrencias_cron.sql](../../supabase/tests/99_recorrencias_cron.sql) — Recorrências renovadas por rotina diária no banco (pg_cron), não mais a cada abertura de tela.
 - [supabase/tests/99_regra_ignorar.sql](../../supabase/tests/99_regra_ignorar.sql) — Regra "Ignorar": aplicação/resgate automático (BB Rende Fácil) fica ignorado sozinho, sem título nem baixa,
@@ -107,6 +110,7 @@
 - [src/lib/asaas-mapa.test.ts](../../src/lib/asaas-mapa.test.ts) — Testes de src/lib/asaas-mapa.ts.
 - [src/lib/assinatura-mapa.test.ts](../../src/lib/assinatura-mapa.test.ts) — Testes de src/lib/assinatura-mapa.ts.
 - [src/lib/assistente.test.ts](../../src/lib/assistente.test.ts) — Testes de src/lib/assistente.ts.
+- [src/lib/biometria-grupos.test.ts](../../src/lib/biometria-grupos.test.ts) — Testes de src/lib/biometria-grupos.ts.
 - [src/lib/boleto.test.ts](../../src/lib/boleto.test.ts) — Testes de src/lib/boleto.ts.
 - [src/lib/campo/conhecimento-tambaqui.test.ts](../../src/lib/campo/conhecimento-tambaqui.test.ts) — Testes de src/lib/campo/conhecimento-tambaqui.ts.
 - [src/lib/campo/contexto-chat.test.ts](../../src/lib/campo/contexto-chat.test.ts) — Testes de src/lib/campo/contexto-chat.ts.
@@ -122,12 +126,12 @@
 - [src/lib/db/indexeddb.test.ts](../../src/lib/db/indexeddb.test.ts) — Testes de src/lib/db/indexeddb.ts.
 - [src/lib/documento.test.ts](../../src/lib/documento.test.ts) — Testes de src/lib/documento.ts.
 - [src/lib/dre-exportar.test.ts](../../src/lib/dre-exportar.test.ts) — Testes de src/lib/dre-exportar.ts.
+- [src/lib/eslint-config.test.ts](../../src/lib/eslint-config.test.ts) — Testes.
 - [src/lib/estoque-carrinho.test.ts](../../src/lib/estoque-carrinho.test.ts) — Testes de src/lib/estoque-carrinho.ts.
 - [src/lib/fala-apontamento.test.ts](../../src/lib/fala-apontamento.test.ts) — Testes de src/lib/fala-apontamento.ts.
 - [src/lib/fluxo.test.ts](../../src/lib/fluxo.test.ts) — Testes de src/lib/fluxo.ts.
 - [src/lib/focus-mapa.test.ts](../../src/lib/focus-mapa.test.ts) — Testes de src/lib/focus-mapa.ts.
 - [src/lib/formato.test.ts](../../src/lib/formato.test.ts) — Testes de src/lib/formato.ts.
-- [src/lib/formula-racao.test.ts](../../src/lib/formula-racao.test.ts) — Testes de src/lib/formula-racao.ts.
 - [src/lib/historico.test.ts](../../src/lib/historico.test.ts) — Testes de src/lib/historico.ts.
 - [src/lib/importacao-modelo.test.ts](../../src/lib/importacao-modelo.test.ts) — Testes de src/lib/importacao-modelo.ts.
 - [src/lib/importacao.test.ts](../../src/lib/importacao.test.ts) — Testes de src/lib/importacao.ts.
@@ -151,7 +155,9 @@
 - [src/lib/planejamento.test.ts](../../src/lib/planejamento.test.ts) — Testes de src/lib/planejamento.ts.
 - [src/lib/planilha.test.ts](../../src/lib/planilha.test.ts) — Testes de src/lib/planilha.ts.
 - [src/lib/pontos.test.ts](../../src/lib/pontos.test.ts) — Testes de src/lib/pontos.ts.
+- [src/lib/previsao-racao.test.ts](../../src/lib/previsao-racao.test.ts) — Testes de src/lib/previsao-racao.ts.
 - [src/lib/previsao.test.ts](../../src/lib/previsao.test.ts) — Testes de src/lib/previsao.ts.
+- [src/lib/racao-estoque.test.ts](../../src/lib/racao-estoque.test.ts) — Testes de src/lib/racao-estoque.ts.
 - [src/lib/rateio.test.ts](../../src/lib/rateio.test.ts) — Testes de src/lib/rateio.ts.
 - [src/lib/regras-em-partes.test.ts](../../src/lib/regras-em-partes.test.ts) — Testes de src/lib/regras-em-partes.ts.
 - [src/lib/regras.test.ts](../../src/lib/regras.test.ts) — Testes de src/lib/regras.ts.
@@ -207,6 +213,9 @@
 | `npm run local` | `node scripts/local.mjs` |
 | `npm run local:parar` | `node scripts/local.mjs parar` |
 | `npm run local:zerar` | `node scripts/local.mjs zerar` |
+| `npm run dev:iniciar` | `bash scripts/dev-iniciar.sh` |
+| `npm run dev:parar` | `bash scripts/dev-parar.sh` |
+| `npm run dev:status` | `node scripts/limites-docker.mjs --ver` |
 | `npm run build` | `next build` |
 | `npm run start` | `next start` |
 | `npm run lint` | `eslint` |
@@ -222,7 +231,10 @@
 - [scripts/aplicar-migracoes.sh](../../scripts/aplicar-migracoes.sh) — Aplica no banco as migrations de supabase/migrations que ainda não rodaram.
 - [scripts/backup-banco.sh](../../scripts/backup-banco.sh) — Gera um backup cifrado do banco do Balbina.
 - [scripts/conferir-consultas.mjs](../../scripts/conferir-consultas.mjs) — Confere se o que o site (src/) e o app (mobile/src/) pedem ao banco existe depois das migrations:
+- [scripts/dev-iniciar.sh](../../scripts/dev-iniciar.sh) — Liga o ambiente de desenvolvimento no modo leve, para notebook de 8 GB no Linux (docs/ambiente-leve.md).
+- [scripts/dev-parar.sh](../../scripts/dev-parar.sh) — Desliga TUDO do ambiente de desenvolvimento e devolve a memória ao Linux (docs/ambiente-leve.md):
 - [scripts/focus-homologacao.ts](../../scripts/focus-homologacao.ts) — Teste ponta a ponta da NF-e/NFC-e no ambiente de HOMOLOGAÇÃO da Focus NFe (notas sem valor fiscal).
+- [scripts/limites-docker.mjs](../../scripts/limites-docker.mjs) — Limites rígidos de RAM e CPU nos contêineres do Supabase local (docs/ambiente-leve.md).
 - [scripts/local.mjs](../../scripts/local.mjs) — Roda o Balbina na sua máquina com um banco Supabase local (Docker), sem tocar na produção.
 - [scripts/mapa-codigo.mjs](../../scripts/mapa-codigo.mjs) — Gera o mapa do código do Balbina: onde fica cada tela, função, componente, rota de API,
 - [scripts/restaurar-backup.sh](../../scripts/restaurar-backup.sh) — Restaura um backup gerado por backup-banco.sh.
@@ -233,6 +245,7 @@
 
 ## Documentação
 
+- [docs/ambiente-leve.md](../../docs/ambiente-leve.md) — Ambiente leve (notebook de 8 GB no Linux)
 - [docs/api.md](../../docs/api.md) — API pública do Balbina (v1)
 - [docs/app-celular.md](../../docs/app-celular.md) — App Balbina para iOS e Android
 - [docs/asaas-producao.md](../../docs/asaas-producao.md) — Asaas em produção

@@ -17,7 +17,7 @@ export type ContatoImportado = {
   chave?: string; nome: string; tipos: TipoContato[]; cpf_cnpj?: string; inscricao_estadual?: string; email?: string;
   telefone?: string; cidade?: string; uf?: string; endereco?: Record<string, string>; produtor_rural?: boolean;
 };
-export type TipoProduto = "alevino" | "racao" | "insumo_racao" | "embalagem" | "medicamento" | "vacina" | "outro";
+export type TipoProduto = "alevino" | "racao" | "corretivo" | "embalagem" | "medicamento" | "vacina" | "outro";
 export type ProdutoImportado = {
   nome: string; tipo: TipoProduto; unidade: string; sku?: string; ncm?: string; estoque_minimo?: number; observacoes?: string;
 };

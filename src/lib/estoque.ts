@@ -1,6 +1,5 @@
-// Produtos que não são pescado: insumos, ração, embalagens e medicamentos
+// Produtos que não são pescado: ração (comprada pronta), corretivos, embalagens e medicamentos
 export const TIPOS_PRODUTO: Record<string, string> = {
-  insumo_racao: "Ingrediente de ração",
   racao: "Ração",
   corretivo: "Corretivo e fertilizante",
   embalagem: "Embalagem",
@@ -16,9 +15,6 @@ export const TIPOS_DEPOSITO: Record<string, string> = {
   expedicao: "Expedição",
 };
 
-// Linhas do formulário de fórmula de ração
-export const LINHAS_FORMULA = 10;
-
 // Todos os tipos, para o cadastro de produtos
 export const TIPOS_PRODUTO_TODOS: Record<string, string> = { peixe: "Pescado", alevino: "Alevinos", ...TIPOS_PRODUTO };
 
@@ -29,7 +25,7 @@ export const UNIDADES = ["kg", "cx", "un", "mil", "g", "t", "sc", "l", "ml", "do
 export const ABAS_PRODUTO = {
   todos: { nome: "Todos", tipos: null },
   pescado: { nome: "Pescado e alevinos", tipos: ["peixe", "alevino"] },
-  insumos: { nome: "Ração e insumos", tipos: ["racao", "insumo_racao", "corretivo"] },
+  insumos: { nome: "Ração e insumos", tipos: ["racao", "corretivo"] },
   embalagens: { nome: "Embalagens", tipos: ["embalagem"] },
   sanidade: { nome: "Vacinas e medicamentos", tipos: ["vacina", "medicamento"] },
   outros: { nome: "Outros", tipos: ["outro"] },

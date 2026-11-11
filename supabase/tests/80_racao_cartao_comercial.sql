@@ -1,4 +1,4 @@
--- Marco 5b: insumos, fábrica de ração, cartão de crédito e relatórios comerciais.
+-- Marco 5b: insumos, cartão de crédito e relatórios comerciais (a fábrica de ração foi desativada em 2026-11-11).
 \set ON_ERROR_STOP on
 
 create or replace function pg_temp.espera_erro(p_sql text, p_trecho text) returns void language plpgsql as $$
@@ -27,9 +27,9 @@ insert into depositos (id, empresa_id, nome, tipo) values
   ('80000000-0000-0000-0000-0000000000d1', current_setting('t.emp')::uuid, 'Silos', 'insumos'),
   ('80000000-0000-0000-0000-0000000000d2', current_setting('t.emp')::uuid, 'Ração pronta', 'racao');
 insert into produtos (id, empresa_id, tipo, nome, unidade) values
-  ('80000000-0000-0000-0000-0000000000a1', current_setting('t.emp')::uuid, 'insumo_racao', 'Milho', 'kg'),
-  ('80000000-0000-0000-0000-0000000000a2', current_setting('t.emp')::uuid, 'insumo_racao', 'Farelo de soja', 'kg'),
-  ('80000000-0000-0000-0000-0000000000a3', current_setting('t.emp')::uuid, 'insumo_racao', 'Calcário', 'kg'),
+  ('80000000-0000-0000-0000-0000000000a1', current_setting('t.emp')::uuid, 'outro', 'Milho', 'kg'),
+  ('80000000-0000-0000-0000-0000000000a2', current_setting('t.emp')::uuid, 'outro', 'Farelo de soja', 'kg'),
+  ('80000000-0000-0000-0000-0000000000a3', current_setting('t.emp')::uuid, 'outro', 'Calcário', 'kg'),
   ('80000000-0000-0000-0000-0000000000b1', current_setting('t.emp')::uuid, 'racao', 'Engorda 1', 'kg'),
   ('80000000-0000-0000-0000-0000000000b2', current_setting('t.emp')::uuid, 'racao', 'Engorda 2', 'kg');
 
@@ -41,44 +41,12 @@ select registrar_entrada('80000000-0000-0000-0000-0000000000a3', '80000000-0000-
 select pg_temp.ok((select saldo = 20000 and valor_cents = 2400000 from estoque_produtos where produto_id = '80000000-0000-0000-0000-0000000000a1'), 'estoque de insumos com saldo e valor');
 select pg_temp.espera_erro($$select registrar_saida('80000000-0000-0000-0000-0000000000a3', '80000000-0000-0000-0000-0000000000d1', current_date, 5000)$$, 'Saldo insuficiente');
 
--- Fórmula
+-- Fábrica de ração desativada: a ração é comprada pronta e entra por entrada numerada
 select pg_temp.espera_erro($$select salvar_formula('80000000-0000-0000-0000-0000000000b1', 'Engorda 1',
-  '[{"insumo_id":"80000000-0000-0000-0000-0000000000a1","kg":0}]')$$, 'Informe a quantidade');
--- Batida de qualquer total (sem trava de 1.000 kg): 700 + 350 = 1.050 kg
-select set_config('t.f3', salvar_formula('80000000-0000-0000-0000-0000000000b2', 'Engorda 2', '[
-  {"insumo_id":"80000000-0000-0000-0000-0000000000a1","kg":700},
-  {"insumo_id":"80000000-0000-0000-0000-0000000000a2","kg":350}]')::text, false);
-select pg_temp.ok((select total_kg from formulas_racao where id = current_setting('t.f3')::uuid) = 1050, 'fórmula guarda o total da batida (1.050 kg)');
-select pg_temp.ok((select array_agg(kg::text || '/' || kg_por_tonelada::text order by kg) from formula_itens where formula_id = current_setting('t.f3')::uuid)
-  = '{350.000/333.333,700.000/666.667}', 'kg na batida e proporção por tonelada');
-select pg_temp.ok((select total_kg = 1050 and custo_batida_cents = 700 * 120 + 350 * 250 from custo_formulas where formula_id = current_setting('t.f3')::uuid), 'custo da batida no total informado');
-select set_config('t.f4', salvar_formula('80000000-0000-0000-0000-0000000000b2', 'Engorda 2', '[
-  {"insumo_id":"80000000-0000-0000-0000-0000000000a1","kg":400},
-  {"insumo_id":"80000000-0000-0000-0000-0000000000a3","kg":200}]')::text, false);
-select pg_temp.ok((select total_kg from formulas_racao where id = current_setting('t.f4')::uuid) = 600, 'batida menor que 1.000 kg também vale');
-select pg_temp.ok((select custo_tonelada_cents from custo_formulas where formula_id = current_setting('t.f4')::uuid) = round(666.667 * 120 + 333.333 * 20), 'custo da tonelada proporcional à batida de 600 kg');
-select pg_temp.espera_erro($$select salvar_formula('80000000-0000-0000-0000-0000000000a1', 'x',
-  '[{"insumo_id":"80000000-0000-0000-0000-0000000000a2","kg_por_tonelada":1000}]')$$, 'tipo ração');
-select set_config('t.f1', salvar_formula('80000000-0000-0000-0000-0000000000b1', 'Engorda 1', '[
-  {"insumo_id":"80000000-0000-0000-0000-0000000000a1","kg_por_tonelada":650},
-  {"insumo_id":"80000000-0000-0000-0000-0000000000a2","kg_por_tonelada":250},
-  {"insumo_id":"80000000-0000-0000-0000-0000000000a3","kg_por_tonelada":100}]')::text, false);
-select pg_temp.ok((select custo_tonelada_cents from custo_formulas where formula_id = current_setting('t.f1')::uuid) = 650 * 120 + 250 * 250 + 100 * 20, 'custo da tonelada da fórmula');
-select set_config('t.f2', salvar_formula('80000000-0000-0000-0000-0000000000b1', 'Engorda 1', '[
-  {"insumo_id":"80000000-0000-0000-0000-0000000000a1","kg_por_tonelada":640},
-  {"insumo_id":"80000000-0000-0000-0000-0000000000a2","kg_por_tonelada":250},
-  {"insumo_id":"80000000-0000-0000-0000-0000000000a3","kg_por_tonelada":110}]')::text, false);
-select pg_temp.ok((select array_agg(versao::text || vigente::text order by versao) from formulas_racao where produto_racao_id = '80000000-0000-0000-0000-0000000000b1') = '{1false,2true}', 'nova versão aposenta a anterior');
-
--- Produção de 10 t
-select pg_temp.espera_erro(format($$select produzir_racao(%L, current_date, 25, '80000000-0000-0000-0000-0000000000d1', '80000000-0000-0000-0000-0000000000d2')$$, current_setting('t.f2')), 'Falta');
-select set_config('t.op', produzir_racao(current_setting('t.f2')::uuid, current_date, 8, '80000000-0000-0000-0000-0000000000d1', '80000000-0000-0000-0000-0000000000d2')::text, false);
-select pg_temp.ok((select saldo from estoque_produtos where produto_id = '80000000-0000-0000-0000-0000000000a1') = 20000 - 640 * 8, 'produção consome o milho da fórmula');
-select pg_temp.ok((select saldo from estoque_produtos where produto_id = '80000000-0000-0000-0000-0000000000b1') = 8000, 'ração produzida entra no depósito de destino');
-select pg_temp.ok((select custo_total_cents from ordens_producao_racao where id = current_setting('t.op')::uuid) = 8 * (640 * 120 + 250 * 250 + 110 * 20), 'custo da ordem ao custo médio dos ingredientes');
-select pg_temp.ok((select custo_medio_cents from produtos where id = '80000000-0000-0000-0000-0000000000b1') = (640 * 120 + 250 * 250 + 110 * 20) / 1000.0, 'ração com custo médio por kg');
-select registrar_saida('80000000-0000-0000-0000-0000000000b1', '80000000-0000-0000-0000-0000000000d2', current_date, 3000);
-select pg_temp.ok((select saldo from estoque_produtos where produto_id = '80000000-0000-0000-0000-0000000000b1') = 5000, 'consumo no viveiro baixa a ração');
+  '[{"insumo_id":"80000000-0000-0000-0000-0000000000a1","kg":700}]')$$, 'fábrica de ração foi desativada');
+select pg_temp.espera_erro($$select produzir_racao(gen_random_uuid(), current_date, 1, '80000000-0000-0000-0000-0000000000d1', '80000000-0000-0000-0000-0000000000d2')$$, 'fábrica de ração foi desativada');
+select pg_temp.espera_erro($$insert into produtos (empresa_id, tipo, nome, unidade) values (current_setting('t.emp')::uuid, 'insumo_racao', 'Farelo', 'kg')$$, 'tipo_check');
+select pg_temp.espera_erro($$insert into formulas_racao (empresa_id, produto_racao_id, fase) values (current_setting('t.emp')::uuid, '80000000-0000-0000-0000-0000000000b1', 'x')$$, 'permission denied');
 
 -- Cartão: fecha dia 5, vence dia 15
 select pg_temp.ok(app.vencimento_fatura('2026-10-03', 5, 15) = '2026-10-15', 'compra antes do fechamento cai na fatura do mês');
@@ -125,7 +93,6 @@ set request.jwt.claim.sub = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
 select pg_temp.ok((select count(*) from estoque_produtos where empresa_id = current_setting('t.emp')::uuid) = 0, 'estoque de insumos isolado por empresa');
 select pg_temp.ok((select count(*) from faturas_cartao where empresa_id = current_setting('t.emp')::uuid) = 0, 'faturas isoladas por empresa');
 select pg_temp.ok((select count(*) from vendas_itens where empresa_id = current_setting('t.emp')::uuid) = 0, 'vendas isoladas por empresa');
-select pg_temp.espera_erro(format($$select produzir_racao(%L, current_date, 1, '80000000-0000-0000-0000-0000000000d1', '80000000-0000-0000-0000-0000000000d2')$$, current_setting('t.f2')), 'não encontrada');
 
 reset role;
 \o

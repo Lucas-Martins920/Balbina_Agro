@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { BotaoLancamento } from "@/components/lancamento";
-import { Campo, CLASSE_BOTAO_TEXTO, classeBotao, Tabela, Titulo } from "@/components/ui";
+import { Campo, CLASSE_BOTAO_TEXTO, classeBotao, Etiqueta, Tabela, Titulo } from "@/components/ui";
 import { getEmpresaAtual } from "@/lib/empresa";
 import { diasAtrasISO, formatarData, formatarMoeda, formatarQuantidade } from "@/lib/formato";
+import { DIAS_ALERTA_VALIDADE } from "@/lib/racao-estoque";
 import { faixaClasse, textoKg } from "@/lib/pescado";
 import { createClient } from "@/lib/supabase/server";
 import { unidadeSaldo } from "@/lib/estoque";
@@ -20,19 +21,20 @@ export default async function PaginaEstoque() {
   const { pode } = await getPermissoes();
   const { atual } = await getEmpresaAtual();
   const supabase = await createClient();
-  const [{ data: estoque }, { data: movimentos }, { data: lotes }, { data: produtos }, { data: saldosProdutos }, { data: saldosDeposito }, { data: depositos }, { data: outrosPontos }] = await Promise.all([
+  const [{ data: estoque }, { data: movimentos }, { data: lotes }, { data: produtos }, { data: saldosProdutos }, { data: saldosDeposito }, { data: depositos }, { data: outrosPontos }, { data: entradas }] = await Promise.all([
     supabase.from("estoque_peixe").select("classe_id, classe_nome, ordem, comercializavel, sem_classificacao, saldo, disponivel, peso_min_g, peso_max_g")
       .eq("empresa_id", atual.id).order("ordem"),
     supabase.from("movimentos_estoque").select("id, data, tipo, quantidade, observacao, produtos(nome, tipo, unidade, base_estoque), lotes(codigo)")
       .eq("empresa_id", atual.id).neq("tipo", "despesca")
       .gte("data", diasAtrasISO(30, atual.fuso)).order("data", { ascending: false }).order("created_at", { ascending: false }).limit(100),
     supabase.from("lotes").select("id, codigo").eq("empresa_id", atual.id).neq("fase", "encerrado").order("codigo"),
-    supabase.from("produtos").select("id, nome, tipo, unidade, base_estoque, ativo, estoque_minimo, custo_medio_cents")
+    supabase.from("produtos").select("id, nome, tipo, unidade, base_estoque, ativo, estoque_minimo, custo_medio_cents, proteina_pct, granulometria, saco_kg")
       .eq("empresa_id", atual.id).order("nome"),
     supabase.from("saldos_produtos").select("produto_id, saldo, valor_cents").eq("empresa_id", atual.id),
     supabase.from("estoque_produtos").select("produto_id, deposito_id, saldo").eq("empresa_id", atual.id),
     supabase.from("depositos").select("id, nome").eq("empresa_id", atual.id).neq("tipo", "peixe").order("nome"),
     supabase.from("estoque_peixe_ponto").select("ponto_venda_id, ponto_nome, saldo, disponivel").eq("empresa_id", atual.id).eq("sede", false).eq("ponto_ativo", true),
+    supabase.from("racao_saldos").select("saldo_kg, dias_para_vencer").eq("empresa_id", atual.id).gt("saldo_kg", 0),
   ]);
   // Peixe que está nos outros pontos de venda (o resto da tela é o estoque da piscicultura)
   const pontos = new Map<string, { nome: string; saldo: number; disponivel: number }>();
@@ -55,6 +57,12 @@ export default async function PaginaEstoque() {
   const disponivel = (estoque ?? []).filter((e) => e.comercializavel).reduce((s, e) => s + Number(e.disponivel), 0);
   const podeAjustar = pode("estoque.editar");
 
+  // Ração: o resumo; o detalhe (entradas, FEFO, sacos, reserva, movimentos) fica em /racao
+  const totalRacao = (entradas ?? []).reduce((s, e) => s + Number(e.saldo_kg), 0);
+  const nEntradas = entradas?.length ?? 0;
+  const vencidas = (entradas ?? []).filter((e) => e.dias_para_vencer !== null && Number(e.dias_para_vencer) < 0).length;
+  const vencendo = (entradas ?? []).filter((e) => e.dias_para_vencer !== null && Number(e.dias_para_vencer) >= 0 && Number(e.dias_para_vencer) <= DIAS_ALERTA_VALIDADE).length;
+
   return (
     <div className="flex max-w-6xl flex-col gap-6">
       <Titulo descricao={`${textoKg(total)} de peixe em estoque${pontos.size ? " na piscicultura" : ""} · ${textoKg(disponivel)} disponíveis para venda`}
@@ -75,6 +83,19 @@ export default async function PaginaEstoque() {
         </>}>
         Estoque
       </Titulo>
+
+      <section id="racao" className="flex scroll-mt-6 flex-col gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-lg font-semibold">Ração</h2>
+          <Link href="/racao" className={classeBotao("secundario", "sm")}>Abrir o estoque de ração</Link>
+        </div>
+        <p className="text-sm text-texto-suave">
+          {formatarQuantidade(totalRacao)} kg de ração em {nEntradas} {nEntradas === 1 ? "entrada" : "entradas"} com saldo
+          {vencidas > 0 && <> · <Etiqueta tom="perigo">{vencidas} {vencidas === 1 ? "vencida" : "vencidas"}</Etiqueta></>}
+          {vencendo > 0 && <> · <Etiqueta tom="alerta">{vencendo} {vencendo === 1 ? "vence" : "vencem"} em até {DIAS_ALERTA_VALIDADE} dias</Etiqueta></>}.
+          Entradas, ordem de uso (FEFO), sacos, cobertura, reserva e movimentos ficam no estoque de ração.
+        </p>
+      </section>
 
       <section className="flex flex-col gap-2">
         <h2 className="text-lg font-semibold">Pescado por classe</h2>
@@ -110,7 +131,7 @@ export default async function PaginaEstoque() {
       </p>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-lg font-semibold">Produtos e insumos</h2>
+        <h2 className="text-lg font-semibold">Todos os produtos e insumos</h2>
         <p className="text-sm text-texto-suave">
           Todos os produtos do cadastro, com o saldo somado dos depósitos ({formatarMoeda(valorTotal)} ao custo médio). Clique num produto para lançar entrada, saída ou ajuste de saldo.
         </p>

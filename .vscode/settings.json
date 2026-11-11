@@ -1,3 +1,34 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+
+    // Notebook de 8 GB (docs/ambiente-leve.md): o VS Code não vigia nem indexa pastas geradas.
+    // Sem isto, cada compilação do Turbopack em .next/ acorda o vigia de arquivos e a busca.
+    "files.watcherExclude": {
+        "**/node_modules/**": true,
+        "**/.next/**": true,
+        "**/.git/objects/**": true,
+        "**/graphify-out/**": true,
+        "**/docs/mapa-codigo/**": true,
+        "**/docs/legado/**": true,
+        "**/supabase/.temp/**": true,
+        "**/supabase/.branches/**": true,
+        "**/playwright-report/**": true,
+        "**/test-results/**": true,
+        "**/mobile/.expo/**": true
+    },
+    "search.exclude": {
+        "**/.next": true,
+        "**/graphify-out": true,
+        "**/docs/mapa-codigo": true,
+        "**/playwright-report": true,
+        "**/test-results": true
+    },
+    "search.followSymlinks": false,
+    // um TypeScript server com teto de memória; o mobile/ tem o próprio tsconfig e não entra no projeto da raiz
+    "typescript.tsserver.maxTsServerMemory": 2048,
+    "typescript.tsc.autoDetect": "off",
+    "npm.autoDetect": "off",
+    "git.autorefresh": true,
+    "git.autofetch": false,
+    "extensions.autoUpdate": false
 }

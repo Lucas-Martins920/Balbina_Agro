@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { falha, mensagemBanco, sucesso, type EstadoAcao } from "@/lib/acao";
 import { getEmpresaAtual } from "@/lib/empresa";
-import { lerCentavos, lerDecimal, lerInteiro } from "@/lib/formato";
+import { validarGrupos, type GrupoBiometria } from "@/lib/biometria-grupos";
+import { formatarNumero, lerCentavos, lerDecimal, lerInteiro } from "@/lib/formato";
 import { lerKg } from "@/lib/pescado";
 import { createClient } from "@/lib/supabase/server";
 
@@ -132,8 +133,37 @@ export async function reabrirLote(_: EstadoAcao, form: FormData): Promise<Estado
 }
 
 // Biometria: pesa uma amostra do viveiro. Dá para informar o peso total da amostra ou o peso médio.
+// Grupos da biometria vindos do formulário (campo escondido "grupos", JSON); vazio = biometria pelo total
+function lerGruposForm(form: FormData): { ok: GrupoBiometria[] } | { erro: string } | null {
+  let bruto: unknown;
+  try { bruto = JSON.parse(String(form.get("grupos") ?? "[]")); } catch { return { erro: "Grupos inválidos." }; }
+  if (!Array.isArray(bruto) || bruto.length === 0) return null;
+  return validarGrupos(bruto);
+}
+
 export async function registrarBiometria(_: EstadoAcao, form: FormData): Promise<EstadoAcao> {
   const t = (k: string) => String(form.get(k) ?? "").trim();
+  const grupos = lerGruposForm(form);
+  if (grupos && "erro" in grupos) return falha(grupos.erro);
+  if (grupos) {
+    if (!t("viveiro_id")) return falha("Escolha o viveiro.");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(t("data"))) return falha("Informe a data da biometria.");
+    const opcional = (k: string, max: number) => { if (!t(k)) return null; const v = lerDecimal(t(k)); return v === null || v < 0 || v > max ? NaN : v; };
+    const jejum = opcional("jejum_horas", 96), temp = opcional("temperatura_c", 45), ox = opcional("oxigenio_mg_l", 30);
+    if ([jejum, temp, ox].some((v) => Number.isNaN(v))) return falha("Confira jejum (0 a 96 h), temperatura (0 a 45 °C) e oxigênio (0 a 30 mg/L).");
+    const { atual } = await getEmpresaAtual();
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("registrar_biometria_grupos", {
+      p_empresa: atual.id, p_viveiro: t("viveiro_id"), p_data: t("data"), p_grupos: grupos.ok, p_client_id: null, p_lote: t("lote_id") || null,
+      p_origem: "web", p_observacoes: t("observacoes") || null, p_jejum_horas: jejum, p_temperatura_c: temp, p_oxigenio_mg_l: ox,
+    });
+    if (error) return falha(mensagemBanco(error));
+    const { data: b } = await supabase.from("biometrias").select("peso_medio_g, peixes_amostrados").eq("id", data).maybeSingle();
+    revalidarLotes();
+    revalidatePath("/painel");
+    revalidatePath("/racao");
+    return sucesso(b ? `Biometria lançada: ${formatarNumero(Number(b.peso_medio_g), 1)} g de média em ${b.peixes_amostrados} peixes.` : "Biometria lançada.");
+  }
   const peixes = lerInteiro(form.get("peixes"));
   const total = lerGramas(form.get("peso_total_g"));
   const medio = lerGramas(form.get("peso_medio_g"));
@@ -165,6 +195,21 @@ export async function registrarBiometria(_: EstadoAcao, form: FormData): Promise
   revalidarLotes();
   revalidatePath("/painel");
   return sucesso("Biometria lançada: o peso do lote e a ração sugerida foram atualizados.");
+}
+
+// Corrigir os grupos de uma biometria já lançada (somar, corrigir ou tirar um grupo): o banco recalcula a média
+export async function corrigirGruposBiometria(_: EstadoAcao, form: FormData): Promise<EstadoAcao> {
+  const id = String(form.get("id") ?? "");
+  const grupos = lerGruposForm(form);
+  if (!id) return falha("Biometria não encontrada.");
+  if (!grupos) return falha("Informe pelo menos um grupo pesado.");
+  if ("erro" in grupos) return falha(grupos.erro);
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("corrigir_grupos_biometria", { p_biometria: id, p_grupos: grupos.ok });
+  if (error) return falha(mensagemBanco(error));
+  revalidarLotes();
+  revalidatePath("/racao");
+  return sucesso(`Grupos corrigidos: ${formatarNumero(Number(data), 1)} g de média.`);
 }
 
 export async function excluirBiometria(_: EstadoAcao, form: FormData): Promise<EstadoAcao> {

@@ -88,11 +88,12 @@ test.describe("app de campo sem internet", () => {
     await aba.getByRole("group", { name: "Viveiro" }).getByRole("button", { name: /V1/ }).click();
     await aba.getByRole("button", { name: /Registrar biometria/ }).click();
     const folha = page.getByRole("dialog");
-    await folha.getByLabel(/^Peixes pesados/).fill("20");
-    await folha.getByLabel(/^Peso total da amostra/).fill("1");
-    await folha.getByRole("button", { name: "Salvar biometria" }).click();
-    // peso fora do esperado para o lote: a folha pede para conferir antes de salvar
-    const conferir = folha.getByRole("button", { name: "Está certo, salvar" });
+    // biometria em grupos (o padrão): um puçá com 20 peixes e 1 kg
+    await folha.getByRole("textbox", { name: "Peixes", exact: true }).first().fill("20");
+    await folha.getByRole("textbox", { name: "Peso kg", exact: true }).first().fill("1");
+    await folha.getByRole("button", { name: "Concluir biometria" }).click();
+    // peso fora do esperado para o lote: a folha pede para conferir antes de concluir
+    const conferir = folha.getByRole("button", { name: "Está certo, concluir" });
     if (await conferir.isVisible().catch(() => false)) await conferir.click();
     await expect(page.getByRole("button", { name: "Sem sinal. 1 na fila de envio" })).toBeVisible();
 

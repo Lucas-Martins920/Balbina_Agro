@@ -48,9 +48,9 @@ export const GRUPOS: GrupoModulos[] = [
   {
     nome: "Estoque",
     modulos: [
-      { slug: "estoque", nome: "Estoque", descricao: "Pescado em kg por classe, insumos, ração, embalagens e medicamentos.", marco: 3 },
+      { slug: "estoque", nome: "Estoque", descricao: "Pescado em kg por classe, ração, corretivos, embalagens e medicamentos.", marco: 3 },
       { slug: "pontos-de-venda", permissao: "estoque", nome: "Pontos de venda", descricao: "Piscicultura, peixaria, feira: estoque de peixe por ponto e transferência com frete.", marco: 5 },
-      { slug: "racao", nome: "Ração e insumos", descricao: "Estoque de insumos, fórmulas, ordens de produção e custo médio.", marco: 5 },
+      { slug: "racao", nome: "Estoque de ração", descricao: "Ração comprada pronta: entradas numeradas com lote e validade, consumo pelo FEFO, sacos, cobertura e movimentos.", marco: 5 },
     ],
   },
   {

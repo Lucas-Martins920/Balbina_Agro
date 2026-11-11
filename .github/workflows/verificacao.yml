@@ -129,7 +129,14 @@ jobs:
       - if: env.E2E == 'true' && steps.navegador.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
       - if: env.E2E == 'true' && steps.navegador.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
+        # o apt do runner às vezes não resolve DNS (falha de rede, não do código): tenta de novo antes de desistir
+        run: |
+          for tentativa in 1 2 3; do
+            npx playwright install-deps chromium && exit 0
+            echo "install-deps falhou (tentativa $tentativa); esperando antes de tentar de novo"
+            sleep 60
+          done
+          exit 1
       - name: Testes de ponta a ponta
         if: env.E2E == 'true'
         run: npx playwright test
@@ -185,7 +192,7 @@ jobs:
     timeout-minutes: 15
     services:
       postgres:
-        image: postgres:16
+        image: postgres:17
         env:
           POSTGRES_PASSWORD: postgres
         ports: ["5432:5432"]

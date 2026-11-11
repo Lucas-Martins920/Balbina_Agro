@@ -64,3 +64,16 @@ test("insumo: medicamento do cadastro", () => {
   assert.deepEqual(validarInsumoCampo({ ...base, tipo: "medicamento" }, HOJE), { erro: "Escolha o medicamento ou a vitamina." });
   assert.deepEqual(validarInsumoCampo({ ...base, tipo: "medicamento", medicamento_id: OUTRO, dias: 0 }, HOJE), { erro: "Dias de tratamento: de 1 a 120." });
 });
+
+test("biometria em grupos: totais pela média ponderada, água e jejum", () => {
+  const r = validarBiometriaCampo({ ...base, grupos: [{ peixes: 10, peso_kg: 1.5, ponto_captura: "cocho" }, { peixes: 40, peso_kg: 8 }],
+    jejum_horas: 12, temperatura_c: 29.5, oxigenio_mg_l: null, observacoes: "" }, HOJE) as { ok: Record<string, unknown> };
+  assert.equal(r.ok.peixes, 50);
+  assert.equal(r.ok.peso_total_g, 9500);
+  assert.equal(r.ok.peso_medio_g, null);
+  assert.equal((r.ok.grupos as unknown[]).length, 2);
+  assert.equal(r.ok.jejum_horas, 12);
+  assert.equal(r.ok.oxigenio_mg_l, null);
+  assert.deepEqual(validarBiometriaCampo({ ...base, grupos: [] }, HOJE), { erro: "Informe pelo menos um grupo pesado." });
+  assert.deepEqual(validarBiometriaCampo({ ...base, grupos: [{ peixes: 5, peso_kg: 1 }], temperatura_c: 80 }, HOJE), { erro: "Temperatura inválida: de 0 a 45 °C." });
+});

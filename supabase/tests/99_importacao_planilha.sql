@@ -46,6 +46,7 @@ select set_config('t.r', importar_pacote(current_setting('t.emp')::uuid, current
 select pg_temp.ok((current_setting('t.r')::jsonb->>'produtos')::int = 2, 'importa produtos e ignora o pescado (vem das classes)');
 select pg_temp.ok((select estoque_minimo from produtos where empresa_id = current_setting('t.emp')::uuid and nome = 'Milho moído') = 500,
   'produto com estoque mínimo e código');
+select pg_temp.ok((select tipo from produtos where empresa_id = current_setting('t.emp')::uuid and nome = 'Milho moído') = 'outro', 'insumo de ração da planilha antiga entra como outro (fábrica desativada)');
 select pg_temp.ok((select pago_cents from agendamentos where empresa_id = current_setting('t.emp')::uuid and descricao = 'Venda de peixes') = 90000,
   'lançamento da planilha entra com a baixa');
 

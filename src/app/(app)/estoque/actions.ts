@@ -31,7 +31,6 @@ export async function movimentarEstoque(_: EstadoAcao, form: FormData): Promise<
   if (error) return falha(mensagemBanco(error));
   revalidatePath("/estoque");
   revalidatePath("/produtos");
-  revalidatePath("/racao");
   const dif = Number(mov);
   if (operacao === "ajuste" && dif === 0) return sucesso("Contagem bate com o sistema; nada lançado.");
   const texto = formatarQuantidade(Math.abs(dif));

@@ -19,7 +19,7 @@ export async function cadastrarRapido(tipo: TipoRapido, nome: string, subtipo?: 
   const supabase = await createClient();
 
   if (tipo === "produto") {
-    const t = subtipo && subtipo in TIPOS_PRODUTO ? subtipo : "insumo_racao";
+    const t = subtipo && subtipo in TIPOS_PRODUTO ? subtipo : "outro";
     const unidade = ["embalagem", "outro"].includes(t) ? "un" : t === "vacina" ? "dose" : t === "medicamento" ? "ml" : "kg";
     const { data, error } = await supabase.from("produtos").insert({ empresa_id: atual.id, nome: limpo, tipo: t, unidade }).select("id, nome, unidade").single();
     if (error) return { erro: mensagemBanco(error) };

@@ -206,11 +206,10 @@ export default async function PaginaAutomacoes() {
         )}
       </Cartao>
 
-      <Cartao titulo="Compra e produção sugeridas" descricao="Em Previsões: o que produzir na fábrica e o que comprar, pelo consumo médio e pelas fórmulas vigentes.">
+      <Cartao titulo="Compra de ração sugerida" descricao="Em Previsões: a ração a comprar, pelo consumo médio dos lotes.">
         <FormAcao acao={salvarAbastecimento} botao="Salvar" limparAoSalvar={false}>
           <div className="grid grid-cols-2 gap-3 sm:max-w-sm">
             <Campo rotulo="Comprar para (dias)" id="compra_dias" name="compra_dias" type="number" min={1} max={180} defaultValue={cfg?.compra_dias ?? 30} required />
-            <Campo rotulo="Produzir para (dias)" id="producao_dias" name="producao_dias" type="number" min={1} max={60} defaultValue={cfg?.producao_dias ?? 7} required />
           </div>
         </FormAcao>
       </Cartao>

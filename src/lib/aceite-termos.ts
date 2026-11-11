@@ -2,6 +2,7 @@ import "server-only";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getClaimsDaSessao } from "@/lib/auth";
 import { eLoginLocal } from "@/lib/login-local";
 import { VERSAO_TERMOS } from "@/lib/termos";
 
@@ -23,10 +24,9 @@ export async function registrarAceite(origem: "cadastro" | "tela_aceite") {
 // Primeira linha das telas logadas: sem aceite da versão vigente, a pessoa passa pela tela de aceite.
 // Quem marcou o aceite no cadastro (antes de confirmar o e-mail) tem o registro gravado aqui.
 export async function exigirAceiteTermos(voltar: string) {
-  const supabase = await createClient();
-  const { data: claims } = await supabase.auth.getClaims();
-  const usuario = claims?.claims;
+  const usuario = await getClaimsDaSessao();
   if (!usuario?.sub) redirect("/login");
+  const supabase = await createClient();
   // Login por usuário criado pelo master: no primeiro acesso (e depois de uma senha nova do master) troca a senha.
   if (eLoginLocal(usuario.email)) {
     const { data: local } = await supabase.rpc("meu_login_local");

@@ -27,7 +27,7 @@ insert into contatos (id, empresa_id, tipos, nome) values
 -- pescado e alevinos nascem de venda; insumos nascem de consumo
 select pg_temp.ok((select para_venda from produtos where id = current_setting('t.cx')::uuid), 'pescado é produto de venda');
 insert into produtos (id, empresa_id, tipo, nome, unidade) values
-  ('99b00000-0000-0000-0000-0000000000a1', current_setting('t.emp')::uuid, 'insumo_racao', 'Milho', 'kg'),
+  ('99b00000-0000-0000-0000-0000000000a1', current_setting('t.emp')::uuid, 'outro', 'Milho', 'kg'),
   ('99b00000-0000-0000-0000-0000000000a2', current_setting('t.emp')::uuid, 'alevino', 'Alevino de tambaqui', 'un'),
   ('99b00000-0000-0000-0000-0000000000a3', current_setting('t.emp')::uuid, 'outro', 'Sacaria vazia', 'un');
 insert into produtos (id, empresa_id, tipo, nome, unidade, para_venda) values
