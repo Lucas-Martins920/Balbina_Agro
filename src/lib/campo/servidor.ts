@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { mensagemBanco } from "@/lib/acao";
 import type { EmpresaCampo } from "@/lib/apontamento-campo-servidor";
 import { hojeISO } from "@/lib/formato";
+import { PARAMETROS_PADRAO } from "@/lib/previsao-racao";
 import { resumoLote, type SemanaLote } from "@/lib/zootecnico";
 import type { BiometriaRecente, InsumoOpcao, LoteTanque, PainelCampo, RacaoSugerida, Tanque } from "./tipos";
 import { validarAbrirLote, validarBiometriaCampo, validarFecharLote, validarInsumoCampo } from "./validar";
@@ -32,13 +33,14 @@ function racao(r: RacaoBanco | undefined): RacaoSugerida | null {
 // arraçoamento, curva de crescimento e conversão alimentar, e o que dá para aplicar no viveiro.
 export async function painelCampo(supabase: SupabaseClient, empresa: EmpresaCampo): Promise<PainelCampo> {
   const hoje = hojeISO(empresa.fuso);
-  const [{ data: viveiros }, { data: alocacoes }, { data: especies }, { data: produtos }, { data: saldos }] = await Promise.all([
+  const [{ data: viveiros }, { data: alocacoes }, { data: especies }, { data: produtos }, { data: saldos }, { data: parametros }] = await Promise.all([
     supabase.from("viveiros").select("id, nome, area_m2, volume_m3, aeracao, setores(nome)").eq("empresa_id", empresa.id).eq("ativo", true),
     supabase.from("alocacoes_atuais").select("lote_id, viveiro_id, lote_codigo, fase, data_povoamento, especie_id, peixes_atuais, semana, dias_cultivo, " +
       "ultimo_apontamento, peso_medio_g, biomassa_kg, peixes_m2, kg_m3, ultima_biometria, carencia_ate, previsao_despesca, peso_alvo_g").eq("empresa_id", empresa.id),
     supabase.from("especies").select("id, nome").eq("empresa_id", empresa.id).order("nome"),
     supabase.from("produtos").select("id, nome, unidade, tipo").eq("empresa_id", empresa.id).eq("ativo", true).in("tipo", ["corretivo", "outro"]).order("nome"),
     supabase.from("saldos_produtos").select("produto_id, saldo").eq("empresa_id", empresa.id),
+    supabase.from("racao_parametros").select("amostra_pct, amostra_min, amostra_max").eq("empresa_id", empresa.id).maybeSingle(),
   ]);
   const ocupados = (alocacoes ?? []) as unknown as Record<string, unknown>[];
   const lotes = [...new Set(ocupados.map((a) => String(a.lote_id)))];
@@ -116,6 +118,9 @@ export async function painelCampo(supabase: SupabaseClient, empresa: EmpresaCamp
   return {
     tanques,
     especies: (especies ?? []).map((e) => ({ id: e.id, nome: e.nome })),
+    amostra: parametros
+      ? { amostra_pct: Number(parametros.amostra_pct), amostra_min: Number(parametros.amostra_min), amostra_max: Number(parametros.amostra_max) }
+      : { amostra_pct: PARAMETROS_PADRAO.amostra_pct, amostra_min: PARAMETROS_PADRAO.amostra_min, amostra_max: PARAMETROS_PADRAO.amostra_max },
     insumos: ((produtos ?? []) as Omit<InsumoOpcao, "saldo">[]).map((p) => ({ ...p, saldo: saldo.get(p.id) ?? null })),
   };
 }
@@ -129,6 +134,16 @@ export async function gravarBiometriaCampo(supabase: SupabaseClient, empresa: Em
   const v = validarBiometriaCampo(corpo, hojeISO(empresa.fuso));
   if ("erro" in v) return recusa(v.erro);
   const b = v.ok;
+  if (b.grupos) {
+    // biometria em grupos: biometria e grupos numa transação; o client_id não deixa o reenvio duplicar
+    const { data, error } = await supabase.rpc("registrar_biometria_grupos", {
+      p_empresa: empresa.id, p_viveiro: b.viveiro_id, p_data: b.data, p_grupos: b.grupos, p_client_id: b.client_id, p_lote: b.lote_id,
+      p_origem: "app", p_observacoes: b.observacoes || null, p_jejum_horas: b.jejum_horas ?? null, p_temperatura_c: b.temperatura_c ?? null,
+      p_oxigenio_mg_l: b.oxigenio_mg_l ?? null,
+    });
+    if (error) return recusa(mensagemBanco(error));
+    return { status: 200, corpo: { id: data } };
+  }
   const { data, error } = await supabase.rpc("registrar_biometria", {
     p_empresa: empresa.id, p_viveiro: b.viveiro_id, p_data: b.data, p_peixes: b.peixes,
     p_peso_total_g: b.peso_total_g, p_peso_medio_g: b.peso_medio_g, p_comprimento_cm: null, p_uniformidade_pct: null,

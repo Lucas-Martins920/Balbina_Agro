@@ -61,4 +61,6 @@ export type PainelCampo = {
   tanques: Tanque[];
   especies: Opcao[];
   insumos: InsumoOpcao[];
+  // tamanho da amostra da biometria (Estoque de ração › Reserva e amostra)
+  amostra?: { amostra_pct: number; amostra_min: number; amostra_max: number };
 };

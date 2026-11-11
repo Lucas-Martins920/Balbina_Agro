@@ -1,6 +1,8 @@
 // O que a fila do app de campo manda ao servidor (pode chegar horas depois, quando o celular pega sinal).
 // Conferido aqui antes de chegar ao banco, que confere de novo (permissão, lote no viveiro, saldo, carência).
 
+import { totaisGrupos, validarGrupos, type GrupoBiometria } from "../biometria-grupos.ts";
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const DATA = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -46,12 +48,31 @@ function base(v: unknown, hoje: string): Resultado<{ corpo: Obj; client_id: stri
 export type BiometriaCampo = {
   client_id: string; viveiro_id: string; lote_id: string | null; data: string;
   peixes: number; peso_total_g: number | null; peso_medio_g: number | null; observacoes: string;
+  // biometria em grupos (opcional): o servidor grava os grupos e o peso médio ponderado
+  grupos?: GrupoBiometria[]; jejum_horas?: number | null; temperatura_c?: number | null; oxigenio_mg_l?: number | null;
 };
 
 export function validarBiometriaCampo(v: unknown, hoje: string): Resultado<BiometriaCampo> {
   const b = base(v, hoje);
   if ("erro" in b) return b;
   const c = b.ok.corpo;
+  if (c.grupos !== undefined) {
+    const g = validarGrupos(c.grupos);
+    if ("erro" in g) return g;
+    const t = totaisGrupos(g.ok);
+    const opcional = (v: unknown, max: number) => (vazio(v) ? null : (numero(v) !== null && numero(v)! >= 0 && numero(v)! <= max ? numero(v) : undefined));
+    const jejum = opcional(c.jejum_horas, 96), temp = opcional(c.temperatura_c, 45), ox = opcional(c.oxigenio_mg_l, 30);
+    if (jejum === undefined) return { erro: "Jejum inválido: de 0 a 96 horas." };
+    if (temp === undefined) return { erro: "Temperatura inválida: de 0 a 45 °C." };
+    if (ox === undefined) return { erro: "Oxigênio inválido: de 0 a 30 mg/L." };
+    return {
+      ok: {
+        client_id: b.ok.client_id, viveiro_id: b.ok.viveiro_id, lote_id: uuid(c.lote_id), data: b.ok.data,
+        peixes: t.peixes, peso_total_g: t.pesoTotalG, peso_medio_g: null, observacoes: texto(c.observacoes, 500),
+        grupos: g.ok, jejum_horas: jejum, temperatura_c: temp, oxigenio_mg_l: ox,
+      },
+    };
+  }
   const peixes = inteiroPositivo(c.peixes, 100_000);
   if (!peixes) return { erro: "Informe quantos peixes foram pesados (número inteiro)." };
   const total = positivo(c.peso_total_g, 5_000_000);
