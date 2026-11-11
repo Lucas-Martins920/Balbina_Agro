@@ -5,6 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { EmpresaCampo } from "@/lib/apontamento-campo-servidor";
 import { responderManejoOllama, type ConfigOllama } from "@/lib/ai/offline-chat";
 import { hojeISO } from "@/lib/formato";
+import { carregarPlanoRacao } from "@/lib/previsao-racao-dados";
 import { ErroIa, MODELO, cliente } from "@/lib/ia";
 import { textoBaseConhecimento } from "./conhecimento-tambaqui";
 import { textoDadosPiscicultura, type MensagemChat } from "./contexto-chat";
@@ -22,16 +23,19 @@ export type { RespostaChat };
 
 // Os dados de hoje que a IA recebe junto com a conversa, e o que os cartões precisam para conferir os ids
 async function prepararManejo(supabase: SupabaseClient, empresa: EmpresaCampo, kgSaco: number | null): Promise<{ dados: string; ctx: ContextoCartoes }> {
-  const [painel, { data: medicamentos }, { data: racoes }] = await Promise.all([
+  const hoje = hojeISO(empresa.fuso);
+  // o planejamento da ração é o mesmo da ficha do lote; sem ele a IA só não recebe a seção
+  const [painel, { data: medicamentos }, { data: racoes }, plano] = await Promise.all([
     painelCampo(supabase, empresa),
     supabase.from("medicamentos").select("id, nome, dose_por_unidade, unidade_dose, via, carencia_dias").eq("empresa_id", empresa.id).eq("ativo", true).order("nome"),
     supabase.from("produtos").select("id, nome").eq("empresa_id", empresa.id).eq("tipo", "racao").eq("ativo", true).order("nome"),
+    carregarPlanoRacao(supabase as Parameters<typeof carregarPlanoRacao>[0], empresa.id, hoje).catch(() => null),
   ]);
   const meds: MedicamentoOpcao[] = (medicamentos ?? []).map((m) => ({
     id: m.id, nome: m.nome, dose: m.dose_por_unidade === null ? null : Number(m.dose_por_unidade), unidade: m.unidade_dose, via: m.via, carencia: m.carencia_dias ?? 0,
   }));
   return {
-    dados: textoDadosPiscicultura({ painel, medicamentos: meds, racoes: racoes ?? [], hoje: hojeISO(empresa.fuso), kgSaco }),
+    dados: textoDadosPiscicultura({ painel, medicamentos: meds, racoes: racoes ?? [], hoje, kgSaco, plano }),
     ctx: contextoDosCartoes(painel, meds, racoes ?? []),
   };
 }

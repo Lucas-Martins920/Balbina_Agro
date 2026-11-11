@@ -45,3 +45,33 @@ test("dados da piscicultura levam ids, lote, ração sugerida e cadastros", () =
   assert.match(t, /- id cal: Calcário \(kg\), saldo 300 kg/);
   assert.match(t, /- id oxi: Oxitetraciclina \(dose do cadastro 5 g por kg de ração\), carência 21 dias/);
 });
+
+test("IA recebe o planejamento da ração com a origem de cada número e sem dados técnicos para outra espécie", async () => {
+  const { preverLote, planejarReserva, PARAMETROS_PADRAO } = await import("../previsao-racao.ts");
+  const tabela = [{ fase: "Recria III", peso_min_g: 70, peso_max_g: 188, proteina_pct: 32, granulo: "4-6 mm", taxa_inicio_pct: 4.2, taxa_fim_pct: 2.7, refeicoes: 3, fonte: "Embrapa" }];
+  const r32 = { id: "r32", nome: "Ração 32% 4-6 mm", proteina_pct: 32, granulometria: "4-6 mm", saco_kg: 25, fase_recomendada: null };
+  const saldos = [{ racao_id: "r32", numero: 1, saldo_kg: 63, dias_para_vencer: 60 }];
+  const tambaqui = preverLote({ hoje: "2026-11-11", especie: "Tambaqui", tabela, curva: [], peixes: 2500,
+    biometrias: [{ data: "2026-10-27", peso_medio_g: 120 }, { data: "2026-11-11", peso_medio_g: 150 }], tratoKgPorDia: [], racaoUsadaId: null, racoes: [r32], saldos });
+  const pirarucu = preverLote({ hoje: "2026-11-11", especie: "Pirarucu", tabela: [], curva: [], peixes: 300,
+    biometrias: [], tratoKgPorDia: [], racaoUsadaId: null, racoes: [r32], saldos });
+  const reserva = planejarReserva([{ racao: r32, consumo: tambaqui.consumoPorDia.atual }], saldos, { reservaSacos: 10, prazoEntregaDias: 7 });
+  const t = textoDadosPiscicultura({
+    painel: { especies: [], insumos: [], tanques: [] }, medicamentos: [], racoes: [], hoje: "2026-11-11", kgSaco: 25,
+    plano: { hoje: "2026-11-11", parametros: PARAMETROS_PADRAO, racoes: [r32], saldos, reserva,
+      lotes: [{ lote_id: "l1", codigo: "L-1", especie: "Tambaqui", previsao: tambaqui }, { lote_id: "l2", codigo: "L-2", especie: "Pirarucu", previsao: pirarucu }] },
+  });
+  assert.match(t, /## Planejamento da ração/);
+  assert.match(t, /lote L-1 \(Tambaqui\) · confiança alta/);
+  assert.match(t, /peso médio hoje: 150 g \[medido/);
+  assert.match(t, /GMD: 2 g\/dia \[calculado/);
+  assert.match(t, /consumo diário previsto: 11,9 kg \[previsão/);
+  assert.match(t, /faixa Recria III, fonte Embrapa/);
+  assert.match(t, /sobra: \[ausente/);
+  assert.match(t, /previsão de consumo \[previsão\]: 15 dias/);
+  assert.match(t, /sem dados técnicos para Pirarucu: .*não use números do tambaqui/);
+  assert.match(t, /lote L-2 \(Pirarucu\) · confiança indisponível/);
+  assert.match(t, /- Ração 32% 4-6 mm \(saco de 25 kg\): estoque 63 kg = 2,5 sacos .*\[recomendação\]/);
+  // sem plano, a seção não aparece (a IA continua respondendo com o resto)
+  assert.doesNotMatch(textoDadosPiscicultura({ painel: { especies: [], insumos: [], tanques: [] }, medicamentos: [], racoes: [], hoje: "2026-11-11", kgSaco: null }), /Planejamento/);
+});
