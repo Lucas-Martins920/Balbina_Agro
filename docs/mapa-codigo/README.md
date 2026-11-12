@@ -2,7 +2,7 @@
 
 > Gerado automaticamente por `scripts/mapa-codigo.mjs`. **Não edite à mão**: depois de mudar o código, rode `npm run mapa` e a pasta `docs/mapa-codigo/` é refeita. Em conflito de merge nesses arquivos, rode `npm run mapa` de novo e aceite o resultado.
 
-Resumo: 540 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2253 funções/componentes/tipos, 369 funções do banco, 113 tabelas, 33 views, 84 triggers, 197 policies, 125 migrations.
+Resumo: 542 arquivos TypeScript em `src/`, 88 telas, 56 rotas de API, 2258 funções/componentes/tipos, 369 funções do banco, 113 tabelas, 33 views, 84 triggers, 197 policies, 125 migrations.
 
 **Versão com busca (recomendada):** abra [mapa.html](mapa.html) no navegador (duplo clique no arquivo `docs/mapa-codigo/mapa.html`). Nas páginas Markdown, use Ctrl+F.
 
@@ -114,13 +114,14 @@ Resumo: 540 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2253 funç
 | `e2e` | 19 | Testes de ponta a ponta com Playwright (npm run test:e2e). |
 | `public` | 6 | Arquivos estáticos (ícones, service worker do modo offline). |
 | `scripts` | 14 | Scripts de apoio: rodar local, backup, testes do banco, aplicar migrations, este mapa. |
-| `src` | 542 | Todo o código do app Next.js (telas, componentes, regras em TypeScript). |
-| `src/app` | 256 | Rotas do Next.js: cada pasta é um endereço; page.tsx é a tela, route.ts é API, actions.ts são as ações de formulário (server actions). |
-| `src/app/(app)` | 165 | Telas do sistema logado (com menu lateral). O nome entre parênteses não aparece na URL. |
+| `src` | 544 | Todo o código do app Next.js (telas, componentes, regras em TypeScript). |
+| `src/app` | 258 | Rotas do Next.js: cada pasta é um endereço; page.tsx é a tela, route.ts é API, actions.ts são as ações de formulário (server actions). |
+| `src/app/(app)` | 167 | Telas do sistema logado (com menu lateral). O nome entre parênteses não aparece na URL. |
 | `src/app/(app)/_cadastro-rapido` | 1 | Endereço /_cadastro-rapido. |
 | `src/app/(app)/_titulos` | 3 | Código compartilhado por Contas a pagar e Contas a receber (lista, página e ações). |
 | `src/app/(app)/apontamentos` | 7 | Tela /apontamentos (Produção > Apontamento diário). |
 | `src/app/(app)/apontamentos/checklist` | 1 | Endereço /apontamentos/checklist. |
+| `src/app/(app)/cadastros` | 2 | Endereço /cadastros. |
 | `src/app/(app)/cartoes` | 2 | Tela /cartoes (Financeiro > Cartões de crédito). |
 | `src/app/(app)/categorias` | 3 | Tela /categorias (Cadastros > Categorias). |
 | `src/app/(app)/centros-de-custo` | 3 | Tela /centros-de-custo (Cadastros > Centros de custo). |
@@ -285,9 +286,7 @@ Resumo: 540 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2253 funç
 | `src/lib/db` | 3 |  |
 | `src/lib/supabase` | 8 | Clientes do Supabase: server.ts (servidor com sessão), client.ts (navegador), admin.ts (chave de serviço), proxy.ts (sessão no proxy). |
 | `src/lib/sync` | 5 |  |
-| `supabase` | 218 | Banco de dados Supabase (Postgres). |
-| `supabase/.branches` | 1 |  |
-| `supabase/.temp` | 1 |  |
+| `supabase` | 216 | Banco de dados Supabase (Postgres). |
 | `supabase/migrations` | 125 | Migrations SQL em ordem de data. Tabelas, views, funções, triggers e policies (RLS). Nunca editar uma antiga: criar outra. |
 | `supabase/seed` | 1 |  |
 | `supabase/templates` | 1 |  |
@@ -308,6 +307,7 @@ Resumo: 540 arquivos TypeScript em `src/`, 87 telas, 56 rotas de API, 2253 funç
 | `/auth/mfa/email` |  | [src/app/auth/mfa/email/page.tsx](../../src/app/auth/mfa/email/page.tsx) | — |
 | `/auth/nova-senha` |  | [src/app/auth/nova-senha/page.tsx](../../src/app/auth/nova-senha/page.tsx) | — |
 | `/auth/primeiro-acesso` |  | [src/app/auth/primeiro-acesso/page.tsx](../../src/app/auth/primeiro-acesso/page.tsx) | [src/app/auth/primeiro-acesso/actions.ts](../../src/app/auth/primeiro-acesso/actions.ts) |
+| `/cadastros` |  | [src/app/(app)/cadastros/page.tsx](../../src/app/(app)/cadastros/page.tsx) | — |
 | `/campo` |  | [src/app/campo/page.tsx](../../src/app/campo/page.tsx) | — |
 | `/cartoes` | Financeiro > Cartões de crédito | [src/app/(app)/cartoes/page.tsx](../../src/app/(app)/cartoes/page.tsx) | [src/app/(app)/cartoes/actions.ts](../../src/app/(app)/cartoes/actions.ts) |
 | `/categorias` | Cadastros > Categorias | [src/app/(app)/categorias/page.tsx](../../src/app/(app)/categorias/page.tsx) | [src/app/(app)/categorias/actions.ts](../../src/app/(app)/categorias/actions.ts) |

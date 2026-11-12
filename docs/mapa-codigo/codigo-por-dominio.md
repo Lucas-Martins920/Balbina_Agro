@@ -740,7 +740,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `Acesso` *tipo* L6 (usado em 6) · `SEM_ACESSO` *constante* L8 (usado em 2) · `Acao` *tipo* L10 · `ModuloPermissao` *tipo* L11 (usado em 1) · `CATALOGO` *constante* L26 (usado em 3) · `GRUPOS_CATALOGO` *constante* L39 (usado em 2) · `CHAVES_VALIDAS` *constante* L41 (usado em 4) · `PERFIS` *constante* L45 (usado em 3) · `chavesDoCargo` *função* L63 (usado em 2) · `planoInclui` *função* L72 (usado em 3) · `temPermissao` *função* L78 (usado em 6) · `podeDispensar2fa` *função* L92 (usado em 2)
   - internas: `modulo` L68
 - **[src/lib/permissoes.ts](../../src/lib/permissoes.ts)** — Acesso do usuário logado na empresa atual. O banco aplica a mesma regra nas policies.
-  - `Permissoes` *tipo* L9 · `getPermissoes` *função* L12 (usado em 73) · `exigirAcesso` *função* L22 (usado em 58) · `exigirMaster` *função* L27 (usado em 6) · `foraDoPlano` *função* L34 (usado em 7)
+  - `Permissoes` *tipo* L9 · `getPermissoes` *função* L12 (usado em 74) · `exigirAcesso` *função* L22 (usado em 58) · `exigirMaster` *função* L27 (usado em 6) · `foraDoPlano` *função* L34 (usado em 7)
 - **[src/lib/supabase/falha-auth.ts](../../src/lib/supabase/falha-auth.ts)** — Erro do Auth ao conferir a sessão: só rede, timeout ou 5xx são temporários (vale tentar de novo). 4xx (refresh token vencido ou já usado, JWT inválido) quer dizer sessão morta: o caminho é o login.
   - `falhaTemporaria` *função* L5 (usado em 2)
 - **[src/lib/supabase/proxy.ts](../../src/lib/supabase/proxy.ts)** — Renova a sessão a cada navegação e manda quem não está logado para /login.
@@ -890,6 +890,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 
 ## Início, painel, ajuda e configurações
 
+- **[src/app/(app)/cadastros/page.tsx](../../src/app/(app)/cadastros/page.tsx)** (rota `/cadastros`) — Tela /cadastros.
+  - `PaginaCadastros` *componente* L8
 - **[src/app/(app)/configuracoes/actions.ts](../../src/app/(app)/configuracoes/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /configuracoes.
   - `salvarApontarAgua` *ação* L12 (usado em 1) · `salvarFuso` *ação* L25 (usado em 1)
 - **[src/app/(app)/configuracoes/automacoes/actions.ts](../../src/app/(app)/configuracoes/automacoes/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /configuracoes/automacoes.
@@ -977,6 +979,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `TipoRapido` *tipo* L11 (usado em 1) · `ResultadoRapido` *tipo* L12 · `cadastrarRapido` *ação* L14 (usado em 1)
 - **[src/app/(app)/actions.ts](../../src/app/(app)/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /.
   - `trocarEmpresa` *ação* L7 (usado em 2)
+- **[src/app/(app)/cadastros/lista.tsx](../../src/app/(app)/cadastros/lista.tsx)** (navegador)
+  - `ListaCadastros` *componente* L7 (usado em 1)
 - **[src/app/(app)/despescas/actions.ts](../../src/app/(app)/despescas/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /despescas.
   - `registrarDespesca` *ação* L16 (usado em 1) · `desfazerDespesca` *ação* L59 (usado em 1)
   - internas: `revalidar` L10
@@ -1039,7 +1043,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `Tema` *tipo* L10 · `SCRIPT_TEMA` *constante* L17 (usado em 1) · `SeletorTema` *componente* L65 (usado em 3) · `InterruptorTema` *componente* L93 (usado em 1) · `BotaoTema` *componente* L119 (usado em 1)
   - internas: `ler` L22 · `assinar` L32 · `aplicar` L44
 - **[src/components/ui.tsx](../../src/components/ui.tsx)** — `quebrar` deixa um texto longo passar para a linha de baixo (a cápsula cresce na altura) em vez de vazar no celular.
-  - `classeBotao` *função* L21 (usado em 53) · `Botao` *componente* L31 (usado em 40) · `LinkBotao` *componente* L41 (usado em 24) · `CLASSE_BOTAO_TEXTO` *constante* L51 (usado em 37) · `CLASSE_CONTROLE` *constante* L54 (usado em 18) · `Campo` *componente* L66 (usado em 69) · `Selecao` *componente* L75 (usado em 53) · `AreaTexto` *componente* L86 (usado em 16) · `Cartao` *componente* L95 (usado em 48) · `Aviso` *componente* L140 (usado em 55) · `TomEtiqueta` *tipo* L148 (usado em 9) · `Etiqueta` *componente* L150 (usado em 49) · `Tabela` *componente* L165 (usado em 27) · `Vazio` *componente* L206 (usado em 9) · `Titulo` *componente* L215 (usado em 69) · `Secao` *componente* L228 (usado em 2) · `Segmentos` *componente* L244 (usado em 12) · `Cor` *tipo* L266 (usado em 3) · `COR_FICHA` *constante* L267 · `Ficha` *componente* L278 (usado em 3) · `CartaoKpi` *componente* L291 (usado em 2) · `Indicador` *componente* L317 (usado em 8) · `Faixa` *componente* L348 (usado em 8)
+  - `classeBotao` *função* L21 (usado em 53) · `Botao` *componente* L31 (usado em 40) · `LinkBotao` *componente* L41 (usado em 24) · `CLASSE_BOTAO_TEXTO` *constante* L51 (usado em 37) · `CLASSE_CONTROLE` *constante* L54 (usado em 18) · `Campo` *componente* L66 (usado em 70) · `Selecao` *componente* L75 (usado em 53) · `AreaTexto` *componente* L86 (usado em 16) · `Cartao` *componente* L95 (usado em 49) · `Aviso` *componente* L140 (usado em 56) · `TomEtiqueta` *tipo* L148 (usado em 9) · `Etiqueta` *componente* L150 (usado em 49) · `Tabela` *componente* L165 (usado em 27) · `Vazio` *componente* L206 (usado em 9) · `Titulo` *componente* L215 (usado em 70) · `Secao` *componente* L228 (usado em 2) · `Segmentos` *componente* L244 (usado em 12) · `Cor` *tipo* L266 (usado em 3) · `COR_FICHA` *constante* L267 · `Ficha` *componente* L278 (usado em 3) · `CartaoKpi` *componente* L291 (usado em 2) · `Indicador` *componente* L317 (usado em 8) · `Faixa` *componente* L348 (usado em 8)
   - internas: `Rotulo` L57
 - **[src/components/whatsapp-pessoal.tsx](../../src/components/whatsapp-pessoal.tsx)** — H2: o celular da própria pessoa no WhatsApp do Balbina (avisos e envio de documentos).
   - `WhatsAppPessoal` *componente* L11 (usado em 2)
@@ -1102,10 +1106,10 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `ViveiroFaltando` *tipo* L5 (usado em 1) · `textoLembrete` *função* L7 (usado em 2) · `Resumo` *tipo* L16 (usado em 1) · `textoResumo` *função* L25 (usado em 2) · `textoPacoteContador` *função* L44 (usado em 2)
   - internas: `moeda` L21 · `plural` L22 · `nomeMes` L41
 - **[src/lib/menu.ts](../../src/lib/menu.ts)** — Estrutura da barra lateral (src/components/barra-lateral.tsx), sem React, para testar sem navegador. Os grupos de módulos (src/lib/modulos.ts) ficam em três seções, como no desenho de referência: Principal (Painel e Rot…
-  - `Link` *tipo* L7 (usado em 1) · `Grupo` *tipo* L8 (usado em 1) · `Secao` *tipo* L9 (usado em 1) · `MODULOS_CELULAR` *constante* L12 · `USUARIOS` *constante* L19 · `montarMenu` *função* L21 (usado em 3) · `estaAtivo` *função* L46 (usado em 1) · `hrefAtivo` *função* L51 (usado em 1) · `grupoAtivo` *função* L55 (usado em 2) · `sincronizarGruposAbertos` *função* L60 (usado em 2) · `Tela` *tipo* L68 · `buscarTelas` *função* L71 (usado em 2)
-  - internas: `normalizar` L66
+  - `Link` *tipo* L7 (usado em 1) · `Grupo` *tipo* L8 (usado em 1) · `Secao` *tipo* L9 (usado em 1) · `MODULOS_CELULAR` *constante* L12 · `USUARIOS` *constante* L19 · `CADASTROS` *constante* L21 · `HUB_CADASTROS` *constante* L22 · `itensDoCadastro` *função* L25 (usado em 2) · `montarMenu` *função* L30 (usado em 3) · `estaAtivo` *função* L60 (usado em 1) · `hrefAtivo` *função* L65 (usado em 1) · `grupoAtivo` *função* L69 (usado em 2) · `sincronizarGruposAbertos` *função* L74 (usado em 2) · `Tela` *tipo* L82 · `buscarTelas` *função* L85 (usado em 2)
+  - internas: `normalizar` L80
 - **[src/lib/modulos.ts](../../src/lib/modulos.ts)** — Mapa de navegação. `marco` diz em que etapa do plano original do FINAVI (docs/legado/finavi/replica/architecture.md) o módulo ficou pronto.
-  - `Modulo` *tipo* L2 · `GrupoModulos` *tipo* L13 · `GRUPOS` *constante* L15 (usado em 5) · `podeVerModulo` *função* L90 (usado em 1) · `encontrarModulo` *função* L94 (usado em 3)
+  - `Modulo` *tipo* L2 · `GrupoModulos` *tipo* L13 · `GRUPOS` *constante* L15 (usado em 6) · `podeVerModulo` *função* L90 (usado em 2) · `encontrarModulo` *função* L94 (usado em 3)
 - **[src/lib/ordem.ts](../../src/lib/ordem.ts)** — Ordem das categorias e dos centros de custo escolhida pela piscicultura (arrastando na lista, como no NIBO). No banco a ordem vale entre irmãos; aqui a árvore vira lista plana: pai, filhos dele, próximo pai.
   - `ItemOrdenavel` *tipo* L4 (usado em 1) · `compararOrdem` *função* L11 (usado em 3) · `ordenarArvore` *função* L21 (usado em 1) · `emOrdem` *função* L46 · `moverPara` *função* L51 (usado em 1) · `ordenado` *função* L59 (usado em 9)
   - internas: `posGrupo` L8
