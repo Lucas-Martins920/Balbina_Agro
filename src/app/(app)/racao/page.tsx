@@ -12,6 +12,7 @@ import { carregarPlanoRacao } from "@/lib/previsao-racao-dados";
 import { descricaoRacao, numeroEntrada, sacosDoSaldo, situacaoValidade } from "@/lib/racao-estoque";
 import { createClient } from "@/lib/supabase/server";
 import { ajustarEntradaRacao, estornarSaidaRacao, excluirEntradaRacao, lancarEntradaRacao, salvarParametrosRacao } from "./actions";
+import { AbasEstoque } from "@/components/abas-estoque";
 
 const TIPOS_AJUSTE: Record<string, string> = {
   contagem: "Contagem", perda: "Perda", avaria: "Avaria (saco rasgado, molhado)", vencimento: "Vencimento", correcao: "Correção de lançamento", outro: "Outro",
@@ -84,6 +85,7 @@ export default async function PaginaRacao({ searchParams }: { searchParams: Prom
 
   return (
     <div className="flex max-w-6xl flex-col gap-6">
+      <AbasEstoque ativa="racao" />
       <Titulo descricao={`${kg(totalKg)} de ração em estoque. O trato usa primeiro a entrada que vence primeiro (FEFO).`}
         acoes={podeLancar ? <>
           <BotaoLancamento rotulo="Entrada de ração" titulo="Entrada de ração" acao={lancarEntradaRacao} botao="Lançar entrada" chave="entrada-racao"

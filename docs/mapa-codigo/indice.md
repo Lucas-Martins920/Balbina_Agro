@@ -15,6 +15,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `AbaProduto` | tipo | `src/lib/estoque.ts:33` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
 | `Abas` | componente | `src/app/(app)/conciliacao/abas.tsx:8` | Financeiro | 1 arquivo |
 | `ABAS_PRODUTO` | constante | `src/lib/estoque.ts:25` | Vendas, PDV, estoque, produtos e ração | 2 arquivos |
+| `AbasEstoque` | componente | `src/components/abas-estoque.tsx:11` | Vendas, PDV, estoque, produtos e ração | 3 arquivos |
 | `AbasFiltro` | componente | `src/components/cadastro.tsx:522` | Comum | 10 arquivos |
 | `AbasPlanejamento` | componente | `src/app/(app)/planejamento/linha-do-tempo.tsx:9` | Planejamento, previsões, custo do kg e relatórios | 3 arquivos |
 | `AbasRelatorio` | componente | `src/app/(app)/relatorios/abas.tsx:7` | Planejamento, previsões, custo do kg e relatórios | 8 arquivos |
@@ -1607,7 +1608,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `PaginaDocumentos` | componente | `src/app/(app)/contas-a-pagar/documentos/page.tsx:23` | Financeiro | — |
 | `PaginaDre` | componente | `src/app/(app)/relatorios/dre/page.tsx:30` | Planejamento, previsões, custo do kg e relatórios | — |
 | `PaginaEspecies` | componente | `src/app/(app)/lotes/especies/page.tsx:10` | Produção | — |
-| `PaginaEstoque` | componente | `src/app/(app)/estoque/page.tsx:19` | Vendas, PDV, estoque, produtos e ração | — |
+| `PaginaEstoque` | componente | `src/app/(app)/estoque/page.tsx:20` | Vendas, PDV, estoque, produtos e ração | — |
 | `PaginaFluxo` | componente | `src/app/(app)/fluxo-de-caixa/page.tsx:15` | Financeiro | — |
 | `PaginaHistorico` | componente | `src/app/(app)/historico/page.tsx:55` | Login, segurança, usuários e permissões | — |
 | `PaginaImportar` | componente | `src/app/(app)/configuracoes/importar/page.tsx:16` | Importação | — |
@@ -1618,7 +1619,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `PaginaLogin` | componente | `src/app/login/page.tsx:11` | Login, segurança, usuários e permissões | — |
 | `PaginaLote` | componente | `src/app/(app)/lotes/[id]/page.tsx:33` | Produção | — |
 | `PaginaLotes` | componente | `src/app/(app)/lotes/page.tsx:8` | Produção | — |
-| `PaginaMedicamentos` | componente | `src/app/(app)/medicamentos/page.tsx:7` | Produção | — |
+| `PaginaMedicamentos` | componente | `src/app/(app)/medicamentos/page.tsx:8` | Produção | — |
 | `PaginaMfa` | componente | `src/app/auth/mfa/page.tsx:15` | Login, segurança, usuários e permissões | — |
 | `PaginaNotas` | componente | `src/app/(app)/notas/page.tsx:17` | Fiscal | — |
 | `PaginaNotasRecebidas` | componente | `src/app/(app)/notas/recebidas/page.tsx:27` | Fiscal | — |
@@ -1642,7 +1643,7 @@ Só os nomes exportados (usáveis por outros arquivos). Os internos aparecem em 
 | `PaginaPrimeiroAcesso` | componente | `src/app/auth/primeiro-acesso/page.tsx:9` | Login, segurança, usuários e permissões | — |
 | `PaginaPrivacidade` | componente | `src/app/privacidade/page.tsx:10` | Login, segurança, usuários e permissões | — |
 | `PaginaProdutos` | componente | `src/app/(app)/produtos/page.tsx:3` | Vendas, PDV, estoque, produtos e ração | — |
-| `PaginaRacao` | componente | `src/app/(app)/racao/page.tsx:26` | Vendas, PDV, estoque, produtos e ração | — |
+| `PaginaRacao` | componente | `src/app/(app)/racao/page.tsx:27` | Vendas, PDV, estoque, produtos e ração | — |
 | `PaginaRegras` | componente | `src/app/(app)/conciliacao/regras/page.tsx:19` | Financeiro | — |
 | `PaginaReguaCobranca` | componente | `src/app/(app)/contas-a-receber/regua/page.tsx:13` | Financeiro | — |
 | `PaginaRelatorioContas` | componente | `src/app/(app)/relatorios/contas/page.tsx:13` | Planejamento, previsões, custo do kg e relatórios | — |
