@@ -2,7 +2,7 @@
 
 > Gerado automaticamente por `scripts/mapa-codigo.mjs`. **Não edite à mão**: depois de mudar o código, rode `npm run mapa` e a pasta `docs/mapa-codigo/` é refeita. Em conflito de merge nesses arquivos, rode `npm run mapa` de novo e aceite o resultado.
 
-Resumo: 542 arquivos TypeScript em `src/`, 88 telas, 56 rotas de API, 2258 funções/componentes/tipos, 369 funções do banco, 113 tabelas, 33 views, 84 triggers, 197 policies, 125 migrations.
+Resumo: 543 arquivos TypeScript em `src/`, 88 telas, 56 rotas de API, 2259 funções/componentes/tipos, 369 funções do banco, 113 tabelas, 33 views, 84 triggers, 197 policies, 125 migrations.
 
 **Versão com busca (recomendada):** abra [mapa.html](mapa.html) no navegador (duplo clique no arquivo `docs/mapa-codigo/mapa.html`). Nas páginas Markdown, use Ctrl+F.
 
@@ -114,7 +114,7 @@ Resumo: 542 arquivos TypeScript em `src/`, 88 telas, 56 rotas de API, 2258 funç
 | `e2e` | 19 | Testes de ponta a ponta com Playwright (npm run test:e2e). |
 | `public` | 6 | Arquivos estáticos (ícones, service worker do modo offline). |
 | `scripts` | 14 | Scripts de apoio: rodar local, backup, testes do banco, aplicar migrations, este mapa. |
-| `src` | 544 | Todo o código do app Next.js (telas, componentes, regras em TypeScript). |
+| `src` | 545 | Todo o código do app Next.js (telas, componentes, regras em TypeScript). |
 | `src/app` | 258 | Rotas do Next.js: cada pasta é um endereço; page.tsx é a tela, route.ts é API, actions.ts são as ações de formulário (server actions). |
 | `src/app/(app)` | 167 | Telas do sistema logado (com menu lateral). O nome entre parênteses não aparece na URL. |
 | `src/app/(app)/_cadastro-rapido` | 1 | Endereço /_cadastro-rapido. |
@@ -275,7 +275,7 @@ Resumo: 542 arquivos TypeScript em `src/`, 88 telas, 56 rotas de API, 2258 funç
 | `src/app/privacidade` | 1 | Endereço /privacidade. |
 | `src/app/termos` | 1 | Endereço /termos. |
 | `src/app/vendedor` | 1 | App do vendedor (pedidos no celular). |
-| `src/components` | 64 | Componentes React reutilizados pelas telas. ui.tsx tem os primitivos visuais (botões, cartões, tabelas). |
+| `src/components` | 65 | Componentes React reutilizados pelas telas. ui.tsx tem os primitivos visuais (botões, cartões, tabelas). |
 | `src/components/campo` | 17 |  |
 | `src/components/vendas` | 9 | Componentes de vendas: PDV, nova venda, NFC-e, app do vendedor. |
 | `src/lib` | 221 | Regras e utilitários em TypeScript (cálculos puros, consultas, integrações). Arquivo .test.ts ao lado = teste. |

@@ -10,6 +10,7 @@ import { unidadeSaldo } from "@/lib/estoque";
 import { contarPescado } from "./actions";
 import { ListaEstoque, type ProdutoEstoque } from "@/components/movimento-estoque";
 import { exigirAcesso, getPermissoes } from "@/lib/permissoes";
+import { AbasEstoque } from "@/components/abas-estoque";
 
 const TIPOS: Record<string, string> = {
   despesca: "Despesca", venda: "Venda", ajuste: "Ajuste", perda: "Perda", transferencia: "Transferência",
@@ -65,6 +66,7 @@ export default async function PaginaEstoque() {
 
   return (
     <div className="flex max-w-6xl flex-col gap-6">
+      <AbasEstoque ativa="pescado" />
       <Titulo descricao={`${textoKg(total)} de peixe em estoque${pontos.size ? " na piscicultura" : ""} · ${textoKg(disponivel)} disponíveis para venda`}
         acoes={<>
           <Link href="/despescas?lancar=despesca" className={classeBotao("primario", "md")}>Lançar despesca</Link>

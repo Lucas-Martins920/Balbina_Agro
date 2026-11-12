@@ -226,7 +226,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `Medicamento` *tipo* L10 (usado em 1) · `ListaMedicamentos` *componente* L96 (usado em 1)
   - internas: `baseDaDose` L28 · `FormMedicamento` L36
 - **[src/app/(app)/medicamentos/page.tsx](../../src/app/(app)/medicamentos/page.tsx)** (rota `/medicamentos`) — Dose por kg de ração ou por m³ de água, carência antes da despesca e produto do estoque.
-  - `PaginaMedicamentos` *componente* L7
+  - `PaginaMedicamentos` *componente* L8
 - **[src/app/(app)/piscicultura/actions.ts](../../src/app/(app)/piscicultura/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /piscicultura.
   - `salvarSetor` *ação* L24 (usado em 1) · `excluirSetor` *ação* L51 (usado em 1) · `salvarViveiro` *ação* L63 (usado em 1) · `excluirViveiro` *ação* L104 (usado em 1) · `salvarClasse` *ação* L118 (usado em 1)
   - internas: `revalidar` L10 · `lerMedida` L17
@@ -371,7 +371,7 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
 - **[src/app/(app)/estoque/actions.ts](../../src/app/(app)/estoque/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /estoque.
   - `movimentarEstoque` *ação* L10 (usado em 1) · `contarPescado` *ação* L41 (usado em 1)
 - **[src/app/(app)/estoque/page.tsx](../../src/app/(app)/estoque/page.tsx)** (rota `/estoque`) — Pescado em kg por classe, ração, corretivos, embalagens e medicamentos.
-  - `PaginaEstoque` *componente* L19
+  - `PaginaEstoque` *componente* L20
 - **[src/app/(app)/pontos-de-venda/[id]/page.tsx](../../src/app/(app)/pontos-de-venda/%5Bid%5D/page.tsx)** (rota `/pontos-de-venda/[id]`) — Tela /pontos-de-venda/[id].
   - `PaginaPontoVenda` *componente* L14
 - **[src/app/(app)/pontos-de-venda/actions.ts](../../src/app/(app)/pontos-de-venda/actions.ts)** (servidor) — Ações de formulário (server actions) da tela /pontos-de-venda.
@@ -397,8 +397,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `lancarEntradaRacao` *ação* L21 (usado em 1) · `excluirEntradaRacao` *ação* L44 (usado em 1) · `ajustarEntradaRacao` *ação* L55 (usado em 1) · `estornarSaidaRacao` *ação* L72 (usado em 1) · `salvarParametrosRacao` *ação* L84 (usado em 1)
   - internas: `texto` L12 · `atualizarTelas` L14
 - **[src/app/(app)/racao/page.tsx](../../src/app/(app)/racao/page.tsx)** (rota `/racao`) — Ração comprada pronta: entradas numeradas com lote e validade, consumo pelo FEFO, sacos, cobertura e movimentos.
-  - `PaginaRacao` *componente* L26
-  - internas: `kg` L24
+  - `PaginaRacao` *componente* L27
+  - internas: `kg` L25
 - **[src/app/(app)/relatorios/vendas/page.tsx](../../src/app/(app)/relatorios/vendas/page.tsx)** (rota `/relatorios/vendas`) — Tela /relatorios/vendas.
   - `RelatoriosVendas` *componente* L19
   - internas: `mesValido` L12 · `diasValidos` L13 · `Ranking` L117
@@ -456,6 +456,8 @@ Cada arquivo com o que ele faz e os nomes que ele define (`nome` *tipo* linha). 
   - `metadata` *constante* L8 · `PaginaPedidoCliente` *componente* L18
 - **[src/app/vendedor/page.tsx](../../src/app/vendedor/page.tsx)** (rota `/vendedor`) — Pedido em campo no celular: catálogo com a tabela do cliente, funciona sem internet.
   - `metadata` *constante* L12 · `PaginaVendedor` *componente* L16
+- **[src/components/abas-estoque.tsx](../../src/components/abas-estoque.tsx)**
+  - `AbasEstoque` *componente* L11 (usado em 3)
 - **[src/components/movimento-estoque.tsx](../../src/components/movimento-estoque.tsx)** (navegador) — saldo de cada produto (fora o pescado, que fica num depósito só) em cada depósito
   - `ProdutoEstoque` *tipo* L10 (usado em 1) · `Opcao` *tipo* L22 (usado em 1) · `SaldoDeposito` *tipo* L24 (usado em 1) · `FormMovimento` *componente* L34 (usado em 1) · `ListaEstoque` *componente* L119 (usado em 1)
 - **[src/components/vendas/botao-copiar.tsx](../../src/components/vendas/botao-copiar.tsx)** (navegador)
