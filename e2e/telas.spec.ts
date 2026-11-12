@@ -6,7 +6,7 @@ test.use({ storageState: SESSAO_DONO });
 // página ou "Página não encontrada"). Não confere o conteúdo; os fluxos ficam nos outros arquivos.
 const TELAS = [
   "/painel", "/pendencias", "/previsoes", "/primeiros-passos", "/piscicultura", "/lotes", "/lotes/especies", "/despescas", "/apontamentos", "/apontamentos/checklist",
-  "/relatorios/indicadores", "/sanidade", "/medicamentos", "/racao", "/planejamento", "/planejamento/parametros",
+  "/cadastros", "/relatorios/indicadores", "/sanidade", "/medicamentos", "/racao", "/planejamento", "/planejamento/parametros",
   "/planejamento/viabilidade", "/estoque", "/produtos", "/insumos", "/custo-do-kg",
   "/vendas", "/vendas/nova", "/vendas/pdv", "/vendas/pdv/caixa", "/vendas/precos", "/relatorios/vendas", "/vendas/fixos", "/vendas/links",
   "/tabelas-de-preco", "/pontos-de-venda", "/pontos-de-venda/transferencias", "/contatos",

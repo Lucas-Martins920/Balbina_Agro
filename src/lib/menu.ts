@@ -18,6 +18,15 @@ const SECOES: { nome: string; grupos: string[] }[] = [
 
 export const USUARIOS = { slug: "configuracoes/usuarios", nome: "Usuários e cargos" };
 
+export const CADASTROS = "Cadastros";
+export const HUB_CADASTROS = "cadastros";
+
+// Os cadastros que a pessoa pode ver, na ordem do grupo: alimentam a tela /cadastros.
+export function itensDoCadastro(visiveis: string[]): { slug: string; nome: string; descricao: string }[] {
+  const g = GRUPOS.find((x) => x.nome === CADASTROS);
+  return (g?.modulos ?? []).filter((m) => visiveis.includes(m.slug)).map((m) => ({ slug: m.slug, nome: m.nome, descricao: m.descricao }));
+}
+
 export function montarMenu(visiveis: string[], { master, simples = false }: { master: boolean; simples?: boolean }): Secao[] {
   const principal: Link[] = [{ tipo: "link", href: "/painel", nome: "Painel", slug: "painel", grupo: null }];
   if (!simples) principal.push({ tipo: "link", href: "/pendencias", nome: "Rotina do dia", slug: "pendencias", grupo: null });
@@ -33,6 +42,11 @@ export function montarMenu(visiveis: string[], { master, simples = false }: { ma
         .map((m) => ({ tipo: "link", href: `/${m.slug}`, nome: m.nome, slug: m.slug, grupo: g.nome }));
       if (master && !simples && g.nome === "Configurações") {
         filhos.push({ tipo: "link", href: `/${USUARIOS.slug}`, nome: USUARIOS.nome, slug: USUARIOS.slug, grupo: g.nome });
+      }
+      // Cadastros viram uma tela só (/cadastros, com busca) em vez de um menu de vários itens
+      if (g.nome === CADASTROS) {
+        if (filhos.length) itens.push({ tipo: "link", href: `/${HUB_CADASTROS}`, nome: CADASTROS, slug: HUB_CADASTROS, grupo: null });
+        continue;
       }
       if (filhos.length === 1) itens.push(filhos[0]);
       else if (filhos.length > 1) itens.push({ tipo: "grupo", nome: g.nome, filhos });
